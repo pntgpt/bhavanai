@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '@/components/ui/Card';
+import Modal from '@/components/ui/Modal';
+import ContactForm from '@/components/forms/ContactForm';
 import { Linkedin, Mail } from 'lucide-react';
 
 /**
@@ -13,12 +15,12 @@ import { Linkedin, Mail } from 'lucide-react';
  * - Short biographical descriptions
  * - Relevant credentials and experience
  * - LinkedIn profile links
- * - Contact form for inquiries
+ * - Contact form for inquiries (Requirements 10.3, 10.5)
  * 
  * Builds trust with potential customers and partners by showcasing
  * the team's expertise and credibility.
  * 
- * Requirements: 10.1, 10.2, 10.4, 19.2
+ * Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 19.2
  */
 
 export interface TeamMember {
@@ -33,7 +35,6 @@ export interface TeamMember {
 
 export interface TeamProps {
   members?: TeamMember[];
-  onContactClick?: () => void;
 }
 
 const defaultMembers: TeamMember[] = [
@@ -68,8 +69,16 @@ const defaultMembers: TeamMember[] = [
 
 const Team: React.FC<TeamProps> = ({
   members = defaultMembers,
-  onContactClick,
 }) => {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const handleContactSuccess = () => {
+    // Close modal after successful submission
+    setTimeout(() => {
+      setIsContactModalOpen(false);
+    }, 3000);
+  };
+
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,7 +153,7 @@ const Team: React.FC<TeamProps> = ({
           ))}
         </div>
 
-        {/* Contact Section - Requirement 10.4 */}
+        {/* Contact Section - Requirements 10.3, 10.4, 10.5 */}
         <div className="max-w-2xl mx-auto">
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
             <div className="mb-4 flex justify-center">
@@ -163,18 +172,16 @@ const Team: React.FC<TeamProps> = ({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* Contact Form Button */}
-              {onContactClick && (
-                <button
-                  onClick={onContactClick}
-                  className="bg-primary-600 text-white font-sans font-medium px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-                  aria-label="Open contact form"
-                >
-                  Send us a message
-                </button>
-              )}
+              {/* Contact Form Button - Requirement 10.3 */}
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="bg-primary-600 text-white font-sans font-medium px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+                aria-label="Open contact form"
+              >
+                Send us a message
+              </button>
 
-              {/* Direct Email Link */}
+              {/* Direct Email Link - Requirement 10.4 */}
               <a
                 href="mailto:hello@bhavan.ai"
                 className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-sans font-medium transition-colors"
@@ -187,6 +194,15 @@ const Team: React.FC<TeamProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Contact Form Modal - Requirements 10.3, 10.5 */}
+      <Modal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        title="Contact Us"
+      >
+        <ContactForm onSuccess={handleContactSuccess} inline />
+      </Modal>
     </section>
   );
 };

@@ -88,7 +88,7 @@
   - Commit all changes with detailed message
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [-] 8. Build Signup/Early Access form and page
+- [x] 8. Build Signup/Early Access form and page
   - Create signup form component with all fields (name, email, phone, city, rent, living type, consent)
   - Add GDPR/India privacy notice with policy links
   - Implement validation and submission with success/error feedback
@@ -96,7 +96,7 @@
   - Commit all changes with detailed message
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 9. Create Contact form and legal pages
+- [-] 9. Create Contact form and legal pages
   - Build Contact form component with name, email, subject, message fields
   - Add contact form to Team section
   - Create Privacy Policy, Terms of Service, and FAQ pages with content
