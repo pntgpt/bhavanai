@@ -62,6 +62,11 @@ export const metadata: Metadata = {
  * Root layout component
  * Provides the HTML structure and font configuration for all pages
  * Uses Next.js App Router layout pattern
+ * 
+ * Layout structure:
+ * - Header: Sticky navigation with mobile menu
+ * - Main content: Page-specific content
+ * - Footer: Site-wide footer with links and newsletter
  */
 export default function RootLayout({
   children,
@@ -70,7 +75,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+      </body>
     </html>
   );
 }

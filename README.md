@@ -125,22 +125,135 @@ See `.env.example` for all required and optional environment variables.
 1. Build the static site: `npm run build`
 2. Upload the contents of the `/out` directory to your hosting provider
 
+## Components
+
+### Layout Components
+
+#### Header
+Sticky navigation bar with mobile menu support.
+
+**Features:**
+- Transparent mode for hero sections
+- Responsive mobile hamburger menu
+- Smooth scroll behavior
+- Accessible navigation with ARIA labels
+
+**Usage:**
+```tsx
+import Header from '@/components/layout/Header';
+
+<Header transparent={true} />
+```
+
+#### Footer
+Multi-column footer with newsletter signup.
+
+**Features:**
+- Company, Product, Legal, and Resources sections
+- Newsletter subscription form
+- Social media links
+- Responsive layout
+
+**Usage:**
+```tsx
+import Footer from '@/components/layout/Footer';
+
+<Footer onNewsletterSubmit={handleSubmit} />
+```
+
+### UI Components
+
+#### Button
+Versatile button component with multiple variants and sizes.
+
+**Variants:** `primary`, `secondary`, `outline`, `ghost`  
+**Sizes:** `sm`, `md`, `lg`
+
+**Usage:**
+```tsx
+import { Button } from '@/components/ui';
+
+<Button variant="primary" size="md" loading={false}>
+  Get Started
+</Button>
+```
+
+#### Card
+Container component for displaying content in an elevated surface.
+
+**Variants:** `default`, `feature`, `team`, `listing`
+
+**Usage:**
+```tsx
+import { Card } from '@/components/ui';
+
+<Card variant="feature" hover>
+  <h3>Feature Title</h3>
+  <p>Feature description</p>
+</Card>
+```
+
+#### Modal
+Accessible modal dialog with focus trap and keyboard navigation.
+
+**Features:**
+- Focus trap implementation
+- ESC key to close
+- Backdrop click to close
+- Animated entrance/exit
+- ARIA attributes for accessibility
+
+**Usage:**
+```tsx
+import { Modal } from '@/components/ui';
+
+<Modal isOpen={isOpen} onClose={handleClose} title="Modal Title">
+  <p>Modal content</p>
+</Modal>
+```
+
 ## Design System
 
 ### Colors
 
 - **Primary**: Blue (#3B82F6) for CTAs and interactive elements
 - **Neutral**: Gray scale for text and backgrounds
-- **Semantic**: Success, warning, error, info colors
+- **Semantic**: Success (#10B981), Warning (#F59E0B), Error (#EF4444), Info (#3B82F6)
 
 ### Typography
 
-- **Headings**: Playfair Display (serif)
-- **Body**: Inter (sans-serif)
+- **Headings**: Playfair Display (serif) - for all h1-h6 elements
+- **Body**: Inter (sans-serif) - for paragraphs, lists, and UI text
+
+**Font Sizes:**
+- xs: 12px, sm: 14px, base: 16px, lg: 18px, xl: 20px
+- 2xl: 24px, 3xl: 30px, 4xl: 36px, 5xl: 48px, 6xl: 60px
+
+**Font Weights:**
+- Light: 300, Regular: 400, Medium: 500, Semibold: 600, Bold: 700
 
 ### Spacing
 
 Base unit: 4px (Tailwind's default spacing scale)
+
+**Scale:** 0, 4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px, 64px, 80px, 96px, 128px
+
+### Design System Utilities
+
+The `lib/design-system.ts` file provides utility functions for consistent styling:
+
+```tsx
+import { getHeadingClasses, getBodyTextClasses, getSectionSpacing } from '@/lib/design-system';
+
+// Apply heading styles
+<h1 className={getHeadingClasses(1)}>Title</h1>
+
+// Apply body text styles
+<p className={getBodyTextClasses('base')}>Content</p>
+
+// Apply section spacing
+<section className={getSectionSpacing()}>...</section>
+```
 
 ## Features
 
