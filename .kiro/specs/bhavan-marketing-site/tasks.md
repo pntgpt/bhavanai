@@ -19,7 +19,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.3, 11.1, 11.2, 11.3, 18.1, 18.2, 18.3_
 
-- [-] 3. Build homepage with Hero and How It Works sections
+- [x] 3. Build homepage with Hero and How It Works sections
   - Create Hero section with headline, subheadline, and dual CTAs
   - Implement smooth scroll functionality for "How it works" link
   - Build HowItWorks section with 4 step cards, icons, and flow diagram
@@ -32,7 +32,7 @@
   - **Property 1: Step card completeness**
   - **Validates: Requirements 2.2**
 
-- [ ] 4. Implement Features, Marketplace, Pricing, and Market sections
+- [-] 4. Implement Features, Marketplace, Pricing, and Market sections
   - Create Features section with grid of feature cards (KYC, SPV, financing, marketplace, security)
   - Build Marketplace section with exit process explanation, fee structure, and listing card mockup
   - Create Pricing section with platform fees, marketplace fees, and future fees
