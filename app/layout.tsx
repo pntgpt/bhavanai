@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
+import { GoogleAnalytics, AnalyticsProvider } from '@/components/analytics';
 
 /**
  * Font configuration for the application
@@ -75,8 +76,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <GoogleAnalytics />
+      </head>
       <body className="font-sans">
-        {children}
+        <AnalyticsProvider>
+          {children}
+        </AnalyticsProvider>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import SignupForm from '@/components/forms/SignupForm';
+import { trackCTAClick, trackScrollToSection } from '@/lib/analytics';
 
 /**
  * Hero Section Component
@@ -38,6 +39,10 @@ const Hero: React.FC<HeroProps> = ({
    * Implements requirement 1.5
    */
   const handleScrollToHowItWorks = () => {
+    // Track CTA click
+    trackCTAClick('hero_how_it_works', secondaryCTAText);
+    trackScrollToSection('how-it-works');
+    
     const howItWorksSection = document.getElementById('how-it-works');
     if (howItWorksSection) {
       howItWorksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -49,6 +54,8 @@ const Hero: React.FC<HeroProps> = ({
    * Implements requirement 1.4
    */
   const handleGetEarlyAccess = () => {
+    // Track CTA click
+    trackCTAClick('hero_get_early_access', primaryCTAText);
     setIsModalOpen(true);
   };
 

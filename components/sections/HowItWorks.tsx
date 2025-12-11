@@ -10,6 +10,7 @@ import {
   FileText, 
   TrendingUp 
 } from 'lucide-react';
+import { trackCTAClick, trackNavigation } from '@/lib/analytics';
 
 /**
  * HowItWorks Section Component
@@ -75,6 +76,9 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
    * Implements requirement 2.5
    */
   const handleSeeEligibility = () => {
+    // Track CTA click
+    trackCTAClick('how_it_works_see_eligibility', 'See eligibility');
+    trackNavigation('/eligibility', 'how-it-works');
     router.push('/eligibility');
   };
 

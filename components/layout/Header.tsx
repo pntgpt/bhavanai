@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
+import { trackCTAClick, trackNavigation } from '@/lib/analytics';
 
 /**
  * Header component with sticky navigation and mobile menu
@@ -91,7 +92,13 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Link href="/signup">
+            <Link 
+              href="/signup"
+              onClick={() => {
+                trackCTAClick('header_get_early_access', 'Get Early Access');
+                trackNavigation('/signup', 'header');
+              }}
+            >
               <Button variant="primary" size="md">
                 Get Early Access
               </Button>
@@ -152,7 +159,14 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               ))}
 
               <div className="pt-4 border-t border-gray-200">
-                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link 
+                  href="/signup" 
+                  onClick={() => {
+                    trackCTAClick('header_get_early_access', 'Get Early Access');
+                    trackNavigation('/signup', 'header-mobile');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
                   <Button variant="primary" size="md" className="w-full">
                     Get Early Access
                   </Button>

@@ -96,7 +96,7 @@
   - Commit all changes with detailed message
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [-] 9. Create Contact form and legal pages
+- [x] 9. Create Contact form and legal pages
   - Build Contact form component with name, email, subject, message fields
   - Add contact form to Team section
   - Create Privacy Policy, Terms of Service, and FAQ pages with content
@@ -104,7 +104,7 @@
   - Commit all changes with detailed message
   - _Requirements: 10.3, 10.5, 11.1, 11.4_
 
-- [ ] 10. Implement Google Analytics 4 integration
+- [-] 10. Implement Google Analytics 4 integration
   - Create analytics utility with GA4 initialization
   - Add custom event tracking for CTA clicks
   - Implement form conversion tracking

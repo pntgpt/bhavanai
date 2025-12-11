@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Facebook, Twitter, Linkedin, Instagram, Mail } from 'lucide-react';
 import Button from '../ui/Button';
+import { trackCTAClick, trackDownload, trackExternalLink } from '@/lib/analytics';
 
 /**
  * Footer component with multi-column layout
@@ -32,6 +33,9 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
       setSubmitStatus('error');
       return;
     }
+
+    // Track newsletter CTA click
+    trackCTAClick('footer_newsletter', 'Subscribe');
 
     setIsSubmitting(true);
     setSubmitStatus('idle');
@@ -146,6 +150,10 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
                     href={link.href}
                     download={link.download}
                     className="hover:text-white transition-colors text-sm"
+                    onClick={() => {
+                      const fileType = link.href.split('.').pop() || 'pdf';
+                      trackDownload(link.name, fileType);
+                    }}
                   >
                     {link.name}
                   </a>
@@ -203,6 +211,7 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors"
                     aria-label={social.name}
+                    onClick={() => trackExternalLink(social.href, social.name)}
                   >
                     <Icon size={20} />
                   </a>

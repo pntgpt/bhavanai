@@ -19,6 +19,7 @@ import {
   UTMParams,
 } from '@/types';
 import { getCurrentUTMParams } from './utm';
+import { trackFormConversion } from './analytics';
 
 /**
  * Configuration for form submission
@@ -170,6 +171,10 @@ export async function submitForm(
       // Handle successful response
       if (response.ok) {
         const result: FormSubmissionResponse = await response.json();
+        
+        // Track form conversion in analytics
+        trackFormConversion(formType, data);
+        
         return result;
       }
 
