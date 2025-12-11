@@ -80,7 +80,7 @@
   - **Property 4: Form validation blocking**
   - **Validates: Requirements 5.3**
 
-- [-] 7. Build Eligibility Checker form and page
+- [x] 7. Build Eligibility Checker form and page
   - Create eligibility form component with all fields (city, age, rent, salary, co-owner count, email, phone)
   - Implement client-side validation with inline error messages
   - Add form submission with UTM capture and success/error feedback
@@ -88,7 +88,7 @@
   - Commit all changes with detailed message
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 8. Build Signup/Early Access form and page
+- [-] 8. Build Signup/Early Access form and page
   - Create signup form component with all fields (name, email, phone, city, rent, living type, consent)
   - Add GDPR/India privacy notice with policy links
   - Implement validation and submission with success/error feedback

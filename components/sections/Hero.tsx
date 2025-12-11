@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
+import SignupForm from '@/components/forms/SignupForm';
 
 /**
  * Hero Section Component
@@ -113,20 +114,19 @@ const Hero: React.FC<HeroProps> = ({
         </div>
       </div>
 
-      {/* Signup Modal - Placeholder for now, will be implemented in task 8 */}
+      {/* Signup Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Get Early Access"
       >
-        <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">
-            Signup form will be implemented in task 8.
-          </p>
-          <p className="text-sm text-gray-500">
-            For now, this is a placeholder modal.
-          </p>
-        </div>
+        <SignupForm 
+          inline={true}
+          onSuccess={() => {
+            // Keep modal open to show success message
+            // User can close it manually or click to sign up another person
+          }}
+        />
       </Modal>
     </section>
   );
