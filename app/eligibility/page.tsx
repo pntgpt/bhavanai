@@ -3,6 +3,7 @@ import Footer from '@/components/layout/Footer';
 import EligibilityForm from '@/components/forms/EligibilityForm';
 import { CheckCircle, Users, Home, TrendingUp } from 'lucide-react';
 import type { Metadata } from 'next';
+import { generatePageMetadata, pageMetadata } from '@/lib/seo';
 
 /**
  * Eligibility Checker Page
@@ -13,13 +14,10 @@ import type { Metadata } from 'next';
  * Includes explanatory content about eligibility criteria and the benefits
  * of co-ownership through Bhavan.ai's platform.
  * 
- * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
+ * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 15.1, 15.2, 15.4
  */
 
-export const metadata: Metadata = {
-  title: 'Check Your Eligibility - Bhavan.ai',
-  description: 'See if you qualify for fractional home ownership with Bhavan.ai. Quick eligibility check based on your city, income, and preferences.',
-};
+export const metadata: Metadata = generatePageMetadata(pageMetadata.eligibility);
 
 export default function EligibilityPage() {
   return (

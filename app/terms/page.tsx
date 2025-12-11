@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generatePageMetadata, pageMetadata } from '@/lib/seo';
 
 /**
  * Terms of Service Page
@@ -6,13 +7,10 @@ import type { Metadata } from 'next';
  * Displays Bhavan.ai's terms of service governing the use of the platform.
  * Outlines user rights, responsibilities, and legal agreements.
  * 
- * Requirements: 11.1
+ * Requirements: 11.1, 15.1, 15.2, 15.4
  */
 
-export const metadata: Metadata = {
-  title: 'Terms of Service - Bhavan.ai',
-  description: 'Read the terms and conditions governing the use of Bhavan.ai platform and services.',
-};
+export const metadata: Metadata = generatePageMetadata(pageMetadata.terms);
 
 export default function TermsPage() {
   return (

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generatePageMetadata, pageMetadata } from '@/lib/seo';
 
 /**
  * Privacy Policy Page
@@ -6,13 +7,10 @@ import type { Metadata } from 'next';
  * Displays Bhavan.ai's privacy policy including GDPR and India data protection compliance.
  * Explains how user data is collected, processed, stored, and protected.
  * 
- * Requirements: 11.1
+ * Requirements: 11.1, 15.1, 15.2, 15.4
  */
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy - Bhavan.ai',
-  description: 'Learn how Bhavan.ai collects, uses, and protects your personal data in compliance with GDPR and Indian data protection laws.',
-};
+export const metadata: Metadata = generatePageMetadata(pageMetadata.privacy);
 
 export default function PrivacyPage() {
   return (

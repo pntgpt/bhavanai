@@ -1,18 +1,17 @@
 import type { Metadata } from 'next';
+import { generatePageMetadata, pageMetadata, generateFAQSchema } from '@/lib/seo';
 
 /**
  * FAQ Page
  * 
  * Displays frequently asked questions about Bhavan.ai's fractional home ownership platform.
  * Organized by category for easy navigation.
+ * Includes structured data for SEO.
  * 
- * Requirements: 11.1
+ * Requirements: 11.1, 15.1, 15.2, 15.3, 15.4
  */
 
-export const metadata: Metadata = {
-  title: 'FAQ - Frequently Asked Questions | Bhavan.ai',
-  description: 'Find answers to common questions about fractional home ownership, SPVs, financing, and the Bhavan.ai platform.',
-};
+export const metadata: Metadata = generatePageMetadata(pageMetadata.faq);
 
 interface FAQItem {
   question: string;
@@ -183,8 +182,18 @@ const faqCategories: FAQCategory[] = [
 ];
 
 export default function FAQPage() {
+  // Generate FAQ structured data for all questions
+  const allFAQs = faqCategories.flatMap(category => category.items);
+  const faqSchema = generateFAQSchema(allFAQs);
+
   return (
     <main className="min-h-screen bg-white">
+      {/* Structured Data for SEO - Requirement 15.3 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-16">

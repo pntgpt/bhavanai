@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { GoogleAnalytics, AnalyticsProvider } from '@/components/analytics';
+import { organizationSchema } from '@/lib/seo';
 
 /**
  * Font configuration for the application
@@ -78,6 +79,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <GoogleAnalytics />
+        {/* Organization Structured Data - Requirement 15.3 */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
       </head>
       <body className="font-sans">
         <AnalyticsProvider>

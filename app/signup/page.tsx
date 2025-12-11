@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import SignupForm from '@/components/forms/SignupForm';
+import { generatePageMetadata, pageMetadata } from '@/lib/seo';
 
 /**
  * Signup/Early Access Page
@@ -7,18 +8,10 @@ import SignupForm from '@/components/forms/SignupForm';
  * Dedicated page for users to sign up for early access to Bhavan.ai.
  * Features comprehensive signup form with GDPR/India privacy compliance.
  * 
- * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
+ * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 15.1, 15.2, 15.4
  */
 
-export const metadata: Metadata = {
-  title: 'Get Early Access - Bhavan.ai',
-  description: 'Sign up for early access to Bhavan.ai and be the first to know when fractional home ownership launches in your city.',
-  openGraph: {
-    title: 'Get Early Access - Bhavan.ai',
-    description: 'Sign up for early access to Bhavan.ai and be the first to know when fractional home ownership launches in your city.',
-    type: 'website',
-  },
-};
+export const metadata: Metadata = generatePageMetadata(pageMetadata.signup);
 
 export default function SignupPage() {
   return (
