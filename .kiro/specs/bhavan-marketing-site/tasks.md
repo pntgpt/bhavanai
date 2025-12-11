@@ -80,7 +80,7 @@
   - **Property 4: Form validation blocking**
   - **Validates: Requirements 5.3**
 
-- [ ] 7. Build Eligibility Checker form and page
+- [-] 7. Build Eligibility Checker form and page
   - Create eligibility form component with all fields (city, age, rent, salary, co-owner count, email, phone)
   - Implement client-side validation with inline error messages
   - Add form submission with UTM capture and success/error feedback
