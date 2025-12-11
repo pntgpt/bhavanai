@@ -187,7 +187,7 @@ export default function FAQPage() {
   const faqSchema = generateFAQSchema(allFAQs);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main id="main-content" className="min-h-screen bg-white">
       {/* Structured Data for SEO - Requirement 15.3 */}
       <script
         type="application/ld+json"

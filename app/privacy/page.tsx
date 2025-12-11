@@ -14,7 +14,7 @@ export const metadata: Metadata = generatePageMetadata(pageMetadata.privacy);
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main id="main-content" className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         {/* Header */}
         <div className="mb-12">

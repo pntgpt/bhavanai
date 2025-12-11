@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <>
       <Header transparent />
-      <main>
+      <main id="main-content">
         {/* Hero Section - Requirements 1.1-1.5 */}
         <Hero />
         

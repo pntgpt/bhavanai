@@ -49,7 +49,7 @@ export default function EligibilityPage() {
               {/* Criteria Card 1 */}
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-primary-600" />
+                  <CheckCircle className="w-8 h-8 text-primary-600" aria-hidden="true" />
                 </div>
                 <h3 className="font-sans font-semibold text-lg text-gray-900 mb-2">
                   Age 18+
@@ -62,7 +62,7 @@ export default function EligibilityPage() {
               {/* Criteria Card 2 */}
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="w-8 h-8 text-primary-600" />
+                  <TrendingUp className="w-8 h-8 text-primary-600" aria-hidden="true" />
                 </div>
                 <h3 className="font-sans font-semibold text-lg text-gray-900 mb-2">
                   Stable Income
@@ -75,7 +75,7 @@ export default function EligibilityPage() {
               {/* Criteria Card 3 */}
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-primary-600" />
+                  <Users className="w-8 h-8 text-primary-600" aria-hidden="true" />
                 </div>
                 <h3 className="font-sans font-semibold text-lg text-gray-900 mb-2">
                   2-5 Co-owners
@@ -88,7 +88,7 @@ export default function EligibilityPage() {
               {/* Criteria Card 4 */}
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Home className="w-8 h-8 text-primary-600" />
+                  <Home className="w-8 h-8 text-primary-600" aria-hidden="true" />
                 </div>
                 <h3 className="font-sans font-semibold text-lg text-gray-900 mb-2">
                   Available Cities

@@ -86,6 +86,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
+        {/* Skip to main content link for keyboard navigation - Requirement 13.2 */}
+        <a href="#main-content" className="skip-to-main">
+          Skip to main content
+        </a>
         <AnalyticsProvider>
           {children}
         </AnalyticsProvider>

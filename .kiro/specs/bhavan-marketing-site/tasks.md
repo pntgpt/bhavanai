@@ -125,7 +125,7 @@
   - **Property 14: UTM parameter preservation (already covered in 6.1)**
   - **Validates: Requirements 14.4**
 
-- [-] 11. Implement SEO optimization and metadata
+- [x] 11. Implement SEO optimization and metadata
   - Create SEO utility for generating page metadata
   - Add unique title, description, and OG tags to all pages
   - Implement structured data (Organization and FAQ schemas)
@@ -142,7 +142,7 @@
   - **Property 17: Open Graph tag presence**
   - **Validates: Requirements 15.2**
 
-- [ ] 12. Implement accessibility features
+- [-] 12. Implement accessibility features
   - Add keyboard navigation support with visible focus indicators
   - Implement focus trap for modals
   - Add descriptive alt text to all images
