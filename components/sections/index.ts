@@ -10,3 +10,5 @@ export { default as Features } from './Features';
 export { default as Marketplace } from './Marketplace';
 export { default as Pricing } from './Pricing';
 export { default as Market } from './Market';
+export { default as Roadmap } from './Roadmap';
+export { default as Team } from './Team';

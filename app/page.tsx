@@ -6,7 +6,9 @@ import {
   Features, 
   Marketplace, 
   Pricing, 
-  Market 
+  Market,
+  Roadmap,
+  Team
 } from '@/components/sections';
 
 /**
@@ -19,8 +21,10 @@ import {
  * - Marketplace section with exit process (Task 4)
  * - Pricing section with fee structure (Task 4)
  * - Market & Validation section with statistics (Task 4)
+ * - Roadmap section with 6-month timeline (Task 5)
+ * - Team section with founder information (Task 5)
  * 
- * Requirements: 1.1-1.5, 2.1-2.5, 3.1-3.5, 6.1-6.5, 7.1-7.5, 8.1-8.5
+ * Requirements: 1.1-1.5, 2.1-2.5, 3.1-3.5, 6.1-6.5, 7.1-7.5, 8.1-8.5, 9.1-9.5, 10.1-10.4
  */
 export default function Home() {
   return (
@@ -44,6 +48,12 @@ export default function Home() {
         
         {/* Market & Validation Section - Requirements 8.1-8.5 */}
         <Market />
+        
+        {/* Roadmap Section - Requirements 9.1-9.5 */}
+        <Roadmap />
+        
+        {/* Team Section - Requirements 10.1-10.4 */}
+        <Team />
       </main>
       <Footer />
     </>

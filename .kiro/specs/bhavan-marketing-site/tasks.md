@@ -32,7 +32,7 @@
   - **Property 1: Step card completeness**
   - **Validates: Requirements 2.2**
 
-- [-] 4. Implement Features, Marketplace, Pricing, and Market sections
+- [x] 4. Implement Features, Marketplace, Pricing, and Market sections
   - Create Features section with grid of feature cards (KYC, SPV, financing, marketplace, security)
   - Build Marketplace section with exit process explanation, fee structure, and listing card mockup
   - Create Pricing section with platform fees, marketplace fees, and future fees
@@ -44,7 +44,7 @@
   - **Property 5: Market data source attribution**
   - **Validates: Requirements 8.3**
 
-- [ ] 5. Build Roadmap and Team sections
+- [-] 5. Build Roadmap and Team sections
   - Create Roadmap section with 6-month timeline visualization and milestones
   - Implement current phase indicator
   - Build Team section with founder cards (photos, bios, credentials, LinkedIn links)
