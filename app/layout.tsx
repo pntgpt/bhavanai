@@ -1,24 +1,29 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { GoogleAnalytics, AnalyticsProvider } from '@/components/analytics';
+import { GoogleAnalytics, AnalyticsProvider, PerformanceMonitor } from '@/components/analytics';
 import { organizationSchema } from '@/lib/seo';
 
 /**
  * Font configuration for the application
  * - Inter: Sans-serif font for body text
  * - Playfair Display: Serif font for headings
+ * 
+ * Performance optimization: Using 'swap' display strategy
+ * to prevent invisible text during font loading (Requirement 12.2)
  */
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: true,
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
   display: 'swap',
+  preload: true,
 });
 
 /**
@@ -93,6 +98,8 @@ export default function RootLayout({
         <AnalyticsProvider>
           {children}
         </AnalyticsProvider>
+        {/* Performance monitoring - Requirement 12.2 */}
+        <PerformanceMonitor />
       </body>
     </html>
   );

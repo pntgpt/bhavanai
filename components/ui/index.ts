@@ -11,3 +11,6 @@ export type { CardProps } from './Card';
 
 export { default as Modal } from './Modal';
 export type { ModalProps } from './Modal';
+
+export { default as OptimizedImage } from './OptimizedImage';
+export type { OptimizedImageProps } from './OptimizedImage';

@@ -6,3 +6,4 @@
 
 export { AnalyticsProvider } from './AnalyticsProvider';
 export { GoogleAnalytics } from './GoogleAnalytics';
+export { default as PerformanceMonitor } from './PerformanceMonitor';

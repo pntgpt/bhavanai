@@ -142,7 +142,7 @@
   - **Property 17: Open Graph tag presence**
   - **Validates: Requirements 15.2**
 
-- [-] 12. Implement accessibility features
+- [x] 12. Implement accessibility features
   - Add keyboard navigation support with visible focus indicators
   - Implement focus trap for modals
   - Add descriptive alt text to all images
@@ -167,7 +167,7 @@
   - **Property 13: ARIA attribute presence**
   - **Validates: Requirements 13.5**
 
-- [ ] 13. Optimize performance and implement lazy loading
+- [-] 13. Optimize performance and implement lazy loading
   - Implement lazy loading for below-the-fold images
   - Optimize images with Next.js Image component
   - Add responsive image breakpoints for mobile/desktop
