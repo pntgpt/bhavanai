@@ -44,7 +44,7 @@
   - **Property 5: Market data source attribution**
   - **Validates: Requirements 8.3**
 
-- [-] 5. Build Roadmap and Team sections
+- [x] 5. Build Roadmap and Team sections
   - Create Roadmap section with 6-month timeline visualization and milestones
   - Implement current phase indicator
   - Build Team section with founder cards (photos, bios, credentials, LinkedIn links)
@@ -60,7 +60,7 @@
   - **Property 7: Team member credentials**
   - **Validates: Requirements 10.2**
 
-- [ ] 6. Create form validation utilities and submission logic
+- [-] 6. Create form validation utilities and submission logic
   - Implement validation functions for email, phone, required fields, numeric inputs
   - Create UTM parameter extraction utility
   - Build form submission handler with error handling and retry logic
