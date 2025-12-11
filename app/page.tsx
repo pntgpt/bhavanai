@@ -1,24 +1,29 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { Hero, HowItWorks } from '@/components/sections';
 
 /**
  * Homepage component
- * This is the main landing page for Bhavan.ai
- * Will be populated with Hero, HowItWorks, Features, and other sections in subsequent tasks
+ * 
+ * Main landing page for Bhavan.ai featuring:
+ * - Hero section with headline and CTAs (Task 3)
+ * - How It Works section with 4-step process (Task 3)
+ * - Additional sections will be added in subsequent tasks
+ * 
+ * Requirements: 1.1-1.5, 2.1-2.5
  */
 export default function Home() {
   return (
     <>
       <Header transparent />
-      <main className="min-h-screen">
-        <div className="container mx-auto px-4 py-16 pt-32">
-          <h1 className="text-5xl font-bold text-center mb-4">
-            Turn rent into home ownership
-          </h1>
-          <p className="text-xl text-center text-gray-600">
-            Co-own a home with 2–5 people via a compliant SPV
-          </p>
-        </div>
+      <main>
+        {/* Hero Section - Requirements 1.1-1.5 */}
+        <Hero />
+        
+        {/* How It Works Section - Requirements 2.1-2.5 */}
+        <HowItWorks />
+        
+        {/* Additional sections will be added in task 4 and beyond */}
       </main>
       <Footer />
     </>

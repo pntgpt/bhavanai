@@ -10,7 +10,7 @@
   - Commit all changes with detailed message
   - _Requirements: 12.1, 16.3, 18.2_
 
-- [-] 2. Implement core layout components and design system
+- [x] 2. Implement core layout components and design system
   - Create root layout with SEO metadata structure and font configuration
   - Build Header component with navigation, mobile menu, and sticky behavior
   - Build Footer component with links, social icons, and newsletter form
@@ -19,7 +19,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.3, 11.1, 11.2, 11.3, 18.1, 18.2, 18.3_
 
-- [ ] 3. Build homepage with Hero and How It Works sections
+- [-] 3. Build homepage with Hero and How It Works sections
   - Create Hero section with headline, subheadline, and dual CTAs
   - Implement smooth scroll functionality for "How it works" link
   - Build HowItWorks section with 4 step cards, icons, and flow diagram
