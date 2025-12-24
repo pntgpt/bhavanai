@@ -117,7 +117,7 @@
   - **Property 30: Admin property access**
   - **Validates: Requirements 25.2**
 
-- [-] 7. Set up R2 image storage for property photos
+- [x] 7. Set up R2 image storage for property photos
   - Create R2 bucket for property images using wrangler
   - Create /api/upload endpoint for image uploads
   - Implement image validation (size, format)
@@ -140,7 +140,7 @@
 
 ## Phase 4: Admin Dashboard
 
-- [ ] 9. Build admin user management interface
+- [-] 9. Build admin user management interface
   - Create UserManagementTable component
   - Display all users with status (pending, active, inactive)
   - Add approve/reject actions for pending users

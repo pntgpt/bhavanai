@@ -283,3 +283,190 @@ export async function isPropertyOwner(
   const property = await getPropertyById(db, propertyId);
   return property?.broker_id === userId;
 }
+
+// ============================================================================
+// User Management Functions
+// ============================================================================
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  role: 'admin' | 'broker' | 'ca' | 'lawyer';
+  status: 'pending' | 'active' | 'inactive';
+  created_at: number;
+  updated_at: number;
+}
+
+interface UserFilters {
+  status?: 'pending' | 'active' | 'inactive';
+  role?: 'admin' | 'broker' | 'ca' | 'lawyer';
+}
+
+/**
+ * Get all users with optional filters
+ */
+export async function getUsers(
+  db: D1Database,
+  filters?: UserFilters
+): Promise<User[]> {
+  let query = 'SELECT * FROM users WHERE 1=1';
+  const bindings: any[] = [];
+
+  if (filters?.status) {
+    query += ' AND status = ?';
+    bindings.push(filters.status);
+  }
+
+  if (filters?.role) {
+    query += ' AND role = ?';
+    bindings.push(filters.role);
+  }
+
+  query += ' ORDER BY created_at DESC';
+
+  const result = await db.prepare(query).bind(...bindings).all();
+  return (result.results || []) as unknown as User[];
+}
+
+/**
+ * Get a single user by ID
+ */
+export async function getUserById(
+  db: D1Database,
+  userId: string
+): Promise<User | null> {
+  const result = await db.prepare('SELECT * FROM users WHERE id = ?')
+    .bind(userId)
+    .first();
+  return result as User | null;
+}
+
+/**
+ * Get a user by email
+ */
+export async function getUserByEmail(
+  db: D1Database,
+  email: string
+): Promise<User | null> {
+  const result = await db.prepare('SELECT * FROM users WHERE email = ?')
+    .bind(email)
+    .first();
+  return result as User | null;
+}
+
+/**
+ * Create a new user
+ * Password should already be hashed before calling this function
+ */
+export async function createUser(
+  db: D1Database,
+  data: {
+    name: string;
+    email: string;
+    phone: string;
+    password: string; // Already hashed
+    role: 'admin' | 'broker' | 'ca' | 'lawyer';
+    status?: 'pending' | 'active' | 'inactive';
+  }
+): Promise<User> {
+  const id = crypto.randomUUID();
+  const now = Date.now();
+  const status = data.status || 'pending';
+
+  await db.prepare(`
+    INSERT INTO users (
+      id, name, email, phone, password, role, status, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+    .bind(
+      id,
+      data.name,
+      data.email,
+      data.phone,
+      data.password,
+      data.role,
+      status,
+      now,
+      now
+    )
+    .run();
+
+  return {
+    id,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    password: data.password,
+    role: data.role,
+    status,
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+/**
+ * Update user status (approve, deactivate, etc.)
+ */
+export async function updateUserStatus(
+  db: D1Database,
+  userId: string,
+  status: 'pending' | 'active' | 'inactive'
+): Promise<User | null> {
+  const now = Date.now();
+
+  await db.prepare(`
+    UPDATE users
+    SET status = ?, updated_at = ?
+    WHERE id = ?
+  `)
+    .bind(status, now, userId)
+    .run();
+
+  return await getUserById(db, userId);
+}
+
+/**
+ * Update user password
+ * Password should already be hashed before calling this function
+ */
+export async function updateUserPassword(
+  db: D1Database,
+  userId: string,
+  hashedPassword: string
+): Promise<User | null> {
+  const now = Date.now();
+
+  await db.prepare(`
+    UPDATE users
+    SET password = ?, updated_at = ?
+    WHERE id = ?
+  `)
+    .bind(hashedPassword, now, userId)
+    .run();
+
+  return await getUserById(db, userId);
+}
+
+/**
+ * Delete a user
+ * Also deletes all associated sessions
+ */
+export async function deleteUser(
+  db: D1Database,
+  userId: string
+): Promise<boolean> {
+  // Delete sessions first
+  await db.prepare('DELETE FROM sessions WHERE user_id = ?')
+    .bind(userId)
+    .run();
+
+  // Delete user
+  const result = await db.prepare('DELETE FROM users WHERE id = ?')
+    .bind(userId)
+    .run();
+
+  return result.success;
+}
