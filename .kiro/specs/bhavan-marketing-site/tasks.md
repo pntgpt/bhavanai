@@ -90,7 +90,7 @@
 
 ## Phase 3: Property Management System
 
-- [-] 6. Create property management API endpoints
+- [x] 6. Create property management API endpoints
   - Create /api/broker/properties endpoint for broker CRUD operations
   - Create /api/admin/properties endpoint for admin to view all properties
   - Create /api/admin/properties/[id]/approve endpoint for property approval
@@ -117,7 +117,7 @@
   - **Property 30: Admin property access**
   - **Validates: Requirements 25.2**
 
-- [ ] 7. Set up R2 image storage for property photos
+- [-] 7. Set up R2 image storage for property photos
   - Create R2 bucket for property images using wrangler
   - Create /api/upload endpoint for image uploads
   - Implement image validation (size, format)

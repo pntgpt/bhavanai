@@ -255,6 +255,16 @@ export interface BrokerProperty {
 }
 
 /**
+ * Image upload response
+ */
+export interface ImageUploadResponse {
+  success: boolean;
+  urls?: string[];
+  errors?: string[];
+  error?: string;
+}
+
+/**
  * Cloudflare D1 Database type
  */
 export interface D1Database {
