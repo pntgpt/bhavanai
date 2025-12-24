@@ -62,7 +62,7 @@
 
 ## Phase 2: Authentication UI Components
 
-- [ ] 4. Build login and registration pages
+- [-] 4. Build login and registration pages
   - Create LoginForm component with email and password inputs
   - Create RegistrationForm component with name, email, phone, and user type selector
   - Add client-side validation for both forms
