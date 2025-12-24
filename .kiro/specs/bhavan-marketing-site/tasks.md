@@ -323,7 +323,7 @@
   - Commit all changes with detailed message
   - _New Feature_
 
-- [-] 26. Create property detail page with WhatsApp contact CTA
+- [x] 26. Create property detail page with WhatsApp contact CTA
   - Create dynamic property detail page at /properties/[id] route
   - Display comprehensive property information (images, specs, location, pricing, co-ownership details)
   - Add image gallery for property photos
@@ -340,5 +340,18 @@
   - Ensure button is accessible and doesn't obstruct content
   - Make button responsive and appropriately sized for mobile
   - Add z-index to ensure button stays on top of other content
+  - Commit all changes with detailed message
+  - _New Feature_
+
+- [ ] 28. Create admin dashboard for property management
+  - Create new admin dashboard page at /admin route
+  - Build property management section with table/list view of all properties
+  - Implement "Add New Property" form with all required fields (title, location, price, images, specs, amenities)
+  - Add "Edit Property" functionality to modify existing property details
+  - Implement "Delete Property" functionality with confirmation dialog
+  - Create property form component with validation for all fields
+  - Add image upload/management interface for property photos
+  - Display property status (active, draft, sold) with ability to toggle
+  - Note: No authentication required for now - open admin dashboard
   - Commit all changes with detailed message
   - _New Feature_
