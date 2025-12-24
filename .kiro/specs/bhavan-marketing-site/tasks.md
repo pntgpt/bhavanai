@@ -73,7 +73,7 @@
   - Commit all changes with detailed message: "feat: create login and registration UI with forms"
   - _Requirements: 21.1, 21.4, 22.1, 22.2, 22.4_
 
-- [-] 5. Implement role-based dashboard routing
+- [x] 5. Implement role-based dashboard routing
   - Create dashboard layout component with navigation
   - Create /dashboard/admin route for admin users
   - Create /dashboard/broker route for broker users
@@ -90,7 +90,7 @@
 
 ## Phase 3: Property Management System
 
-- [ ] 6. Create property management API endpoints
+- [-] 6. Create property management API endpoints
   - Create /api/broker/properties endpoint for broker CRUD operations
   - Create /api/admin/properties endpoint for admin to view all properties
   - Create /api/admin/properties/[id]/approve endpoint for property approval
