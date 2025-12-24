@@ -31,7 +31,8 @@ import { getPropertyInquiryMessage, openWhatsApp } from '@/lib/whatsapp';
  */
 
 interface PropertyDetailClientProps {
-  property: Property | undefined;
+  property: Property | undefined | null;
+  propertyId?: string;
 }
 
 export default function PropertyDetailClient({ property }: PropertyDetailClientProps) {

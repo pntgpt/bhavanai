@@ -188,7 +188,7 @@
 
 ## Phase 6: Public Property Listings
 
-- [ ] 13. Update public property listings page
+- [-] 13. Update public property listings page
   - Modify /properties page to fetch only approved properties
   - Update PropertyCard component with new data structure
   - Ensure property images load from R2

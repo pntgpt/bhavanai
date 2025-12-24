@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Filter, X } from 'lucide-react';
 import PropertyCard from '@/components/ui/PropertyCard';
 import Button from '@/components/ui/Button';
-import { sampleProperties, getAvailableCities, getPropertyTypes, filterProperties } from '@/lib/properties';
+import { getPropertyTypes, filterProperties, mapDbPropertyToFrontend } from '@/lib/properties';
 import { Property, PropertyType } from '@/types';
 
 /**
@@ -16,11 +16,17 @@ import { Property, PropertyType } from '@/types';
  * - Responsive design for mobile and desktop
  * - Shows count of available properties
  * - Mobile-friendly filter drawer
+ * - Fetches only approved properties from D1 database
+ * - Loads images from R2 storage
  * 
- * Requirements: New Feature - Property Listings
+ * Requirements: 24.4, 24.5 - Only approved properties visible on public page
  */
 
 export default function PropertiesPage() {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [filters, setFilters] = useState<{
     city: string;
     priceRange: { min: number; max: number };
@@ -35,20 +41,57 @@ export default function PropertiesPage() {
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const cities = getAvailableCities();
   const propertyTypes = getPropertyTypes();
+
+  /**
+   * Fetch approved properties from the API
+   */
+  useEffect(() => {
+    async function fetchProperties() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch('/api/properties/public');
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to fetch properties');
+        }
+        
+        // Map database properties to frontend format
+        const mappedProperties = data.properties.map(mapDbPropertyToFrontend);
+        setProperties(mappedProperties);
+      } catch (err: any) {
+        console.error('Error fetching properties:', err);
+        setError(err.message || 'Failed to load properties. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchProperties();
+  }, []);
+
+  /**
+   * Get unique cities from loaded properties
+   */
+  const cities = useMemo(() => {
+    const citySet = new Set(properties.map(p => p.city));
+    return Array.from(citySet).sort();
+  }, [properties]);
 
   /**
    * Filter properties based on current filter state
    */
   const filteredProperties = useMemo(() => {
-    return filterProperties(sampleProperties, {
+    return filterProperties(properties, {
       city: filters.city || undefined,
       priceRange: filters.priceRange,
       propertyType: filters.propertyType as PropertyType || undefined,
       minBedrooms: filters.minBedrooms ? parseInt(filters.minBedrooms) : undefined,
     });
-  }, [filters]);
+  }, [properties, filters]);
 
   /**
    * Reset all filters
@@ -186,7 +229,33 @@ export default function PropertiesPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading properties...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-800 mb-4">{error}</p>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          </div>
+        )}
+
+        {/* Properties Content */}
+        {!loading && !error && (
+          <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters Sidebar */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
@@ -279,7 +348,8 @@ export default function PropertiesPage() {
               </div>
             )}
           </div>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

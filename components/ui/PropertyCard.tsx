@@ -66,22 +66,50 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     }
   };
 
+  /**
+   * Get the first image URL or null
+   * Handles both array and missing images
+   */
+  const getImageUrl = (): string | null => {
+    if (!property.images || property.images.length === 0) {
+      return null;
+    }
+    return property.images[0];
+  };
+
+  const imageUrl = getImageUrl();
+
   return (
     <Link href={`/properties/${property.id}`}>
       <Card variant="listing" hover className="h-full">
         {/* Property Image */}
         <div className="relative w-full h-48 bg-gray-200 rounded-md overflow-hidden">
-          {property.images && property.images.length > 0 ? (
+          {imageUrl ? (
             <img
-              src={property.images[0]}
+              src={imageUrl}
               alt={property.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                // Handle image load error by showing placeholder
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  const placeholder = parent.querySelector('.image-placeholder');
+                  if (placeholder) {
+                    (placeholder as HTMLElement).style.display = 'flex';
+                  }
+                }
+              }}
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Home size={48} className="text-gray-400" />
-            </div>
-          )}
+          ) : null}
+          
+          {/* Placeholder for missing or failed images */}
+          <div 
+            className="image-placeholder w-full h-full flex items-center justify-center"
+            style={{ display: imageUrl ? 'none' : 'flex' }}
+          >
+            <Home size={48} className="text-gray-400" />
+          </div>
           
           {/* Status Badge */}
           <div className="absolute top-2 right-2">
