@@ -22,13 +22,14 @@ export function generateStaticParams() {
 }
 
 interface PropertyDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  const property = getPropertyById(params.id);
+export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
+  const { id } = await params;
+  const property = getPropertyById(id);
 
   return <PropertyDetailClient property={property} />;
 }
