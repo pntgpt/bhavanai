@@ -1,0 +1,16 @@
+# Cloudflare Worker configuration for R2 static site hosting
+name = "bhavan-website-worker"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-12-01"
+
+# R2 bucket binding
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "bhavan-website"
+
+# Routes - Update with your actual domain
+# Uncomment these lines and replace with your domain:
+# routes = [
+#   { pattern = "yourdomain.com/*", zone_name = "yourdomain.com" },
+#   { pattern = "www.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
