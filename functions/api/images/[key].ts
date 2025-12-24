@@ -15,7 +15,11 @@ interface Env {
  * GET /api/images/[key]
  * Serve an image from R2 storage
  */
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export async function onRequestGet(context: { 
+  request: Request; 
+  env: Env;
+  params: { key: string };
+}): Promise<Response> {
   try {
     // Get the image key from the URL parameter
     const key = context.params.key as string;
@@ -45,4 +49,4 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     console.error('Error serving image:', error);
     return new Response('Internal server error', { status: 500 });
   }
-};
+}

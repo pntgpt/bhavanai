@@ -140,7 +140,7 @@
 
 ## Phase 4: Admin Dashboard
 
-- [-] 9. Build admin user management interface
+- [x] 9. Build admin user management interface
   - Create UserManagementTable component
   - Display all users with status (pending, active, inactive)
   - Add approve/reject actions for pending users
@@ -155,7 +155,7 @@
   - **Property 31: Admin user approval activation**
   - **Validates: Requirements 26.2**
 
-- [ ] 10. Build admin property approval interface
+- [-] 10. Build admin property approval interface
   - Create PropertyApprovalTable component
   - Display all pending properties with details
   - Add property preview with images

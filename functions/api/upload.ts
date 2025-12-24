@@ -78,7 +78,10 @@ function getPublicUrl(bucketName: string, key: string, accountId: string): strin
  * POST /api/upload
  * Upload one or more images to R2 storage
  */
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export async function onRequestPost(context: {
+  request: Request;
+  env: Env;
+}): Promise<Response> {
   try {
     // Require broker or admin role
     const user = await requireRole(
@@ -218,4 +221,4 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     );
   }
-};
+}
