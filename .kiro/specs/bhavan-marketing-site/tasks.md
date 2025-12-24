@@ -188,7 +188,7 @@
 
 ## Phase 6: Public Property Listings
 
-- [-] 13. Update public property listings page
+- [x] 13. Update public property listings page
   - Modify /properties page to fetch only approved properties
   - Update PropertyCard component with new data structure
   - Ensure property images load from R2
@@ -197,7 +197,7 @@
   - Commit all changes with detailed message: "feat: update public property listings to show only approved properties"
   - _Requirements: 24.4, 24.5_
 
-- [ ] 14. Update property detail page
+- [-] 14. Update property detail page
   - Modify /properties/[id] page to fetch from new API
   - Display property data from D1 database
   - Load images from R2 storage

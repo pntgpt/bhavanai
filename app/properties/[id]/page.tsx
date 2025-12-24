@@ -1,38 +1,25 @@
-import React from 'react';
-import PropertyDetailClient from './PropertyDetailClient';
+import PropertyDetailPage from './PropertyDetailPage';
 
 /**
- * Property Detail Page Component (Server Component)
+ * Property Detail Route Wrapper (Server Component)
  * 
- * Handles data fetching for property detail pages.
- * Delegates rendering to client component for interactivity.
+ * Provides generateStaticParams for static export compatibility
+ * Delegates rendering to client component for data fetching
  * 
- * Note: This will be updated in task 14 to fetch from D1 database
- * For now, it passes null to trigger client-side fetching
- * 
- * Requirements: New Feature - Property Detail Page
+ * Requirements: 24.4 - Display approved properties on public pages
  */
 
 /**
- * Generate static params - returns placeholder for now
- * Task 14 will update this to fetch from API
+ * Generate static params for static export
+ * Returns a placeholder to satisfy Next.js requirements
+ * Actual data is fetched client-side via API
  */
 export async function generateStaticParams() {
-  // Return placeholder - actual properties will be fetched client-side
-  // This will be updated in task 14 to fetch real property IDs from API
+  // Return a placeholder param to satisfy static export requirements
+  // The actual property data is fetched client-side
   return [{ id: 'placeholder' }];
 }
 
-interface PropertyDetailPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  const { id } = await params;
-  
-  // Property will be fetched client-side in PropertyDetailClient
-  // This will be updated in task 14 to use the API
-  return <PropertyDetailClient property={null} propertyId={id} />;
+export default function Page() {
+  return <PropertyDetailPage />;
 }

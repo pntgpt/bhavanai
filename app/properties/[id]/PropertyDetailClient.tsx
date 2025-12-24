@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MapPin,
@@ -23,19 +23,19 @@ import { getPropertyInquiryMessage, openWhatsApp } from '@/lib/whatsapp';
  * Property Detail Client Component
  * 
  * Client-side component that handles all interactive features:
- * - Image gallery navigation
+ * - Image gallery navigation from R2 storage
  * - WhatsApp contact button
  * - Back navigation
  * 
- * Requirements: New Feature - Property Detail Page
+ * Requirements: 24.4 - Display property data from D1 database with R2 images
  */
 
 interface PropertyDetailClientProps {
-  property: Property | undefined | null;
-  propertyId?: string;
+  property: Property;
+  propertyId: string;
 }
 
-export default function PropertyDetailClient({ property }: PropertyDetailClientProps) {
+export default function PropertyDetailClient({ property, propertyId }: PropertyDetailClientProps) {
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -43,7 +43,6 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
    * Navigate to previous image in gallery
    */
   const previousImage = () => {
-    if (!property) return;
     setCurrentImageIndex((prev) =>
       prev === 0 ? property.images.length - 1 : prev - 1
     );
@@ -53,7 +52,6 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
    * Navigate to next image in gallery
    */
   const nextImage = () => {
-    if (!property) return;
     setCurrentImageIndex((prev) =>
       prev === property.images.length - 1 ? 0 : prev + 1
     );
@@ -75,10 +73,8 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
    * Handle WhatsApp contact button click
    */
   const handleContactClick = () => {
-    if (!property) return;
-    
     const message = getPropertyInquiryMessage(
-      property.id,
+      propertyId,
       property.address,
       formatPrice(property.price)
     );
@@ -118,29 +114,19 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
     }
   };
 
-  // Handle property not found
-  if (!property) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Property Not Found
-          </h1>
-          <p className="text-gray-600 mb-6">
-            The property you're looking for doesn't exist or has been removed.
-          </p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => router.push('/properties')}
-          >
-            <ArrowLeft size={20} className="mr-2" />
-            Back to Properties
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  /**
+   * Get image URL from R2 storage
+   * Images are stored in R2 and accessed via /api/images/[key]
+   */
+  const getImageUrl = (imageKey: string): string => {
+    // If it's already a full URL, return as is
+    if (imageKey.startsWith('http://') || imageKey.startsWith('https://')) {
+      return imageKey;
+    }
+    
+    // If it's an R2 key, construct the API URL
+    return `/api/images/${imageKey}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -169,7 +155,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                 {property.images && property.images.length > 0 ? (
                   <>
                     <img
-                      src={property.images[currentImageIndex]}
+                      src={getImageUrl(property.images[currentImageIndex])}
                       alt={`${property.title} - Image ${currentImageIndex + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -221,7 +207,7 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
                       aria-label={`View image ${index + 1}`}
                     >
                       <img
-                        src={image}
+                        src={getImageUrl(image)}
                         alt={`Thumbnail ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -242,22 +228,24 @@ export default function PropertyDetailClient({ property }: PropertyDetailClientP
             </Card>
 
             {/* Amenities */}
-            <Card variant="default">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Amenities
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {property.amenities.map((amenity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center text-gray-700"
-                  >
-                    <CheckCircle size={20} className="text-green-600 mr-2 flex-shrink-0" />
-                    <span>{amenity}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            {property.amenities && property.amenities.length > 0 && (
+              <Card variant="default">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  Amenities
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {property.amenities.map((amenity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center text-gray-700"
+                    >
+                      <CheckCircle size={20} className="text-green-600 mr-2 flex-shrink-0" />
+                      <span>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             {/* Neighborhood Info */}
             <Card variant="default">
