@@ -55,6 +55,7 @@ export type FormType = 'eligibility' | 'signup' | 'contact' | 'newsletter';
  */
 export type CTAIdentifier = 
   | 'hero_get_early_access'
+  | 'hero_signup_now'
   | 'hero_how_it_works'
   | 'how_it_works_see_eligibility'
   | 'header_get_early_access'

@@ -4,50 +4,36 @@ import React, { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import SignupForm from '@/components/forms/SignupForm';
-import { trackCTAClick, trackScrollToSection } from '@/lib/analytics';
+import { trackCTAClick } from '@/lib/analytics';
 
 /**
  * Hero Section Component
  * 
  * The main hero section for the homepage featuring:
- * - Headline and subheadline explaining Bhavan.ai's value proposition
- * - Primary CTA button to open signup modal
- * - Secondary CTA link to scroll to How It Works section
+ * - Headline emphasizing wealth building opportunity starting from ₹5.5 Lakhs
+ * - Subheadline explaining the value proposition
+ * - Primary "Signup Now" CTA button to open signup modal
+ * - Pricing context message (free now or later ₹9,999)
  * - Full-viewport height with gradient background
  * - Responsive layout for mobile and desktop
  * 
- * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5
+ * Requirements: 1.1, 1.3
  */
 
 export interface HeroProps {
   headline?: string;
   subheadline?: string;
   primaryCTAText?: string;
-  secondaryCTAText?: string;
+  pricingContext?: string;
 }
 
 const Hero: React.FC<HeroProps> = ({
-  headline = "Turn rent into home ownership. Co-own a home with 2–5 people via a compliant SPV",
-  subheadline = "Match, form an SPV, pay the down payment collectively and move from rent to ownership.",
-  primaryCTAText = "Get early access",
-  secondaryCTAText = "How it works",
+  headline = "Want to be wealthy? Starting from rupees 5.5 Lakhs",
+  subheadline = "Build wealth through fractional home ownership. Start your journey to financial freedom with as little as ₹5.5 Lakhs.",
+  primaryCTAText = "Signup Now",
+  pricingContext = "Free now or later ₹9,999",
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  /**
-   * Smooth scroll to How It Works section
-   * Implements requirement 1.5
-   */
-  const handleScrollToHowItWorks = () => {
-    // Track CTA click
-    trackCTAClick('hero_how_it_works', secondaryCTAText);
-    trackScrollToSection('how-it-works');
-    
-    const howItWorksSection = document.getElementById('how-it-works');
-    if (howItWorksSection) {
-      howItWorksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   /**
    * Open signup modal
@@ -55,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({
    */
   const handleGetEarlyAccess = () => {
     // Track CTA click
-    trackCTAClick('hero_get_early_access', primaryCTAText);
+    trackCTAClick('hero_signup_now', primaryCTAText);
     setIsModalOpen(true);
   };
 
@@ -80,28 +66,22 @@ const Hero: React.FC<HeroProps> = ({
         </p>
 
         {/* CTAs - Requirement 1.3 */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col items-center gap-4 justify-center">
           {/* Primary CTA - Requirement 1.4 */}
           <Button
             variant="primary"
             size="lg"
             onClick={handleGetEarlyAccess}
-            ariaLabel="Get early access to Bhavan.ai"
+            ariaLabel="Sign up now for Bhavan.ai"
             className="w-full sm:w-auto"
           >
             {primaryCTAText}
           </Button>
 
-          {/* Secondary CTA - Requirement 1.5 */}
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleScrollToHowItWorks}
-            ariaLabel="Scroll to How it works section"
-            className="w-full sm:w-auto"
-          >
-            {secondaryCTAText}
-          </Button>
+          {/* Pricing context */}
+          <p className="text-sm text-gray-500 font-sans">
+            {pricingContext}
+          </p>
         </div>
 
         {/* Scroll indicator */}
@@ -125,7 +105,7 @@ const Hero: React.FC<HeroProps> = ({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Get Early Access"
+        title="Signup Now"
       >
         <SignupForm 
           inline={true}
