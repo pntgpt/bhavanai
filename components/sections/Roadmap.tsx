@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { CheckCircle2, Circle, Clock } from 'lucide-react';
+import { openWhatsAppSignup } from '@/lib/whatsapp';
+import { trackCTAClick } from '@/lib/analytics';
 
 /**
  * Roadmap Section Component
@@ -15,7 +17,7 @@ import { CheckCircle2, Circle, Clock } from 'lucide-react';
  * Helps early adopters understand when features will be available
  * and demonstrates clear product development plan.
  * 
- * Requirements: 9.1, 9.2, 9.4, 9.5
+ * Requirements: 9.1, 9.2, 9.4, 9.5, 5.1, 5.5
  */
 
 export interface Milestone {
@@ -228,12 +230,15 @@ const Roadmap: React.FC<RoadmapProps> = ({
           <p className="font-sans text-gray-600 mb-6">
             Want to be part of our journey? Join our early access program.
           </p>
-          <a
-            href="#signup"
+          <button
+            onClick={() => {
+              trackCTAClick('roadmap_get_early_access', 'Get Early Access');
+              openWhatsAppSignup();
+            }}
             className="inline-block bg-primary-600 text-white font-sans font-medium px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors"
           >
             Get Early Access
-          </a>
+          </button>
         </div>
       </div>
     </section>

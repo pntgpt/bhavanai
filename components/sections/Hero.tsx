@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
-import SignupForm from '@/components/forms/SignupForm';
 import { trackCTAClick } from '@/lib/analytics';
+import { openWhatsAppSignup } from '@/lib/whatsapp';
 
 /**
  * Hero Section Component
@@ -12,37 +11,34 @@ import { trackCTAClick } from '@/lib/analytics';
  * The main hero section for the homepage featuring:
  * - Headline emphasizing wealth building opportunity starting from ₹5.5 Lakhs
  * - Subheadline explaining the value proposition
- * - Primary "Signup Now" CTA button to open signup modal
+ * - Primary "Signup Now" CTA button that redirects to WhatsApp
  * - Pricing context message (free now or later ₹9,999)
  * - Full-viewport height with gradient background
  * - Responsive layout for mobile and desktop
  * 
- * Requirements: 1.1, 1.3
+ * Requirements: 1.1, 1.3, 5.1, 5.5
  */
 
 export interface HeroProps {
   headline?: string;
   subheadline?: string;
   primaryCTAText?: string;
-  pricingContext?: string;
 }
 
 const Hero: React.FC<HeroProps> = ({
   headline = "Want to be wealthy? Starting from rupees 5.5 Lakhs",
   subheadline = "Build wealth through fractional home ownership. Start your journey to financial freedom with as little as ₹5.5 Lakhs.",
   primaryCTAText = "Signup Now",
-  pricingContext = "Free now or later ₹9,999",
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   /**
-   * Open signup modal
-   * Implements requirement 1.4
+   * Redirect to WhatsApp with pre-populated message
+   * Implements requirements 5.1, 5.5
    */
-  const handleGetEarlyAccess = () => {
+  const handleSignupClick = () => {
     // Track CTA click
-    trackCTAClick('hero_signup_now', primaryCTAText);
-    setIsModalOpen(true);
+    trackCTAClick('hero_signup_whatsapp', primaryCTAText);
+    // Open WhatsApp with signup message
+    openWhatsAppSignup();
   };
 
   return (
@@ -67,12 +63,12 @@ const Hero: React.FC<HeroProps> = ({
 
         {/* CTAs - Requirement 1.3 */}
         <div className="flex flex-col items-center gap-4 justify-center">
-          {/* Primary CTA - Requirement 1.4 */}
+          {/* Primary CTA - WhatsApp Redirect - Requirements 5.1, 5.5 */}
           <Button
             variant="primary"
             size="lg"
-            onClick={handleGetEarlyAccess}
-            ariaLabel="Sign up now for Bhavan.ai"
+            onClick={handleSignupClick}
+            ariaLabel="Sign up now for Bhavan.ai via WhatsApp"
             className="w-full sm:w-auto"
           >
             {primaryCTAText}
@@ -102,21 +98,6 @@ const Hero: React.FC<HeroProps> = ({
           </svg>
         </div>
       </div>
-
-      {/* Signup Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Signup Now"
-      >
-        <SignupForm 
-          inline={true}
-          onSuccess={() => {
-            // Keep modal open to show success message
-            // User can close it manually or click to sign up another person
-          }}
-        />
-      </Modal>
     </section>
   );
 };

@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
-import { trackCTAClick, trackNavigation } from '@/lib/analytics';
+import { trackCTAClick } from '@/lib/analytics';
+import { openWhatsAppSignup } from '@/lib/whatsapp';
 
 /**
  * Header component with sticky navigation and mobile menu
@@ -14,9 +15,12 @@ import { trackCTAClick, trackNavigation } from '@/lib/analytics';
  * - Responsive mobile hamburger menu
  * - Smooth transitions and animations
  * - Accessible navigation with proper ARIA labels
+ * - WhatsApp redirect for signup CTA
  * 
  * The header becomes opaque with a background when scrolled down,
  * and can optionally start transparent over hero sections
+ * 
+ * Requirements: 5.1, 5.5
  */
 
 export interface HeaderProps {
@@ -64,6 +68,15 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     { name: 'FAQ', href: '/faq' },
   ];
 
+  /**
+   * Handle signup CTA click - redirect to WhatsApp
+   * Implements requirements 5.1, 5.5
+   */
+  const handleSignupClick = () => {
+    trackCTAClick('header_signup_whatsapp', 'Get Early Access');
+    openWhatsAppSignup();
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-normal ${headerBg}`}
@@ -92,17 +105,13 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Link 
-              href="/signup"
-              onClick={() => {
-                trackCTAClick('header_get_early_access', 'Get Early Access');
-                trackNavigation('/signup', 'header');
-              }}
+            <Button 
+              variant="primary" 
+              size="md"
+              onClick={handleSignupClick}
             >
-              <Button variant="primary" size="md">
-                Get Early Access
-              </Button>
-            </Link>
+              Get Early Access
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -159,18 +168,17 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               ))}
 
               <div className="pt-4 border-t border-gray-200">
-                <Link 
-                  href="/signup" 
+                <Button 
+                  variant="primary" 
+                  size="md" 
+                  className="w-full"
                   onClick={() => {
-                    trackCTAClick('header_get_early_access', 'Get Early Access');
-                    trackNavigation('/signup', 'header-mobile');
+                    handleSignupClick();
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  <Button variant="primary" size="md" className="w-full">
-                    Get Early Access
-                  </Button>
-                </Link>
+                  Get Early Access
+                </Button>
               </div>
             </div>
           </div>

@@ -250,7 +250,7 @@
   - **Property 22: Icon set consistency**
   - **Validates: Requirements 19.3**
 
-- [ ] 18. Update hero section with new headline and pricing messaging
+- [x] 18. Update hero section with new headline and pricing messaging
   - Replace main heading with "Want to be wealthy? Starting from rupees 5.5 Lakhs"
   - Update hero CTAs to "Signup Now" with pricing context (free now or later ₹9,999)
   - Remove "How it works" secondary CTA
@@ -258,7 +258,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.1, 1.3_
 
-- [ ] 19. Simplify signup flow to WhatsApp redirect
+- [-] 19. Simplify signup flow to WhatsApp redirect
   - Update signup form to redirect directly to WhatsApp with company number
   - Pre-populate WhatsApp message with user interest in Bhavan.ai
   - Remove complex form fields, keep minimal contact capture if needed
