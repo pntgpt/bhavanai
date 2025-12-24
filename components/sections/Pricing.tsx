@@ -7,16 +7,18 @@ import { Check, Info } from 'lucide-react';
 /**
  * Pricing Section Component
  * 
- * Displays the fee structure and business model for Bhavan.ai:
- * - Platform fees for using the service
+ * Displays the updated fee structure and business model for Bhavan.ai:
+ * - 5% all-inclusive transaction fee (legal, SPV, broker agreements)
+ * - Individual services at ₹3,000 each (CA, Legal, Property Manager)
  * - Marketplace transaction fees
- * - Future fees (registration, SPV management)
+ * - Clear note about 4-6% stamp duty exclusion
+ * - Emphasis on "no hidden charges" messaging
  * - Clear, scannable format with context for when each fee applies
  * 
- * Provides transparency about costs involved in fractional home ownership
+ * Provides complete transparency about costs involved in fractional home ownership
  * through the platform.
  * 
- * Requirements: 7.1, 7.2, 7.3, 7.5
+ * Requirements: 7.1, 7.2, 7.3, 7.4, 7.5
  */
 
 export interface PricingItem {
@@ -35,18 +37,33 @@ export interface PricingProps {
 
 const defaultPricingItems: PricingItem[] = [
   {
-    id: 'platform',
-    name: 'Platform Fee',
-    fee: '1.5% of property value',
-    description: 'One-time fee for SPV formation, matching, and onboarding',
+    id: 'transaction',
+    name: 'Transaction Fee',
+    fee: '5% All-Inclusive',
+    description: 'Complete service package with no hidden charges',
     features: [
+      'Legal agreements and documentation',
+      'SPV formation and registration',
+      'Broker coordination and services',
       'KYC and credit verification',
       'Co-owner matching service',
-      'Digital SPV creation',
-      'Legal documentation',
-      'Onboarding support',
     ],
-    timing: 'Charged at SPV formation',
+    timing: 'Charged at property purchase',
+    isFuture: false,
+  },
+  {
+    id: 'individual',
+    name: 'Individual Services',
+    fee: '₹3,000 each',
+    description: 'Optional standalone professional services',
+    features: [
+      'Chartered Accountant (CA) services',
+      'Legal consultation and review',
+      'Property Manager coordination',
+      'Available separately or bundled',
+      'Transparent, fixed pricing',
+    ],
+    timing: 'As needed, pay per service',
     isFuture: false,
   },
   {
@@ -61,23 +78,8 @@ const defaultPricingItems: PricingItem[] = [
       'Legal transfer documentation',
       'Buyer KYC verification',
     ],
-    timing: 'Charged per transaction',
+    timing: 'Charged per marketplace transaction',
     isFuture: false,
-  },
-  {
-    id: 'future',
-    name: 'Future Fees',
-    fee: 'Coming Soon',
-    description: 'Additional services planned for comprehensive SPV management',
-    features: [
-      'Property registration assistance',
-      'Annual SPV compliance management',
-      'Tax filing support',
-      'Property maintenance coordination',
-      'Insurance management',
-    ],
-    timing: 'To be announced',
-    isFuture: true,
   },
 ];
 
@@ -160,20 +162,23 @@ const Pricing: React.FC<PricingProps> = ({ pricingItems = defaultPricingItems })
         <div className="mt-12 max-w-3xl mx-auto">
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h4 className="font-serif font-semibold text-lg text-gray-900 mb-3">
-              Fee Transparency
+              Complete Fee Transparency
             </h4>
             <div className="space-y-2 text-sm text-gray-700">
               <p>
-                • <strong>No hidden charges:</strong> All fees are disclosed upfront before any transaction
+                • <strong>No hidden charges:</strong> Our 5% transaction fee is all-inclusive, covering legal, SPV, and broker services
+              </p>
+              <p>
+                • <strong>Stamp duty separate:</strong> Government stamp duty (4-6% depending on state) is excluded and paid directly to authorities
               </p>
               <p>
                 • <strong>No monthly fees:</strong> Pay only when you use the platform or marketplace
               </p>
               <p>
-                • <strong>Competitive rates:</strong> Our fees are designed to be fair and sustainable
+                • <strong>Transparent pricing:</strong> Individual services (CA, Legal, Property Manager) available at fixed ₹3,000 each
               </p>
               <p>
-                • <strong>Volume discounts:</strong> Special rates available for multiple property purchases
+                • <strong>Fair and sustainable:</strong> Our fees are designed to provide exceptional value while maintaining quality service
               </p>
             </div>
           </div>
