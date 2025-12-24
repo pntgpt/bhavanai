@@ -23,6 +23,15 @@ The website will be delivered as a static site (Next.js static export or equival
 - **User**: A visitor to the website, typically a renter interested in home ownership
 - **Form Submission**: Data sent from website forms to backend processing
 - **CTA**: Call-to-action button or link prompting user engagement
+- **Admin**: Administrator user with full system access and user management capabilities
+- **Broker**: User who can create, edit, and submit property listings for approval
+- **CA**: Chartered Accountant user with role-specific dashboard access
+- **Lawyer**: Legal professional user with role-specific dashboard access
+- **Property**: A real estate listing created by brokers for potential co-ownership
+- **Pending Approval**: Status of properties or users awaiting administrator review
+- **Dashboard**: Role-specific interface for authenticated users to perform their functions
+- **Session**: Authenticated user connection maintained by secure cookies
+- **Backend User**: Any authenticated user (Admin, Broker, CA, or Lawyer) with system access
 
 ## Requirements
 
@@ -265,3 +274,111 @@ The website will be delivered as a static site (Next.js static export or equival
 3. WHEN the serverless function receives data THEN the system SHALL validate the payload structure
 4. WHEN form submission succeeds THEN the Website SHALL receive a success response and display appropriate feedback
 5. WHEN form submission fails THEN the Website SHALL handle errors gracefully and provide user-friendly error messages
+
+### Requirement 21
+
+**User Story:** As a system administrator, I want a secure login system for backend users, so that only authorized personnel can access administrative functions.
+
+#### Acceptance Criteria
+
+1. WHEN a user navigates to /login THEN the Website SHALL display a login form requesting email and password
+2. WHEN login credentials are submitted THEN the system SHALL authenticate the user against the user database
+3. WHEN authentication succeeds THEN the system SHALL create a secure session and redirect the user to their role-specific dashboard
+4. WHEN authentication fails THEN the system SHALL display an error message and allow retry
+5. WHEN a user session expires THEN the system SHALL redirect the user to the login page
+
+### Requirement 21
+
+**User Story:** As a system administrator, I want a secure login system for backend users, so that only authorized personnel can access administrative functions.
+
+#### Acceptance Criteria
+
+1. WHEN a user navigates to /login THEN the Website SHALL display a login form requesting email and password
+2. WHEN login credentials are submitted THEN the system SHALL authenticate the user against the user database
+3. WHEN authentication succeeds THEN the system SHALL create a secure session and redirect the user to their role-specific dashboard
+4. WHEN authentication fails THEN the system SHALL display an error message and allow retry
+5. WHEN a user session expires THEN the system SHALL redirect the user to the login page
+
+### Requirement 22
+
+**User Story:** As a broker, I want to register for an account, so that I can access the property management system.
+
+#### Acceptance Criteria
+
+1. WHEN a user navigates to /signup THEN the Website SHALL display a registration form requesting name, phone number, email, and user type
+2. WHEN the registration form is displayed THEN the system SHALL present user type options: Broker, CA (Chartered Accountant), and Lawyer
+3. WHEN a user submits the registration form THEN the system SHALL create a pending user account awaiting admin approval
+4. WHEN registration succeeds THEN the system SHALL display a message: "Thank you for registering. Our team will reach out to you shortly."
+5. WHEN a pending user account is created THEN the system SHALL notify administrators of the new registration
+
+### Requirement 23
+
+**User Story:** As a broker, I want to manage property listings from my dashboard, so that I can add properties for potential buyers to view.
+
+#### Acceptance Criteria
+
+1. WHEN a broker accesses their dashboard THEN the system SHALL display options to add, edit, and remove properties
+2. WHEN a broker adds a new property THEN the system SHALL create the property in a pending approval state
+3. WHEN a broker edits an existing property THEN the system SHALL update the property details and reset approval status to pending
+4. WHEN a broker removes a property THEN the system SHALL mark the property as deleted and remove it from public listings
+5. WHEN a broker submits a property for approval THEN the system SHALL notify administrators of the pending property
+
+### Requirement 24
+
+**User Story:** As an administrator, I want to approve or reject property listings, so that only quality properties appear on the public website.
+
+#### Acceptance Criteria
+
+1. WHEN an administrator accesses the property approval section THEN the system SHALL display all properties with pending approval status
+2. WHEN an administrator approves a property THEN the system SHALL change the property status to approved and make it visible on the public property listing page
+3. WHEN an administrator rejects a property THEN the system SHALL change the property status to rejected and notify the broker
+4. WHEN a property is approved THEN the system SHALL display the property on the public /properties page
+5. WHEN a property is rejected or pending THEN the system SHALL exclude the property from the public /properties page
+
+### Requirement 25
+
+**User Story:** As an administrator, I want to manage all properties across all brokers, so that I can maintain quality and consistency.
+
+#### Acceptance Criteria
+
+1. WHEN an administrator accesses the property management section THEN the system SHALL display all properties from all brokers
+2. WHEN an administrator edits any property THEN the system SHALL update the property details regardless of which broker created it
+3. WHEN an administrator deletes any property THEN the system SHALL remove the property from the system
+4. WHEN properties are displayed to administrators THEN the system SHALL show the broker who created each property
+5. WHEN an administrator filters properties THEN the system SHALL support filtering by broker, status, and creation date
+
+### Requirement 26
+
+**User Story:** As an administrator, I want to manage user accounts, so that I can control who has access to the system.
+
+#### Acceptance Criteria
+
+1. WHEN an administrator accesses the user management section THEN the system SHALL display all registered users including pending approvals
+2. WHEN an administrator approves a pending user THEN the system SHALL activate the user account and send credentials to the user
+3. WHEN an administrator creates a new user THEN the system SHALL allow specifying name, email, phone, user type (Admin, Broker, CA, Lawyer), and initial password
+4. WHEN an administrator resets a user password THEN the system SHALL update the password and notify the user
+5. WHEN an administrator deactivates a user THEN the system SHALL prevent that user from logging in
+
+### Requirement 27
+
+**User Story:** As a CA or Lawyer, I want access to a role-specific dashboard, so that I can perform my professional functions within the platform.
+
+#### Acceptance Criteria
+
+1. WHEN a CA logs in THEN the system SHALL redirect them to the CA dashboard
+2. WHEN a Lawyer logs in THEN the system SHALL redirect them to the Lawyer dashboard
+3. WHEN a CA or Lawyer accesses their dashboard THEN the system SHALL display role-appropriate functionality placeholders
+4. WHEN dashboard functionality is not yet implemented THEN the system SHALL display a message indicating features are coming soon
+5. WHEN a CA or Lawyer attempts to access broker or admin functions THEN the system SHALL deny access and display an authorization error
+
+### Requirement 28
+
+**User Story:** As a system user, I want my session to be secure, so that my account cannot be compromised.
+
+#### Acceptance Criteria
+
+1. WHEN a user logs in THEN the system SHALL create a secure, HTTP-only session cookie
+2. WHEN a user is inactive for 24 hours THEN the system SHALL expire the session and require re-authentication
+3. WHEN a user logs out THEN the system SHALL destroy the session and clear all authentication tokens
+4. WHEN a user attempts to access protected routes without authentication THEN the system SHALL redirect to the login page
+5. WHEN a user attempts to access routes outside their role permissions THEN the system SHALL display a 403 Forbidden error

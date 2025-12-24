@@ -10,24 +10,28 @@ The site will be deployed as a collection of pre-rendered HTML pages with minima
 
 ### Technology Stack
 
-- **Framework**: Next.js 14+ with App Router and static export (`output: 'export'`)
+- **Framework**: Next.js 14+ with App Router deployed on Cloudflare Pages
 - **Language**: TypeScript for type safety
 - **Styling**: Tailwind CSS for utility-first styling with custom design tokens
-- **Forms**: Client-side validation with serverless backend integration (Vercel Functions or Netlify Functions)
+- **Authentication**: Custom auth implementation using Cloudflare Workers and D1
+- **Database**: Cloudflare D1 (SQLite) for user and property data
+- **Session Storage**: Cloudflare Durable Objects or KV for session management
+- **Forms**: Client-side validation with Cloudflare Pages Functions for backend
 - **Analytics**: Google Analytics 4 (GA4) with custom event tracking
-- **Image Optimization**: Next.js Image component with static export optimization
+- **Image Storage**: Cloudflare R2 for property images
 - **Icons**: Lucide React for consistent, lightweight iconography
 - **Testing**: Vitest for unit tests, React Testing Library for component tests
-- **Deployment**: Vercel or Netlify with automatic deployments from Git
+- **Deployment**: Cloudflare Pages with D1 database and Pages Functions
 
 ### Architecture Principles
 
-1. **Static-First**: All pages pre-rendered at build time for maximum performance
+1. **Hybrid Rendering**: Marketing pages use static generation, authenticated pages use server-side rendering
 2. **Progressive Enhancement**: Core content accessible without JavaScript, enhanced features require JS
 3. **Mobile-First**: Responsive design starting from mobile breakpoints
 4. **Accessibility-First**: WCAG AA compliance built into every component
 5. **Performance-First**: Lighthouse score > 90 through optimization and lazy loading
 6. **SEO-First**: Semantic HTML, meta tags, structured data on every page
+7. **Security-First**: Role-based access control, secure session management, input validation
 
 ### Directory Structure
 
@@ -35,34 +39,48 @@ The site will be deployed as a collection of pre-rendered HTML pages with minima
 bhavan-marketing-site/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
-│   │   ├── page.tsx           # Homepage
+│   │   ├── page.tsx           # Homepage (static)
 │   │   ├── layout.tsx         # Root layout with SEO
-│   │   ├── eligibility/       # Eligibility checker page
-│   │   ├── signup/            # Early access signup page
-│   │   ├── marketplace/       # Marketplace info page
-│   │   ├── pricing/           # Pricing page
-│   │   ├── roadmap/           # Roadmap page
-│   │   ├── team/              # Team page
-│   │   ├── privacy/           # Privacy policy page
-│   │   ├── terms/             # Terms of service page
-│   │   └── faq/               # FAQ page
+│   │   ├── login/             # Login page (dynamic)
+│   │   ├── signup/            # Registration page (dynamic)
+│   │   ├── dashboard/         # Protected dashboard routes
+│   │   │   ├── admin/        # Admin dashboard
+│   │   │   ├── broker/       # Broker dashboard
+│   │   │   ├── ca/           # CA dashboard
+│   │   │   └── lawyer/       # Lawyer dashboard
+│   │   ├── eligibility/       # Eligibility checker page (static)
+│   │   ├── marketplace/       # Marketplace info page (static)
+│   │   ├── pricing/           # Pricing page (static)
+│   │   ├── roadmap/           # Roadmap page (static)
+│   │   ├── team/              # Team page (static)
+│   │   ├── properties/        # Public property listings (dynamic)
+│   │   ├── privacy/           # Privacy policy page (static)
+│   │   ├── terms/             # Terms of service page (static)
+│   │   └── faq/               # FAQ page (static)
 │   ├── components/            # React components
 │   │   ├── layout/           # Layout components (Header, Footer)
 │   │   ├── sections/         # Page sections (Hero, HowItWorks, etc.)
 │   │   ├── forms/            # Form components
 │   │   ├── ui/               # Reusable UI components
+│   │   ├── dashboard/        # Dashboard-specific components
 │   │   └── analytics/        # Analytics wrapper components
 │   ├── lib/                   # Utility functions
 │   │   ├── analytics.ts      # GA4 integration
+│   │   ├── auth.ts           # Authentication utilities
+│   │   ├── db.ts             # Database client
 │   │   ├── forms.ts          # Form submission logic
 │   │   ├── validation.ts     # Form validation
 │   │   └── seo.ts            # SEO utilities
 │   ├── types/                 # TypeScript type definitions
 │   ├── styles/                # Global styles and Tailwind config
+│   ├── middleware.ts          # Auth middleware for protected routes
 │   └── public/                # Static assets
 │       ├── images/           # Images and placeholders
 │       ├── icons/            # Favicons
 │       └── downloads/        # PDFs (pitch deck, press kit)
+├── prisma/                    # Database schema and migrations
+│   ├── schema.prisma         # Prisma schema
+│   └── migrations/           # Database migrations
 ├── tests/                     # Test files
 ├── next.config.js            # Next.js configuration
 ├── tailwind.config.js        # Tailwind configuration
@@ -311,6 +329,180 @@ interface NewsletterFormProps {
 }
 ```
 
+#### 5. Authentication Components
+
+**LoginForm Component**
+- Email and password inputs
+- Remember me checkbox
+- Submit handler with error display
+- Loading state during authentication
+
+```typescript
+interface LoginFormProps {
+  onSubmit: (credentials: LoginCredentials) => Promise<void>;
+  error?: string;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+```
+
+**RegistrationForm Component**
+- Name, email, phone inputs
+- User type selector (Broker, CA, Lawyer)
+- Terms acceptance checkbox
+- Submit handler for pending account creation
+
+```typescript
+interface RegistrationFormProps {
+  onSubmit: (data: RegistrationData) => Promise<void>;
+}
+
+interface RegistrationData {
+  name: string;
+  email: string;
+  phone: string;
+  userType: 'broker' | 'ca' | 'lawyer';
+  termsAccepted: boolean;
+}
+```
+
+#### 6. Dashboard Components
+
+**AdminDashboard Component**
+- Navigation tabs for different admin functions
+- User management section
+- Property approval section
+- Analytics overview
+
+```typescript
+interface AdminDashboardProps {
+  user: AuthenticatedUser;
+}
+
+interface AuthenticatedUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'broker' | 'ca' | 'lawyer';
+}
+```
+
+**UserManagementTable Component**
+- List of all users with status
+- Approve/reject pending users
+- Create new user button
+- Reset password action
+- Deactivate user action
+
+```typescript
+interface UserManagementTableProps {
+  users: User[];
+  onApprove: (userId: string) => Promise<void>;
+  onReject: (userId: string) => Promise<void>;
+  onResetPassword: (userId: string) => Promise<void>;
+  onDeactivate: (userId: string) => Promise<void>;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'admin' | 'broker' | 'ca' | 'lawyer';
+  status: 'pending' | 'active' | 'inactive';
+  createdAt: string;
+}
+```
+
+**PropertyApprovalTable Component**
+- List of properties pending approval
+- Property details preview
+- Approve/reject actions
+- Filter by broker
+
+```typescript
+interface PropertyApprovalTableProps {
+  properties: Property[];
+  onApprove: (propertyId: string) => Promise<void>;
+  onReject: (propertyId: string, reason: string) => Promise<void>;
+}
+
+interface Property {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  coOwnerCount: number;
+  images: string[];
+  brokerId: string;
+  brokerName: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+**BrokerDashboard Component**
+- My properties list
+- Add new property button
+- Edit/delete property actions
+- Submit for approval action
+
+```typescript
+interface BrokerDashboardProps {
+  user: AuthenticatedUser;
+  properties: Property[];
+}
+```
+
+**PropertyForm Component**
+- Property details inputs (title, description, location, price)
+- Co-owner count selector
+- Image upload
+- Submit for approval
+
+```typescript
+interface PropertyFormProps {
+  property?: Property; // For editing
+  onSubmit: (data: PropertyFormData) => Promise<void>;
+  onCancel: () => void;
+}
+
+interface PropertyFormData {
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  coOwnerCount: number;
+  images: File[];
+}
+```
+
+**CADashboard Component**
+- Placeholder for CA-specific functionality
+- Coming soon message
+
+```typescript
+interface CADashboardProps {
+  user: AuthenticatedUser;
+}
+```
+
+**LawyerDashboard Component**
+- Placeholder for lawyer-specific functionality
+- Coming soon message
+
+```typescript
+interface LawyerDashboardProps {
+  user: AuthenticatedUser;
+}
+```
+
 #### 4. UI Components
 
 **Button Component**
@@ -391,6 +583,283 @@ interface AnalyticsEvent {
 }
 ```
 
+#### Authentication Endpoints
+
+```typescript
+// POST /api/auth/login
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  success: boolean;
+  user?: AuthenticatedUser;
+  error?: string;
+}
+
+// POST /api/auth/register
+interface RegisterRequest {
+  name: string;
+  email: string;
+  phone: string;
+  userType: 'broker' | 'ca' | 'lawyer';
+}
+
+interface RegisterResponse {
+  success: boolean;
+  message: string;
+  userId?: string;
+}
+
+// POST /api/auth/logout
+interface LogoutResponse {
+  success: boolean;
+}
+
+// GET /api/auth/session
+interface SessionResponse {
+  authenticated: boolean;
+  user?: AuthenticatedUser;
+}
+```
+
+#### User Management Endpoints
+
+```typescript
+// GET /api/admin/users
+interface GetUsersResponse {
+  users: User[];
+}
+
+// POST /api/admin/users
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  phone: string;
+  role: 'admin' | 'broker' | 'ca' | 'lawyer';
+  password: string;
+}
+
+interface CreateUserResponse {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+// PATCH /api/admin/users/:id/approve
+interface ApproveUserResponse {
+  success: boolean;
+  message: string;
+}
+
+// PATCH /api/admin/users/:id/reset-password
+interface ResetPasswordRequest {
+  newPassword: string;
+}
+
+interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+// PATCH /api/admin/users/:id/deactivate
+interface DeactivateUserResponse {
+  success: boolean;
+  message: string;
+}
+```
+
+#### Property Management Endpoints
+
+```typescript
+// GET /api/properties (public - only approved)
+interface GetPublicPropertiesResponse {
+  properties: Property[];
+}
+
+// GET /api/broker/properties (broker's own properties)
+interface GetBrokerPropertiesResponse {
+  properties: Property[];
+}
+
+// GET /api/admin/properties (all properties)
+interface GetAllPropertiesResponse {
+  properties: Property[];
+}
+
+// POST /api/broker/properties
+interface CreatePropertyRequest {
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  coOwnerCount: number;
+  images: string[]; // URLs after upload
+}
+
+interface CreatePropertyResponse {
+  success: boolean;
+  property?: Property;
+  error?: string;
+}
+
+// PATCH /api/broker/properties/:id
+interface UpdatePropertyRequest {
+  title?: string;
+  description?: string;
+  location?: string;
+  price?: number;
+  coOwnerCount?: number;
+  images?: string[];
+}
+
+interface UpdatePropertyResponse {
+  success: boolean;
+  property?: Property;
+  error?: string;
+}
+
+// DELETE /api/broker/properties/:id
+interface DeletePropertyResponse {
+  success: boolean;
+  message: string;
+}
+
+// PATCH /api/admin/properties/:id/approve
+interface ApprovePropertyResponse {
+  success: boolean;
+  message: string;
+}
+
+// PATCH /api/admin/properties/:id/reject
+interface RejectPropertyRequest {
+  reason: string;
+}
+
+interface RejectPropertyResponse {
+  success: boolean;
+  message: string;
+}
+```
+
+## Data Models
+
+### Authentication and Authorization
+
+#### Authentication Flow
+
+**Login Process:**
+1. User submits email and password via LoginForm
+2. Credentials sent to `/api/auth/login` endpoint
+3. Server validates credentials against database (bcrypt password comparison)
+4. On success: Create secure session with HTTP-only cookie, return user data
+5. On failure: Return error message, allow retry
+6. Client redirects to role-specific dashboard on success
+
+**Registration Process:**
+1. User submits registration form with name, email, phone, user type
+2. Data sent to `/api/auth/register` endpoint
+3. Server creates user with PENDING status and hashed temporary password
+4. Server sends notification to admins
+5. Client displays "Our team will reach out shortly" message
+6. Admin approves user and sends credentials separately
+
+**Session Management:**
+1. Sessions stored in database with expiration timestamp
+2. HTTP-only, secure cookies prevent XSS attacks
+3. Session validated on every protected route access
+4. Sessions expire after 24 hours of inactivity
+5. Logout destroys session and clears cookies
+
+#### Authorization Model
+
+**Role Hierarchy:**
+- **Admin**: Full access to all features, user management, property management
+- **Broker**: Property CRUD operations, submit for approval, view own properties
+- **CA**: Access to CA dashboard (placeholder functionality)
+- **Lawyer**: Access to Lawyer dashboard (placeholder functionality)
+
+**Route Protection:**
+```typescript
+// middleware.ts
+export function middleware(request: NextRequest) {
+  const session = await getSession(request);
+  
+  // Protect all /dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!session) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    
+    // Role-based access control
+    const role = session.user.role;
+    const path = request.nextUrl.pathname;
+    
+    if (path.startsWith('/dashboard/admin') && role !== 'admin') {
+      return new NextResponse('Forbidden', { status: 403 });
+    }
+    
+    if (path.startsWith('/dashboard/broker') && role !== 'broker') {
+      return new NextResponse('Forbidden', { status: 403 });
+    }
+    
+    // Similar checks for CA and Lawyer
+  }
+  
+  return NextResponse.next();
+}
+```
+
+**API Route Protection:**
+```typescript
+// lib/auth.ts
+export async function requireAuth(req: NextRequest, allowedRoles?: Role[]) {
+  const session = await getSession(req);
+  
+  if (!session) {
+    throw new Error('Unauthorized');
+  }
+  
+  if (allowedRoles && !allowedRoles.includes(session.user.role)) {
+    throw new Error('Forbidden');
+  }
+  
+  return session.user;
+}
+
+// Usage in API route
+export async function POST(req: NextRequest) {
+  const user = await requireAuth(req, ['broker', 'admin']);
+  // Handle property creation
+}
+```
+
+#### Password Security
+
+**Hashing:**
+- Use bcrypt with salt rounds = 12
+- Never store plain text passwords
+- Hash passwords before database insertion
+
+```typescript
+import bcrypt from 'bcrypt';
+
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
+
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+```
+
+**Password Reset:**
+- Admin can reset any user's password
+- Generate temporary password
+- Hash before storing
+- Notify user via email/phone
+
 ## Data Models
 
 ### Lead Data Model
@@ -466,6 +935,96 @@ interface PageMetadata {
   ogType: string;
   canonicalUrl: string;
   structuredData?: object;
+}
+```
+
+### Database Schema
+
+The database schema is defined in SQL for Cloudflare D1 (SQLite). See the Deployment section for the complete schema.
+
+**Key Tables:**
+- `users`: User accounts with roles and status
+- `properties`: Property listings with approval workflow
+- `sessions`: Authentication sessions with expiration
+
+**TypeScript Interfaces (for type safety):**
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string; // Hashed with bcrypt
+  role: 'admin' | 'broker' | 'ca' | 'lawyer';
+  status: 'pending' | 'active' | 'inactive';
+  created_at: number; // Unix timestamp
+  updated_at: number; // Unix timestamp
+}
+
+interface Property {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  co_owner_count: number;
+  images: string; // JSON string array of R2 URLs
+  status: 'pending' | 'approved' | 'rejected';
+  rejection_reason: string | null;
+  broker_id: string;
+  created_at: number;
+  updated_at: number;
+}
+
+interface Session {
+  id: string;
+  user_id: string;
+  token: string;
+  expires_at: number;
+  created_at: number;
+}
+```
+
+**Database Helper Functions:**
+
+```typescript
+// lib/db.ts
+export async function getUser(env: Env, email: string): Promise<User | null> {
+  return await env.DB.prepare(
+    'SELECT * FROM users WHERE email = ?'
+  ).bind(email).first();
+}
+
+export async function createUser(env: Env, user: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User> {
+  const id = crypto.randomUUID();
+  const now = Date.now();
+  
+  await env.DB.prepare(
+    'INSERT INTO users (id, name, email, phone, password, role, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(id, user.name, user.email, user.phone, user.password, user.role, user.status, now, now).run();
+  
+  return { ...user, id, created_at: now, updated_at: now };
+}
+
+export async function getProperties(env: Env, filters?: { status?: string; broker_id?: string }): Promise<Property[]> {
+  let query = 'SELECT * FROM properties WHERE 1=1';
+  const bindings: any[] = [];
+  
+  if (filters?.status) {
+    query += ' AND status = ?';
+    bindings.push(filters.status);
+  }
+  
+  if (filters?.broker_id) {
+    query += ' AND broker_id = ?';
+    bindings.push(filters.broker_id);
+  }
+  
+  query += ' ORDER BY created_at DESC';
+  
+  const result = await env.DB.prepare(query).bind(...bindings).all();
+  return result.results as Property[];
 }
 ```
 
@@ -589,6 +1148,58 @@ Property 23: Error message user-friendliness
 *For any* form submission error response, the website should display a user-friendly error message (not raw error codes or technical jargon) and maintain form state for retry
 **Validates: Requirements 20.5**
 
+Property 24: Login authentication validation
+*For any* login attempt with valid credentials, the system should create a secure session and redirect to the appropriate role-specific dashboard
+**Validates: Requirements 21.3**
+
+Property 25: Failed login error display
+*For any* login attempt with invalid credentials, the system should display an error message and allow retry without clearing the email field
+**Validates: Requirements 21.4**
+
+Property 26: Registration pending status
+*For any* successful registration submission, the system should create a user account with pending status and display the confirmation message
+**Validates: Requirements 22.3, 22.4**
+
+Property 27: Broker property creation pending status
+*For any* property created by a broker, the property should be created with pending approval status
+**Validates: Requirements 23.2**
+
+Property 28: Property approval visibility
+*For any* property with approved status, the property should appear in the public /properties page listing
+**Validates: Requirements 24.4**
+
+Property 29: Property rejection exclusion
+*For any* property with rejected or pending status, the property should not appear in the public /properties page listing
+**Validates: Requirements 24.5**
+
+Property 30: Admin property access
+*For any* property in the system, an authenticated admin user should be able to view and edit that property regardless of which broker created it
+**Validates: Requirements 25.2**
+
+Property 31: Admin user approval activation
+*For any* pending user account, when an admin approves it, the user status should change to active
+**Validates: Requirements 26.2**
+
+Property 32: Role-based dashboard routing
+*For any* authenticated user, after successful login, the system should redirect to the dashboard corresponding to their role (admin → /dashboard/admin, broker → /dashboard/broker, etc.)
+**Validates: Requirements 21.3, 27.1, 27.2**
+
+Property 33: Unauthorized access prevention
+*For any* protected route, when accessed by an unauthenticated user, the system should redirect to the login page
+**Validates: Requirements 28.4**
+
+Property 34: Role permission enforcement
+*For any* protected route requiring specific role permissions, when accessed by a user without those permissions, the system should display a 403 Forbidden error
+**Validates: Requirements 27.5, 28.5**
+
+Property 35: Session expiration
+*For any* user session inactive for 24 hours, the system should expire the session and require re-authentication on next access
+**Validates: Requirements 28.2**
+
+Property 36: Password hashing
+*For any* user password stored in the database, the password should be hashed using bcrypt (not stored in plain text)
+**Validates: Requirements 21.2** (implied security requirement)
+
 ## Error Handling
 
 ### Form Submission Errors
@@ -652,6 +1263,54 @@ Property 23: Error message user-friendliness
 - Announce form validation errors
 - Announce success/error messages after form submission
 
+### Authentication Errors
+
+**Invalid Credentials**
+- Display message: "Invalid email or password. Please try again."
+- Keep email field populated
+- Clear password field for security
+- Log failed attempts for security monitoring
+
+**Session Expiration**
+- Detect expired session on protected route access
+- Redirect to login with message: "Your session has expired. Please log in again."
+- Preserve intended destination for post-login redirect
+
+**Unauthorized Access**
+- Display 403 Forbidden page with clear message
+- Provide link back to appropriate dashboard
+- Log unauthorized access attempts
+
+**Account Pending Approval**
+- Display message: "Your account is pending approval. We'll notify you once it's activated."
+- Prevent login for pending accounts
+- Provide contact information for inquiries
+
+### Property Management Errors
+
+**Property Creation Failures**
+- Validate all required fields client-side
+- Display inline errors for invalid data
+- Server-side validation with detailed error messages
+- Maintain form state on error
+
+**Image Upload Errors**
+- File size limit: 5MB per image
+- Allowed formats: JPEG, PNG, WebP
+- Display error: "Image must be under 5MB and in JPEG, PNG, or WebP format"
+- Allow retry without losing other form data
+
+**Property Approval/Rejection Errors**
+- Verify admin permissions before action
+- Display success/error toast notifications
+- Refresh property list after action
+- Log all approval/rejection actions for audit
+
+**Concurrent Edit Conflicts**
+- Detect if property was modified by another user
+- Display warning: "This property was recently updated. Please refresh and try again."
+- Prevent data loss from overwriting recent changes
+
 ## Testing Strategy
 
 ### Unit Testing
@@ -682,6 +1341,18 @@ The website will use Vitest and React Testing Library for unit testing. Unit tes
 - Test modal open/close behavior
 - Test scroll-to-section functionality
 
+**Authentication Logic**
+- Test password hashing with bcrypt
+- Test session creation and validation
+- Test role-based access control logic
+- Test session expiration detection
+
+**Property Management Logic**
+- Test property status transitions (pending → approved/rejected)
+- Test property filtering by status
+- Test broker property ownership validation
+- Test admin property access across all brokers
+
 **Example Unit Tests:**
 ```typescript
 // Form validation
@@ -701,6 +1372,30 @@ describe('HeroSection', () => {
     render(<HeroSection {...mockProps} />);
     expect(screen.getByText(/Turn rent into home ownership/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Get early access/i })).toBeInTheDocument();
+  });
+});
+
+// Authentication
+describe('hashPassword', () => {
+  it('should hash passwords with bcrypt', async () => {
+    const password = 'testPassword123';
+    const hash = await hashPassword(password);
+    expect(hash).not.toBe(password);
+    expect(await verifyPassword(password, hash)).toBe(true);
+  });
+});
+
+// Authorization
+describe('requireAuth', () => {
+  it('should throw error for unauthenticated requests', async () => {
+    const req = new NextRequest('http://localhost/api/test');
+    await expect(requireAuth(req)).rejects.toThrow('Unauthorized');
+  });
+  
+  it('should allow access for authenticated users with correct role', async () => {
+    const req = createAuthenticatedRequest({ role: 'admin' });
+    const user = await requireAuth(req, ['admin']);
+    expect(user.role).toBe('admin');
   });
 });
 ```
@@ -755,6 +1450,14 @@ test('UTM parameters are preserved in form submissions', () => {
 8. **Property 14: CTA analytics tracking** - Generate random CTA clicks, verify analytics events fire
 9. **Property 15: Form conversion tracking** - Generate random form submissions, verify conversion events
 10. **Property 20: Typography consistency** - Generate random heading and body elements, verify font families
+11. **Property 24: Login authentication validation** - Generate random valid credentials, verify session creation and dashboard redirect
+12. **Property 27: Broker property creation pending status** - Generate random property data, verify pending status on creation
+13. **Property 28: Property approval visibility** - Generate random properties with approved status, verify they appear in public listing
+14. **Property 29: Property rejection exclusion** - Generate random properties with rejected/pending status, verify they don't appear in public listing
+15. **Property 32: Role-based dashboard routing** - Generate random authenticated users with different roles, verify correct dashboard redirect
+16. **Property 33: Unauthorized access prevention** - Generate random unauthenticated requests to protected routes, verify redirect to login
+17. **Property 34: Role permission enforcement** - Generate random authenticated users accessing routes outside their permissions, verify 403 error
+18. **Property 36: Password hashing** - Generate random passwords, verify they are hashed with bcrypt before storage
 
 ### Integration Testing
 
@@ -774,6 +1477,27 @@ test('UTM parameters are preserved in form submissions', () => {
 - Test GA4 initialization
 - Test event tracking on user actions
 - Test UTM parameter capture and persistence
+
+**Authentication Flow**
+- Test complete login flow from form to dashboard
+- Test registration flow and pending account creation
+- Test logout and session destruction
+- Test session expiration and re-authentication
+- Test role-based dashboard access
+
+**Property Management Flow**
+- Test broker property creation and submission for approval
+- Test admin property approval workflow
+- Test admin property rejection with reason
+- Test property visibility on public listing after approval
+- Test broker editing their own properties
+- Test admin editing any property
+
+**User Management Flow**
+- Test admin approving pending user accounts
+- Test admin creating new users with roles
+- Test admin resetting user passwords
+- Test admin deactivating users
 
 ### Accessibility Testing
 
@@ -832,61 +1556,402 @@ npm run build
 ```javascript
 // next.config.js
 module.exports = {
-  output: 'export',
+  // Note: Cannot use full static export with authentication
+  // Marketing pages can be statically generated
+  // Dashboard pages require server-side rendering
   images: {
-    unoptimized: true, // Required for static export
+    domains: ['res.cloudinary.com'], // Add image hosting domains
   },
-  trailingSlash: true, // Better compatibility with static hosts
+  experimental: {
+    serverActions: true, // Enable server actions for forms
+  },
 };
+```
+
+### Database Setup
+
+**Initial Setup:**
+```bash
+# Create D1 database
+wrangler d1 create bhavan-db
+
+# This will output database_id - add it to wrangler.toml
+
+# Create schema
+wrangler d1 execute bhavan-db --file=./schema.sql
+```
+
+**Seed Initial Admin User:**
+```typescript
+// scripts/seed-admin.ts
+import { hash } from 'bcryptjs';
+
+const adminUser = {
+  id: crypto.randomUUID(),
+  name: 'Admin User',
+  email: 'admin@bhavan.ai',
+  phone: '+911234567890',
+  password: await hash('admin123', 12),
+  role: 'admin',
+  status: 'active',
+  created_at: Date.now(),
+  updated_at: Date.now()
+};
+
+// Run via wrangler d1 execute
+const sql = `INSERT INTO users (id, name, email, phone, password, role, status, created_at, updated_at) 
+VALUES ('${adminUser.id}', '${adminUser.name}', '${adminUser.email}', '${adminUser.phone}', '${adminUser.password}', '${adminUser.role}', '${adminUser.status}', ${adminUser.created_at}, ${adminUser.updated_at})`;
+
+console.log(sql);
+```
+
+Run seed:
+```bash
+# Generate SQL and run
+node scripts/seed-admin.ts > seed.sql
+wrangler d1 execute bhavan-db --file=./seed.sql
+```
+
+**Local Development:**
+```bash
+# Run D1 locally
+wrangler pages dev out --d1=DB=bhavan-db
+
+# Or use local SQLite file for development
+# Create local.db and run migrations
+sqlite3 local.db < schema.sql
 ```
 
 ### Environment Variables
 
-**Required Environment Variables:**
+**Wrangler Configuration (wrangler.toml):**
+```toml
+name = "bhavan-website"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "out"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "bhavan-db"
+database_id = "your-database-id-here"
+
+# R2 Buckets
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "bhavan-images"
+
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "bhavan-website"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "production"
+NEXT_PUBLIC_GA_MEASUREMENT_ID = "G-XXXXXXXXXX"
+BCRYPT_SALT_ROUNDS = "12"
+SESSION_DURATION_MS = "86400000"  # 24 hours
+```
+
+**Secrets (set via wrangler):**
 ```bash
-# Analytics
+# Set secrets (not in wrangler.toml for security)
+wrangler pages secret put JWT_SECRET
+wrangler pages secret put ADMIN_EMAIL
+```
+
+**Local Development (.dev.vars):**
+```bash
+# .dev.vars (for local development only, not committed to git)
+ENVIRONMENT=development
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-
-# Form Integration (choose one)
-NEXT_PUBLIC_FORM_ENDPOINT=https://api.example.com/submit
-# OR
-NEXT_PUBLIC_NETLIFY_FORM=true
-# OR
-NEXT_PUBLIC_FORMSPREE_ID=xxxxx
-# OR
-NEXT_PUBLIC_ZAPIER_WEBHOOK=https://hooks.zapier.com/...
-
-# Optional: Error Tracking
-NEXT_PUBLIC_SENTRY_DSN=https://...
 ```
 
 ### Deployment Options
 
-**Option 1: Vercel (Recommended)**
-- Automatic deployments from Git
-- Built-in CDN and edge network
-- Serverless functions for form handling
-- Preview deployments for PRs
-- Custom domain support
+### Deployment Options
 
-**Option 2: Netlify**
-- Automatic deployments from Git
-- Built-in form handling (Netlify Forms)
-- Serverless functions support
-- Split testing capabilities
-- Custom domain support
+#### Cloudflare Pages + D1 + R2 (Selected Approach)
 
-**Option 3: AWS S3 + CloudFront**
-- Upload static files to S3 bucket
-- Configure CloudFront for CDN
-- Use Lambda@Edge for serverless functions
-- More manual setup but full control
+This approach keeps everything within the Cloudflare ecosystem:
 
-**Option 4: GitHub Pages**
-- Free hosting for static sites
-- Automatic deployment from repository
-- Limited to client-side functionality
-- No serverless functions (use external services)
+**Architecture:**
+- **Cloudflare Pages**: Host Next.js application with automatic builds from Git
+- **Cloudflare D1**: SQLite database for users, properties, and sessions
+- **Cloudflare R2**: Object storage for property images
+- **Cloudflare Pages Functions**: Serverless API endpoints for authentication and data operations
+- **Cloudflare Workers KV**: Fast key-value storage for session tokens (optional, can use D1)
+
+**Benefits:**
+- Single platform for entire application
+- Excellent global performance via Cloudflare's edge network
+- Cost-effective (generous free tier)
+- Integrated with existing Cloudflare setup
+- No need to manage separate database hosting
+- Built-in DDoS protection and security
+
+**Implementation Details:**
+
+**1. Database Setup (D1):**
+```bash
+# Create D1 database
+wrangler d1 create bhavan-db
+
+# Create tables
+wrangler d1 execute bhavan-db --file=./schema.sql
+```
+
+**2. Database Schema (SQL for D1):**
+```sql
+-- schema.sql
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  phone TEXT NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL CHECK(role IN ('admin', 'broker', 'ca', 'lawyer')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'active', 'inactive')),
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE TABLE properties (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  location TEXT NOT NULL,
+  price REAL NOT NULL,
+  co_owner_count INTEGER NOT NULL,
+  images TEXT NOT NULL, -- JSON array of R2 URLs
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')),
+  rejection_reason TEXT,
+  broker_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (broker_id) REFERENCES users(id)
+);
+
+CREATE TABLE sessions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  token TEXT UNIQUE NOT NULL,
+  expires_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_properties_broker ON properties(broker_id);
+CREATE INDEX idx_properties_status ON properties(status);
+CREATE INDEX idx_sessions_token ON sessions(token);
+CREATE INDEX idx_sessions_user ON sessions(user_id);
+```
+
+**3. Wrangler Configuration:**
+```toml
+# wrangler.toml
+name = "bhavan-website"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "out"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "bhavan-db"
+database_id = "your-database-id"
+
+# R2 bucket for images
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "bhavan-images"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+```
+
+**4. Pages Functions Structure:**
+```
+functions/
+├── api/
+│   ├── auth/
+│   │   ├── login.ts
+│   │   ├── register.ts
+│   │   ├── logout.ts
+│   │   └── session.ts
+│   ├── admin/
+│   │   ├── users.ts
+│   │   └── properties.ts
+│   ├── broker/
+│   │   └── properties.ts
+│   └── properties/
+│       └── public.ts
+└── _middleware.ts  # Auth middleware
+```
+
+**5. Authentication Implementation:**
+```typescript
+// functions/api/auth/login.ts
+import { hash, compare } from 'bcryptjs';
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const { email, password } = await request.json();
+  
+  // Query user from D1
+  const result = await env.DB.prepare(
+    'SELECT * FROM users WHERE email = ? AND status = ?'
+  ).bind(email, 'active').first();
+  
+  if (!result) {
+    return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Verify password
+  const valid = await compare(password, result.password);
+  if (!valid) {
+    return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Create session
+  const sessionId = crypto.randomUUID();
+  const token = crypto.randomUUID();
+  const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+  
+  await env.DB.prepare(
+    'INSERT INTO sessions (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)'
+  ).bind(sessionId, result.id, token, expiresAt).run();
+  
+  // Set HTTP-only cookie
+  return new Response(JSON.stringify({
+    success: true,
+    user: {
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      role: result.role
+    }
+  }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': `session=${token}; HttpOnly; Secure; SameSite=Lax; Max-Age=${24 * 60 * 60}; Path=/`
+    }
+  });
+}
+```
+
+**6. Middleware for Route Protection:**
+```typescript
+// functions/_middleware.ts
+export async function onRequest(context) {
+  const { request, env, next } = context;
+  const url = new URL(request.url);
+  
+  // Protect dashboard routes
+  if (url.pathname.startsWith('/dashboard')) {
+    const cookie = request.headers.get('Cookie');
+    const sessionToken = cookie?.match(/session=([^;]+)/)?.[1];
+    
+    if (!sessionToken) {
+      return Response.redirect(new URL('/login', request.url), 302);
+    }
+    
+    // Validate session
+    const session = await env.DB.prepare(
+      'SELECT s.*, u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.token = ? AND s.expires_at > ?'
+    ).bind(sessionToken, Date.now()).first();
+    
+    if (!session) {
+      return Response.redirect(new URL('/login', request.url), 302);
+    }
+    
+    // Role-based access control
+    const role = session.role;
+    if (url.pathname.startsWith('/dashboard/admin') && role !== 'admin') {
+      return new Response('Forbidden', { status: 403 });
+    }
+    if (url.pathname.startsWith('/dashboard/broker') && role !== 'broker') {
+      return new Response('Forbidden', { status: 403 });
+    }
+    
+    // Attach user to request context
+    context.data.user = session;
+  }
+  
+  return next();
+}
+```
+
+**7. Image Upload to R2:**
+```typescript
+// functions/api/upload.ts
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const formData = await request.formData();
+  const file = formData.get('image');
+  
+  if (!file) {
+    return new Response(JSON.stringify({ error: 'No file provided' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Generate unique filename
+  const filename = `${crypto.randomUUID()}-${file.name}`;
+  
+  // Upload to R2
+  await env.IMAGES.put(filename, file.stream(), {
+    httpMetadata: {
+      contentType: file.type,
+    },
+  });
+  
+  // Return public URL
+  const url = `https://images.bhavan.ai/${filename}`;
+  return new Response(JSON.stringify({ url }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+```
+
+**Deployment Process:**
+```bash
+# Install Wrangler CLI
+npm install -g wrangler
+
+# Login to Cloudflare
+wrangler login
+
+# Create D1 database
+wrangler d1 create bhavan-db
+
+# Run migrations
+wrangler d1 execute bhavan-db --file=./schema.sql
+
+# Create R2 bucket for images
+wrangler r2 bucket create bhavan-images
+
+# Deploy to Cloudflare Pages
+npm run build
+wrangler pages deploy out
+```
+
+**Considerations:**
+- D1 is currently in open beta (production-ready as of 2024)
+- SQLite has some limitations compared to PostgreSQL (no full-text search, simpler querying)
+- Pages Functions have 100ms CPU time limit (sufficient for most operations)
+- R2 has no egress fees (cost-effective for images)
+- Can migrate to Cloudflare Workers + Durable Objects for more complex features later
+
+This approach keeps your entire stack on Cloudflare, maintains excellent performance, and is cost-effective.
 
 ### Serverless Functions
 
@@ -956,6 +2021,41 @@ export default async function handler(req, res) {
 
 ## Security Considerations
 
+### Authentication Security
+
+**Password Security:**
+- Hash all passwords with bcrypt (salt rounds = 12)
+- Never store plain text passwords
+- Enforce minimum password length (8 characters)
+- Require password complexity (optional, can be added later)
+
+**Session Security:**
+- Use HTTP-only cookies to prevent XSS attacks
+- Set Secure flag on cookies (HTTPS only)
+- Set SameSite=Lax to prevent CSRF
+- Implement session expiration (24 hours)
+- Regenerate session ID on login
+
+**Brute Force Protection:**
+- Rate limit login attempts (5 attempts per 15 minutes)
+- Lock account after 10 failed attempts
+- Log all failed login attempts
+- Implement CAPTCHA after 3 failed attempts (optional)
+
+### Authorization Security
+
+**Role-Based Access Control:**
+- Validate user role on every protected route
+- Check permissions at both middleware and API level
+- Never trust client-side role information
+- Log unauthorized access attempts
+
+**API Security:**
+- Validate authentication on all protected API routes
+- Check role permissions before data access
+- Sanitize all user inputs
+- Use parameterized queries to prevent SQL injection
+
 ### Data Privacy
 
 **GDPR and India Compliance**
@@ -969,6 +2069,14 @@ export default async function handler(req, res) {
 - Don't store sensitive data client-side
 - Use HTTPS for all connections
 - Sanitize user inputs before submission
+- Encrypt sensitive data at rest (database encryption)
+
+**Personal Data Protection:**
+- Hash passwords before storage
+- Encrypt sensitive user information
+- Implement data retention policies
+- Provide data deletion on request
+- Comply with GDPR and Indian data protection laws
 
 ### Form Security
 
@@ -1255,14 +2363,18 @@ Slow: 500ms ease-in-out
 
 ## Conclusion
 
-This design document provides a comprehensive blueprint for building the Bhavan.ai marketing and lead-generation website. The architecture prioritizes performance, accessibility, and user experience while maintaining flexibility for future enhancements.
+This design document provides a comprehensive blueprint for building the Bhavan.ai marketing and property management platform. The architecture balances static generation for marketing pages with dynamic server-side rendering for authenticated dashboards, prioritizing performance, security, accessibility, and user experience.
 
 Key design decisions:
-- Static site generation for optimal performance and SEO
+- Hybrid rendering: static for marketing, dynamic for dashboards
+- Role-based access control with four user types (Admin, Broker, CA, Lawyer)
+- Secure authentication with bcrypt password hashing and HTTP-only sessions
+- Property approval workflow ensuring quality control
 - Component-based architecture for maintainability
 - Comprehensive testing strategy including property-based tests
-- Flexible form integration supporting multiple backends
+- PostgreSQL database with Prisma ORM for type-safe data access
+- Flexible deployment options supporting various hosting platforms
 - Mobile-first, accessible design system
 - Clear error handling and user feedback
 
-The implementation will follow the task list in tasks.md, building incrementally from core components to full pages, with testing integrated throughout the development process.
+The implementation will follow the task list in tasks.md, building incrementally from database setup and authentication to property management and role-specific dashboards, with testing integrated throughout the development process.

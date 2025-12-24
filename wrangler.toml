@@ -3,10 +3,21 @@ name = "bhavan-website-worker"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-12-01"
 
-# R2 bucket binding
+# D1 Database binding for user authentication and property management
+[[d1_databases]]
+binding = "DB"
+database_name = "bhavan-db"
+database_id = "6ec7754a-ec37-425e-adea-73ea0650127f"
+
+# R2 bucket binding for static site hosting
 [[r2_buckets]]
 binding = "MY_BUCKET"
 bucket_name = "bhavan-website"
+
+# R2 bucket binding for property images
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "bhavan-images"
 
 # Routes - Update with your actual domain
 # Uncomment these lines and replace with your domain:
