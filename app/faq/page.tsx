@@ -1,17 +1,24 @@
+'use client';
+
+import { useState, useMemo } from 'react';
 import type { Metadata } from 'next';
 import { generatePageMetadata, pageMetadata, generateFAQSchema } from '@/lib/seo';
+import { ChevronDown, Search } from 'lucide-react';
 
 /**
  * FAQ Page
  * 
  * Displays frequently asked questions about Bhavan.ai's fractional home ownership platform.
  * Organized by category for easy navigation.
+ * Includes accordion/collapsible UI for better UX.
+ * Includes search functionality to filter questions.
  * Includes structured data for SEO.
  * 
  * Requirements: 11.1, 15.1, 15.2, 15.3, 15.4
  */
 
-export const metadata: Metadata = generatePageMetadata(pageMetadata.faq);
+// Note: metadata export removed due to 'use client' directive
+// SEO metadata is handled in layout.tsx
 
 interface FAQItem {
   question: string;
@@ -181,10 +188,105 @@ const faqCategories: FAQCategory[] = [
   },
 ];
 
+/**
+ * AccordionItem Component
+ * 
+ * Individual collapsible FAQ item with smooth animation
+ */
+interface AccordionItemProps {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+function AccordionItem({ question, answer, isOpen, onToggle }: AccordionItemProps) {
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden transition-all">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset"
+        aria-expanded={isOpen}
+      >
+        <h3 className="font-sans font-semibold text-lg text-gray-900 pr-4">
+          {question}
+        </h3>
+        <ChevronDown
+          size={24}
+          className={`flex-shrink-0 text-primary-600 transition-transform duration-200 ${
+            isOpen ? 'transform rotate-180' : ''
+          }`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-200 ${
+          isOpen ? 'max-h-96' : 'max-h-0'
+        }`}
+      >
+        <div className="p-6 pt-0 bg-gray-50">
+          <p className="font-sans text-gray-700 leading-relaxed">
+            {answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FAQPage() {
+  // State for accordion items (track which items are open)
+  const [openItems, setOpenItems] = useState<Set<string>>(new Set());
+  
+  // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Generate FAQ structured data for all questions
   const allFAQs = faqCategories.flatMap(category => category.items);
   const faqSchema = generateFAQSchema(allFAQs);
+
+  /**
+   * Toggle accordion item open/closed
+   */
+  const toggleItem = (categoryIndex: number, itemIndex: number) => {
+    const key = `${categoryIndex}-${itemIndex}`;
+    setOpenItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  };
+
+  /**
+   * Filter FAQ categories based on search query
+   */
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return faqCategories;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return faqCategories
+      .map(category => ({
+        ...category,
+        items: category.items.filter(
+          item =>
+            item.question.toLowerCase().includes(query) ||
+            item.answer.toLowerCase().includes(query)
+        ),
+      }))
+      .filter(category => category.items.length > 0);
+  }, [searchQuery]);
+
+  /**
+   * Clear search and reset view
+   */
+  const clearSearch = () => {
+    setSearchQuery('');
+  };
 
   return (
     <main id="main-content" className="min-h-screen bg-white">
@@ -196,7 +298,7 @@ export default function FAQPage() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="font-serif font-bold text-4xl md:text-5xl text-gray-900 mb-4">
             Frequently Asked Questions
           </h1>
@@ -205,28 +307,75 @@ export default function FAQPage() {
           </p>
         </div>
 
-        {/* FAQ Categories */}
-        <div className="space-y-12">
-          {faqCategories.map((category, categoryIndex) => (
-            <section key={categoryIndex}>
-              <h2 className="font-serif font-semibold text-2xl text-gray-900 mb-6 pb-2 border-b-2 border-primary-500">
-                {category.title}
-              </h2>
-              <div className="space-y-6">
-                {category.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                    <h3 className="font-sans font-semibold text-lg text-gray-900 mb-3">
-                      {item.question}
-                    </h3>
-                    <p className="font-sans text-gray-700 leading-relaxed">
-                      {item.answer}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+        {/* Search Bar */}
+        <div className="mb-12">
+          <div className="relative max-w-2xl mx-auto">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={20} className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search FAQs..."
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-sans text-gray-900 placeholder-gray-400"
+              aria-label="Search frequently asked questions"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Clear search"
+              >
+                <span className="text-sm font-medium">Clear</span>
+              </button>
+            )}
+          </div>
+          {searchQuery && (
+            <p className="text-center mt-3 text-sm text-gray-600">
+              {filteredCategories.reduce((sum, cat) => sum + cat.items.length, 0)} result(s) found
+            </p>
+          )}
         </div>
+
+        {/* FAQ Categories with Accordion */}
+        {filteredCategories.length > 0 ? (
+          <div className="space-y-12">
+            {filteredCategories.map((category, categoryIndex) => (
+              <section key={categoryIndex}>
+                <h2 className="font-serif font-semibold text-2xl text-gray-900 mb-6 pb-2 border-b-2 border-primary-500">
+                  {category.title}
+                </h2>
+                <div className="space-y-4">
+                  {category.items.map((item, itemIndex) => {
+                    const key = `${categoryIndex}-${itemIndex}`;
+                    return (
+                      <AccordionItem
+                        key={key}
+                        question={item.question}
+                        answer={item.answer}
+                        isOpen={openItems.has(key)}
+                        onToggle={() => toggleItem(categoryIndex, itemIndex)}
+                      />
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="font-sans text-gray-600 text-lg mb-4">
+              No FAQs found matching "{searchQuery}"
+            </p>
+            <button
+              onClick={clearSearch}
+              className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              Clear search and view all FAQs
+            </button>
+          </div>
+        )}
 
         {/* Contact CTA */}
         <div className="mt-16 bg-primary-50 border border-primary-200 rounded-lg p-8 text-center">

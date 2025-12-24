@@ -284,7 +284,7 @@
   - Commit all changes with detailed message
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [-] 22. Remove market opportunity and product roadmap sections
+- [x] 22. Remove market opportunity and product roadmap sections
   - Remove Market & Validation section from homepage
   - Remove Roadmap section from homepage
   - Update homepage layout to flow without these sections
@@ -293,7 +293,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 23. Create comprehensive FAQ page with sample content
+- [-] 23. Create comprehensive FAQ page with sample content
   - Create new FAQ page at /faq route
   - Add sample FAQs covering co-ownership, SPV formation, eligibility, pricing, exit process
   - Implement accordion/collapsible UI for FAQ items
