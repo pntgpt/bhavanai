@@ -78,10 +78,12 @@ const Hero: React.FC<HeroProps> = ({
             {primaryCTAText}
           </Button>
 
-          {/* Pricing context */}
-          <p className="text-sm text-gray-500 font-sans">
-            {pricingContext}
-          </p>
+          {/* Pricing context with strikethrough design */}
+          <div className="flex items-center gap-2 text-base font-sans">
+            <span className="text-gray-400 line-through decoration-2">₹9,999</span>
+            <span className="text-primary-600 font-semibold text-lg">FREE</span>
+            <span className="text-gray-500 text-sm">for early adopters</span>
+          </div>
         </div>
 
         {/* Scroll indicator */}
