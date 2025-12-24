@@ -2,7 +2,7 @@
 
 ## Phase 1: Database and Authentication Setup
 
-- [-] 1. Set up Cloudflare D1 database and schema
+- [x] 1. Set up Cloudflare D1 database and schema
   - Create D1 database using wrangler CLI
   - Write SQL schema for users, properties, and sessions tables
   - Add indexes for performance (email, status, broker_id, token)
