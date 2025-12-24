@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:functions": "wrangler pages dev out --binding DB=6ec7754a-ec37-425e-adea-73ea0650127f --r2 MY_BUCKET --r2 IMAGES --port 8788",
+    "dev:full": "npm run build && npm run dev:functions",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

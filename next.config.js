@@ -1,6 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  
+  // Proxy API requests to Wrangler dev server during development
+  async rewrites() {
+    if (process.env.NODE_ENV === 'development') {
+      return [
+        {
+          source: '/api/:path*',
+          destination: 'http://localhost:8788/api/:path*',
+        },
+      ];
+    }
+    return [];
+  },
   images: {
     unoptimized: true, // Required for static export
     formats: ['image/webp', 'image/avif'], // Modern image formats for better compression
