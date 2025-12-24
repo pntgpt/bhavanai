@@ -66,21 +66,6 @@ const defaultPricingItems: PricingItem[] = [
     timing: 'As needed, pay per service',
     isFuture: false,
   },
-  {
-    id: 'marketplace',
-    name: 'Marketplace Fees',
-    fee: '2% + 1% processing',
-    description: 'Fees for buying or selling shares on the secondary market',
-    features: [
-      '2% platform fee on transaction',
-      '1% payment processing fee',
-      'Escrow services included',
-      'Legal transfer documentation',
-      'Buyer KYC verification',
-    ],
-    timing: 'Charged per marketplace transaction',
-    isFuture: false,
-  },
 ];
 
 const Pricing: React.FC<PricingProps> = ({ pricingItems = defaultPricingItems }) => {
@@ -98,7 +83,7 @@ const Pricing: React.FC<PricingProps> = ({ pricingItems = defaultPricingItems })
         </div>
 
         {/* Pricing Cards - Requirements 7.1, 7.2, 7.3, 7.5 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {pricingItems.map((item) => (
             <Card 
               key={item.id} 
