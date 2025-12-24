@@ -258,7 +258,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.1, 1.3_
 
-- [-] 19. Simplify signup flow to WhatsApp redirect
+- [x] 19. Simplify signup flow to WhatsApp redirect
   - Update signup form to redirect directly to WhatsApp with company number
   - Pre-populate WhatsApp message with user interest in Bhavan.ai
   - Remove complex form fields, keep minimal contact capture if needed
@@ -266,7 +266,7 @@
   - Commit all changes with detailed message
   - _Requirements: 5.1, 5.5_
 
-- [ ] 20. Remove eligibility section from website
+- [-] 20. Remove eligibility section from website
   - Remove eligibility checker form component
   - Remove eligibility page (/eligibility)
   - Remove "See eligibility" CTAs from How It Works section

@@ -33,7 +33,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: 'Bhavan.ai - Co-own Your Home with Friends | Fractional Home Ownership',
   description:
-    'Turn rent into home ownership. Bhavan.ai enables 2-5 people to legally co-own residential homes through compliant SPVs. Check your eligibility today.',
+    'Turn rent into home ownership. Bhavan.ai enables 2-5 people to legally co-own residential homes through compliant SPVs. Get early access today.',
   keywords: [
     'fractional home ownership',
     'co-ownership',

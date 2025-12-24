@@ -12,14 +12,6 @@
     <priority>1.0</priority>
   </url>
   
-  <!-- Eligibility Page -->
-  <url>
-    <loc>https://bhavan.ai/eligibility/</loc>
-    <lastmod>2024-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
   <!-- Signup Page -->
   <url>
     <loc>https://bhavan.ai/signup/</loc>

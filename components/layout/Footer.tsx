@@ -64,7 +64,6 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },
     { name: 'Marketplace', href: '/#marketplace' },
-    { name: 'Check Eligibility', href: '/eligibility' },
   ];
 
   const legalLinks = [

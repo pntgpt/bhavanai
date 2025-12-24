@@ -224,16 +224,9 @@ export const pageMetadata = {
   home: {
     title: 'Co-own Your Home with Friends | Fractional Home Ownership',
     description:
-      'Turn rent into home ownership. Bhavan.ai enables 2-5 people to legally co-own residential homes through compliant SPVs. Check your eligibility today.',
+      'Turn rent into home ownership. Bhavan.ai enables 2-5 people to legally co-own residential homes through compliant SPVs. Get early access today.',
     path: '/',
     keywords: ['fractional ownership', 'co-living', 'home ownership', 'SPV formation'],
-  },
-  eligibility: {
-    title: 'Check Your Eligibility',
-    description:
-      'See if you qualify for fractional home ownership with Bhavan.ai. Quick eligibility check based on your city, income, and preferences.',
-    path: '/eligibility',
-    keywords: ['eligibility check', 'qualify', 'home ownership eligibility'],
   },
   signup: {
     title: 'Get Early Access',

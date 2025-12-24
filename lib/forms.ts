@@ -12,7 +12,6 @@ import {
   FormType,
   FormSubmissionRequest,
   FormSubmissionResponse,
-  EligibilityData,
   SignupData,
   ContactData,
   NewsletterData,
@@ -67,7 +66,7 @@ export class FormSubmissionError extends Error {
  */
 export function formatFormData(
   formType: FormType,
-  data: EligibilityData | SignupData | ContactData | NewsletterData,
+  data: SignupData | ContactData | NewsletterData,
   utmParams?: UTMParams
 ): FormSubmissionRequest {
   // Get UTM params from storage if not provided
@@ -143,7 +142,7 @@ async function fetchWithTimeout(
  */
 export async function submitForm(
   formType: FormType,
-  data: EligibilityData | SignupData | ContactData | NewsletterData,
+  data: SignupData | ContactData | NewsletterData,
   config: FormSubmissionConfig = {}
 ): Promise<FormSubmissionResponse> {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
@@ -254,46 +253,6 @@ export function getFormErrorMessage(error: unknown): string {
 
   // Generic error
   return 'Something went wrong. Please try again or email us at hello@bhavan.ai';
-}
-
-/**
- * Validates eligibility form data before submission
- * 
- * @param data - Eligibility form data to validate
- * @returns Array of validation error messages (empty if valid)
- */
-export function validateEligibilityData(data: Partial<EligibilityData>): string[] {
-  const errors: string[] = [];
-
-  if (!data.city || data.city.trim().length === 0) {
-    errors.push('City is required');
-  }
-
-  if (!data.ageRange || data.ageRange.trim().length === 0) {
-    errors.push('Age range is required');
-  }
-
-  if (!data.monthlyRent || data.monthlyRent <= 0) {
-    errors.push('Monthly rent must be greater than 0');
-  }
-
-  if (!data.monthlySalary || data.monthlySalary <= 0) {
-    errors.push('Monthly salary must be greater than 0');
-  }
-
-  if (!data.coOwnerCount || data.coOwnerCount < 2 || data.coOwnerCount > 5) {
-    errors.push('Co-owner count must be between 2 and 5');
-  }
-
-  if (!data.email || data.email.trim().length === 0) {
-    errors.push('Email is required');
-  }
-
-  if (!data.phone || data.phone.trim().length === 0) {
-    errors.push('Phone number is required');
-  }
-
-  return errors;
 }
 
 /**

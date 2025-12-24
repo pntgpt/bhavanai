@@ -48,7 +48,7 @@ export interface AnalyticsEvent {
 /**
  * Form types for conversion tracking
  */
-export type FormType = 'eligibility' | 'signup' | 'contact' | 'newsletter';
+export type FormType = 'signup' | 'contact' | 'newsletter';
 
 /**
  * CTA identifiers for tracking
@@ -58,7 +58,6 @@ export type CTAIdentifier =
   | 'hero_signup_now'
   | 'hero_signup_whatsapp'
   | 'hero_how_it_works'
-  | 'how_it_works_see_eligibility'
   | 'header_get_early_access'
   | 'header_signup_whatsapp'
   | 'footer_newsletter'

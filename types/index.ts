@@ -28,7 +28,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 /**
  * Form types for tracking submissions
  */
-export type FormType = 'eligibility' | 'signup' | 'contact' | 'newsletter';
+export type FormType = 'signup' | 'contact' | 'newsletter';
 
 /**
  * Analytics event categories
@@ -44,20 +44,6 @@ export interface AnalyticsEvent {
   eventLabel?: string;
   eventValue?: number;
   customParams?: Record<string, any>;
-}
-
-/**
- * Eligibility form data structure
- */
-export interface EligibilityData {
-  city: string;
-  ageRange: string;
-  monthlyRent: number;
-  monthlySalary: number;
-  coOwnerCount: number;
-  email: string;
-  phone: string;
-  utmParams?: UTMParams;
 }
 
 /**
@@ -99,7 +85,7 @@ export interface NewsletterData {
  */
 export interface FormSubmissionRequest {
   formType: FormType;
-  data: EligibilityData | SignupData | ContactData | NewsletterData;
+  data: SignupData | ContactData | NewsletterData;
   timestamp: string;
   utmParams?: UTMParams;
 }

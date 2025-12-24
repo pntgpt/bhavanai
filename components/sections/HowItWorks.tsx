@@ -1,16 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import { 
   UserCheck, 
   Users, 
   FileText, 
   TrendingUp 
 } from 'lucide-react';
-import { trackCTAClick, trackNavigation } from '@/lib/analytics';
 
 /**
  * HowItWorks Section Component
@@ -24,10 +21,9 @@ import { trackCTAClick, trackNavigation } from '@/lib/analytics';
  * Features:
  * - Four step cards with icons and descriptions
  * - Visual flow diagram connecting the steps
- * - "See eligibility" CTA button
  * - Responsive layout for mobile and desktop
  * 
- * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
+ * Requirements: 2.1, 2.2, 2.3
  */
 
 export interface ProcessStep {
@@ -69,19 +65,6 @@ const defaultSteps: ProcessStep[] = [
 ];
 
 const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
-  const router = useRouter();
-
-  /**
-   * Navigate to eligibility checker
-   * Implements requirement 2.5
-   */
-  const handleSeeEligibility = () => {
-    // Track CTA click
-    trackCTAClick('how_it_works_see_eligibility', 'See eligibility');
-    trackNavigation('/eligibility', 'how-it-works');
-    router.push('/eligibility');
-  };
-
   return (
     <section 
       id="how-it-works" 
@@ -152,18 +135,6 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* CTA - Requirement 2.4, 2.5 */}
-        <div className="text-center mt-12">
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleSeeEligibility}
-            ariaLabel="Check your eligibility for Bhavan.ai"
-          >
-            See eligibility
-          </Button>
         </div>
       </div>
     </section>
