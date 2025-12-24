@@ -333,7 +333,7 @@
   - Commit all changes with detailed message
   - _New Feature_
 
-- [-] 27. Add floating WhatsApp contact button
+- [x] 27. Add floating WhatsApp contact button
   - Create floating action button component fixed to bottom-right corner
   - Style as WhatsApp icon with subtle animation/pulse effect
   - Link to company WhatsApp number with pre-populated greeting message
