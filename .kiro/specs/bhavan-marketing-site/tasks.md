@@ -166,7 +166,7 @@
   - Commit all changes with detailed message: "feat: create admin property approval interface"
   - _Requirements: 24.1, 24.2, 24.3, 24.4, 24.5, 25.4_
 
-- [-] 11. Build admin all-properties management view
+- [x] 11. Build admin all-properties management view
   - Create comprehensive property table for admins
   - Display all properties regardless of status
   - Add edit functionality for any property
@@ -178,7 +178,7 @@
 
 ## Phase 5: CA and Lawyer Dashboards
 
-- [ ] 12. Create placeholder dashboards for CA and Lawyer roles
+- [x] 12. Create placeholder dashboards for CA and Lawyer roles
   - Build CADashboard component with "Coming Soon" message
   - Build LawyerDashboard component with "Coming Soon" message
   - Add placeholder sections for future functionality
