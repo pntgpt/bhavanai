@@ -60,6 +60,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     : 'text-gray-900';
 
   const navigation = [
+    { name: 'Properties', href: '/properties' },
     { name: 'How It Works', href: '/#how-it-works' },
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },

@@ -313,7 +313,7 @@
   - Commit all changes with detailed message
   - _Requirements: 11.1_
 
-- [ ] 25. Create property listings page with available properties
+- [-] 25. Create property listings page with available properties
   - Create new property listings page at /properties route
   - Design property card component showing key details (location, price, size, co-owner slots)
   - Implement grid layout for property listings

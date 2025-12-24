@@ -106,3 +106,50 @@ export interface FormValidationError {
   field: string;
   message: string;
 }
+
+/**
+ * Property type for real estate listings
+ */
+export type PropertyType = 'apartment' | 'villa' | 'penthouse' | 'studio';
+
+/**
+ * Property status
+ */
+export type PropertyStatus = 'available' | 'filling' | 'sold';
+
+/**
+ * Property data structure for listings
+ */
+export interface Property {
+  id: string;
+  title: string;
+  location: string;
+  city: string;
+  address: string;
+  price: number;
+  pricePerShare: number;
+  size: number; // in sq ft
+  bedrooms: number;
+  bathrooms: number;
+  propertyType: PropertyType;
+  totalCoOwnerSlots: number;
+  availableSlots: number;
+  images: string[];
+  description: string;
+  amenities: string[];
+  status: PropertyStatus;
+  featured?: boolean;
+}
+
+/**
+ * Property filter options
+ */
+export interface PropertyFilters {
+  city?: string;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  propertyType?: PropertyType;
+  minBedrooms?: number;
+}
