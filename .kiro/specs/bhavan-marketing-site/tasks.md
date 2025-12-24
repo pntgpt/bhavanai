@@ -303,7 +303,7 @@
   - Commit all changes with detailed message
   - _Requirements: 11.1_
 
-- [-] 24. Create privacy policy page with compliant content
+- [x] 24. Create privacy policy page with compliant content
   - Create comprehensive privacy policy page at /privacy route
   - Include GDPR and India privacy law compliance sections
   - Add sections on data collection, usage, storage, and user rights
@@ -333,7 +333,7 @@
   - Commit all changes with detailed message
   - _New Feature_
 
-- [ ] 27. Add floating WhatsApp contact button
+- [-] 27. Add floating WhatsApp contact button
   - Create floating action button component fixed to bottom-right corner
   - Style as WhatsApp icon with subtle animation/pulse effect
   - Link to company WhatsApp number with pre-populated greeting message

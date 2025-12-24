@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { GoogleAnalytics, AnalyticsProvider, PerformanceMonitor } from '@/components/analytics';
+import { FloatingWhatsAppButton } from '@/components/ui';
 import { organizationSchema } from '@/lib/seo';
 
 /**
@@ -98,6 +99,8 @@ export default function RootLayout({
         <AnalyticsProvider>
           {children}
         </AnalyticsProvider>
+        {/* Floating WhatsApp contact button - Task 27 */}
+        <FloatingWhatsAppButton />
         {/* Performance monitoring - Requirement 12.2 */}
         <PerformanceMonitor />
       </body>

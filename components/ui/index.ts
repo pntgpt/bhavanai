@@ -14,3 +14,6 @@ export type { ModalProps } from './Modal';
 
 export { default as OptimizedImage } from './OptimizedImage';
 export type { OptimizedImageProps } from './OptimizedImage';
+
+export { default as FloatingWhatsAppButton } from './FloatingWhatsAppButton';
+export type { FloatingWhatsAppButtonProps } from './FloatingWhatsAppButton';

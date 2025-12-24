@@ -289,6 +289,17 @@ h6 {
   }
 }
 
+@keyframes pulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
 /* Animation utility classes */
 .animate-fadeIn {
   animation: fadeIn var(--transition-duration-normal) ease-in-out;
@@ -300,4 +311,8 @@ h6 {
 
 .animate-slideInRight {
   animation: slideInRight var(--transition-duration-normal) ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
 }
