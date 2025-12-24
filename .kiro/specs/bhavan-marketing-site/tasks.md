@@ -62,7 +62,7 @@
 
 ## Phase 2: Authentication UI Components
 
-- [-] 4. Build login and registration pages
+- [x] 4. Build login and registration pages
   - Create LoginForm component with email and password inputs
   - Create RegistrationForm component with name, email, phone, and user type selector
   - Add client-side validation for both forms
@@ -73,7 +73,7 @@
   - Commit all changes with detailed message: "feat: create login and registration UI with forms"
   - _Requirements: 21.1, 21.4, 22.1, 22.2, 22.4_
 
-- [ ] 5. Implement role-based dashboard routing
+- [-] 5. Implement role-based dashboard routing
   - Create dashboard layout component with navigation
   - Create /dashboard/admin route for admin users
   - Create /dashboard/broker route for broker users
