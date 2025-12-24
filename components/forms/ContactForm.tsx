@@ -312,6 +312,17 @@ export default function ContactForm({ onSuccess, inline = false }: ContactFormPr
           )}
         </div>
 
+        {/* Privacy Notice */}
+        <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
+          <p className="text-xs text-gray-600 font-sans leading-relaxed">
+            <strong>Privacy Notice:</strong> By submitting this form, you consent to Bhavan.ai processing your contact information to respond to your inquiry. Your data will be handled in accordance with our{' '}
+            <a href="/privacy" className="text-primary-600 hover:underline" target="_blank" rel="noopener noreferrer">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
+
         {/* Submit Error */}
         {submitError && (
           <div className="bg-red-50 border border-red-200 rounded-md p-4">

@@ -293,7 +293,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [-] 23. Create comprehensive FAQ page with sample content
+- [x] 23. Create comprehensive FAQ page with sample content
   - Create new FAQ page at /faq route
   - Add sample FAQs covering co-ownership, SPV formation, eligibility, pricing, exit process
   - Implement accordion/collapsible UI for FAQ items
@@ -303,7 +303,7 @@
   - Commit all changes with detailed message
   - _Requirements: 11.1_
 
-- [ ] 24. Create privacy policy page with compliant content
+- [-] 24. Create privacy policy page with compliant content
   - Create comprehensive privacy policy page at /privacy route
   - Include GDPR and India privacy law compliance sections
   - Add sections on data collection, usage, storage, and user rights
