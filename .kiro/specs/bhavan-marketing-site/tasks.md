@@ -266,7 +266,7 @@
   - Commit all changes with detailed message
   - _Requirements: 5.1, 5.5_
 
-- [-] 20. Remove eligibility section from website
+- [x] 20. Remove eligibility section from website
   - Remove eligibility checker form component
   - Remove eligibility page (/eligibility)
   - Remove "See eligibility" CTAs from How It Works section
@@ -275,7 +275,7 @@
   - Commit all changes with detailed message
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 21. Update pricing section with new fee structure
+- [x] 21. Update pricing section with new fee structure
   - Update transaction fees to 5% inclusive of legal, SPV, and broker agreements
   - Add note about 4-6% stamp duty exclusion
   - Emphasize "no hidden charges" messaging
@@ -284,7 +284,7 @@
   - Commit all changes with detailed message
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 22. Remove market opportunity and product roadmap sections
+- [-] 22. Remove market opportunity and product roadmap sections
   - Remove Market & Validation section from homepage
   - Remove Roadmap section from homepage
   - Update homepage layout to flow without these sections

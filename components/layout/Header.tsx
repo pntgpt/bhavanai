@@ -63,7 +63,6 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     { name: 'How It Works', href: '/#how-it-works' },
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },
-    { name: 'Roadmap', href: '/#roadmap' },
     { name: 'Team', href: '/#team' },
     { name: 'FAQ', href: '/faq' },
   ];

@@ -14,8 +14,6 @@ import { Hero, HowItWorks } from '@/components/sections';
 const Features = lazy(() => import('@/components/sections/Features'));
 const Marketplace = lazy(() => import('@/components/sections/Marketplace'));
 const Pricing = lazy(() => import('@/components/sections/Pricing'));
-const Market = lazy(() => import('@/components/sections/Market'));
-const Roadmap = lazy(() => import('@/components/sections/Roadmap'));
 const Team = lazy(() => import('@/components/sections/Team'));
 
 /**
@@ -47,8 +45,6 @@ const SectionLoader = () => (
  * - Features section with platform capabilities (Task 4) - Lazy loaded
  * - Marketplace section with exit process (Task 4) - Lazy loaded
  * - Pricing section with fee structure (Task 4) - Lazy loaded
- * - Market & Validation section with statistics (Task 4) - Lazy loaded
- * - Roadmap section with 6-month timeline (Task 5) - Lazy loaded
  * - Team section with founder information (Task 5) - Lazy loaded
  * 
  * Performance optimizations (Task 13):
@@ -56,7 +52,9 @@ const SectionLoader = () => (
  * - Lazy loading with Suspense boundaries
  * - Skeleton loading states for better UX
  * 
- * Requirements: 1.1-1.5, 2.1-2.5, 3.1-3.5, 6.1-6.5, 7.1-7.5, 8.1-8.5, 9.1-9.5, 10.1-10.4, 12.2, 12.4, 12.5
+ * Note: Market & Validation and Roadmap sections removed per Task 22
+ * 
+ * Requirements: 1.1-1.5, 2.1-2.5, 3.1-3.5, 6.1-6.5, 7.1-7.5, 10.1-10.4, 12.2, 12.4, 12.5
  */
 export default function Home() {
   return (
@@ -83,16 +81,6 @@ export default function Home() {
         <Suspense fallback={<SectionLoader />}>
           {/* Pricing Section - Requirements 7.1-7.5 */}
           <Pricing />
-        </Suspense>
-        
-        <Suspense fallback={<SectionLoader />}>
-          {/* Market & Validation Section - Requirements 8.1-8.5 */}
-          <Market />
-        </Suspense>
-        
-        <Suspense fallback={<SectionLoader />}>
-          {/* Roadmap Section - Requirements 9.1-9.5 */}
-          <Roadmap />
         </Suspense>
         
         <Suspense fallback={<SectionLoader />}>
