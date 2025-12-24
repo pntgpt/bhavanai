@@ -65,8 +65,10 @@ function serveObject(object) {
     // Cache static assets aggressively
     headers.set('cache-control', 'public, max-age=31536000, immutable');
   } else if (object.key.match(/\.html$/)) {
-    // Don't cache HTML pages
-    headers.set('cache-control', 'public, max-age=0, must-revalidate');
+    // Don't cache HTML pages - force revalidation
+    headers.set('cache-control', 'no-cache, no-store, must-revalidate');
+    headers.set('pragma', 'no-cache');
+    headers.set('expires', '0');
   } else {
     // Default cache for other files
     headers.set('cache-control', 'public, max-age=3600');
