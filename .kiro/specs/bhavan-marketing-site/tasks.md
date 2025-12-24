@@ -313,7 +313,7 @@
   - Commit all changes with detailed message
   - _Requirements: 11.1_
 
-- [-] 25. Create property listings page with available properties
+- [x] 25. Create property listings page with available properties
   - Create new property listings page at /properties route
   - Design property card component showing key details (location, price, size, co-owner slots)
   - Implement grid layout for property listings
@@ -323,7 +323,7 @@
   - Commit all changes with detailed message
   - _New Feature_
 
-- [ ] 26. Create property detail page with WhatsApp contact CTA
+- [-] 26. Create property detail page with WhatsApp contact CTA
   - Create dynamic property detail page at /properties/[id] route
   - Display comprehensive property information (images, specs, location, pricing, co-ownership details)
   - Add image gallery for property photos
