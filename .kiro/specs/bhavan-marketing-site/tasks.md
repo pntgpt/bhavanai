@@ -155,7 +155,7 @@
   - **Property 31: Admin user approval activation**
   - **Validates: Requirements 26.2**
 
-- [-] 10. Build admin property approval interface
+- [x] 10. Build admin property approval interface
   - Create PropertyApprovalTable component
   - Display all pending properties with details
   - Add property preview with images
@@ -166,7 +166,7 @@
   - Commit all changes with detailed message: "feat: create admin property approval interface"
   - _Requirements: 24.1, 24.2, 24.3, 24.4, 24.5, 25.4_
 
-- [ ] 11. Build admin all-properties management view
+- [-] 11. Build admin all-properties management view
   - Create comprehensive property table for admins
   - Display all properties regardless of status
   - Add edit functionality for any property
