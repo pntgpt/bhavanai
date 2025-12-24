@@ -249,3 +249,96 @@
 - [ ]* 17.3 Write property test for icon set consistency
   - **Property 22: Icon set consistency**
   - **Validates: Requirements 19.3**
+
+- [ ] 18. Update hero section with new headline and pricing messaging
+  - Replace main heading with "Want to be wealthy? Starting from rupees 5.5 Lakhs"
+  - Update hero CTAs to "Signup Now" with pricing context (free now or later ₹9,999)
+  - Remove "How it works" secondary CTA
+  - Update hero subheadline to emphasize wealth building opportunity
+  - Commit all changes with detailed message
+  - _Requirements: 1.1, 1.3_
+
+- [ ] 19. Simplify signup flow to WhatsApp redirect
+  - Update signup form to redirect directly to WhatsApp with company number
+  - Pre-populate WhatsApp message with user interest in Bhavan.ai
+  - Remove complex form fields, keep minimal contact capture if needed
+  - Update all "Signup Now" CTAs to trigger WhatsApp redirect
+  - Commit all changes with detailed message
+  - _Requirements: 5.1, 5.5_
+
+- [ ] 20. Remove eligibility section from website
+  - Remove eligibility checker form component
+  - Remove eligibility page (/eligibility)
+  - Remove "See eligibility" CTAs from How It Works section
+  - Update navigation to remove eligibility links
+  - Clean up unused eligibility-related code and utilities
+  - Commit all changes with detailed message
+  - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+
+- [ ] 21. Update pricing section with new fee structure
+  - Update transaction fees to 5% inclusive of legal, SPV, and broker agreements
+  - Add note about 4-6% stamp duty exclusion
+  - Emphasize "no hidden charges" messaging
+  - Create transparent pricing breakdown for individual services (CA, Legal, Property Manager at ₹3,000 each)
+  - Update pricing display with clear, scannable format
+  - Commit all changes with detailed message
+  - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
+
+- [ ] 22. Remove market opportunity and product roadmap sections
+  - Remove Market & Validation section from homepage
+  - Remove Roadmap section from homepage
+  - Update homepage layout to flow without these sections
+  - Clean up unused roadmap and market components
+  - Update navigation if these sections had dedicated links
+  - Commit all changes with detailed message
+  - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 9.1, 9.2, 9.3, 9.4, 9.5_
+
+- [ ] 23. Create comprehensive FAQ page with sample content
+  - Create new FAQ page at /faq route
+  - Add sample FAQs covering co-ownership, SPV formation, eligibility, pricing, exit process
+  - Implement accordion/collapsible UI for FAQ items
+  - Add FAQ categories for better organization
+  - Include search functionality for FAQs (optional)
+  - Update footer and navigation to link to FAQ page
+  - Commit all changes with detailed message
+  - _Requirements: 11.1_
+
+- [ ] 24. Create privacy policy page with compliant content
+  - Create comprehensive privacy policy page at /privacy route
+  - Include GDPR and India privacy law compliance sections
+  - Add sections on data collection, usage, storage, and user rights
+  - Include contact information for privacy inquiries
+  - Add last updated date
+  - Link privacy policy from all forms and footer
+  - Commit all changes with detailed message
+  - _Requirements: 11.1_
+
+- [ ] 25. Create property listings page with available properties
+  - Create new property listings page at /properties route
+  - Design property card component showing key details (location, price, size, co-owner slots)
+  - Implement grid layout for property listings
+  - Add filtering options (city, price range, property type)
+  - Create sample property data for initial launch
+  - Add navigation link to properties page in header
+  - Commit all changes with detailed message
+  - _New Feature_
+
+- [ ] 26. Create property detail page with WhatsApp contact CTA
+  - Create dynamic property detail page at /properties/[id] route
+  - Display comprehensive property information (images, specs, location, pricing, co-ownership details)
+  - Add image gallery for property photos
+  - Implement "Contact" CTA button that redirects to WhatsApp
+  - Pre-populate WhatsApp message with property details (address, price, property ID)
+  - Include property amenities, neighborhood info, and investment details
+  - Commit all changes with detailed message
+  - _New Feature_
+
+- [ ] 27. Add floating WhatsApp contact button
+  - Create floating action button component fixed to bottom-right corner
+  - Style as WhatsApp icon with subtle animation/pulse effect
+  - Link to company WhatsApp number with pre-populated greeting message
+  - Ensure button is accessible and doesn't obstruct content
+  - Make button responsive and appropriately sized for mobile
+  - Add z-index to ensure button stays on top of other content
+  - Commit all changes with detailed message
+  - _New Feature_
