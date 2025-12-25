@@ -77,7 +77,7 @@ function getPublicUrl(key: string, r2PublicUrl?: string, request?: Request): str
   
   // In local development, use local image serving endpoint
   if (isLocal) {
-    return `/images/${key}`;
+    return `/r2-images/${key}`;
   }
   
   // In production, use R2 public URL

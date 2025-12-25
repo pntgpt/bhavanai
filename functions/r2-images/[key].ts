@@ -3,7 +3,7 @@
  * Serves images from local R2 bucket during development
  * In production, images are served directly from R2 public URL
  * 
- * GET /images/:key
+ * GET /r2-images/:key
  */
 
 interface Env {
