@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "echo \"Tests will be configured in task 16\"",
-    "wrangler:dev": "wrangler pages dev .next --binding DB=6ec7754a-ec37-425e-adea-73ea0650127f --r2 MY_BUCKET --r2 IMAGES --port 8788"
+    "wrangler:dev": "wrangler pages dev out --binding DB=6ec7754a-ec37-425e-adea-73ea0650127f --r2 MY_BUCKET --r2 IMAGES --port 8788"
   },
   "keywords": [
     "fractional-ownership",

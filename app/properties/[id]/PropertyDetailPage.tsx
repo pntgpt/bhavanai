@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import PropertyDetailClient from './PropertyDetailClient';
 import { Property, BrokerProperty } from '@/types';
 import { mapDbPropertyToFrontend } from '@/lib/properties';
@@ -13,21 +12,28 @@ import Button from '@/components/ui/Button';
  * 
  * Fetches property data from D1 database via API on the client side.
  * Only shows approved properties to the public.
- * Uses client-side fetching to work with static export.
+ * Extracts property ID from the current URL path for static export compatibility.
  * 
  * Requirements: 24.4 - Display approved properties on public pages
  */
 
 export default function PropertyDetailPage() {
-  const params = useParams();
-  const id = params?.id as string;
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [propertyId, setPropertyId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Skip if no ID or if it's the placeholder
-    if (!id || id === 'placeholder') {
+    // Extract property ID from the current URL path
+    // URL format: /properties/[id]
+    const path = window.location.pathname;
+    const matches = path.match(/\/properties\/([^\/]+)/);
+    const id = matches ? matches[1] : null;
+
+    setPropertyId(id);
+
+    // Skip if no ID
+    if (!id) {
       setLoading(false);
       setError(true);
       return;
@@ -69,7 +75,7 @@ export default function PropertyDetailPage() {
     }
 
     fetchProperty();
-  }, [id]);
+  }, []); // Run once on mount
 
   // Loading state
   if (loading) {
@@ -84,7 +90,7 @@ export default function PropertyDetailPage() {
   }
 
   // Error state (404)
-  if (error || !property) {
+  if (error || !property || !propertyId) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -121,5 +127,5 @@ export default function PropertyDetailPage() {
     );
   }
 
-  return <PropertyDetailClient property={property} propertyId={id} />;
+  return <PropertyDetailClient property={property} propertyId={propertyId} />;
 }

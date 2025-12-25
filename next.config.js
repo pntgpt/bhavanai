@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Removed output: 'export' to enable dynamic routes for property detail pages
-  // This allows proper server-side rendering and dynamic route handling
+  output: 'export', // Static export for Cloudflare Pages
   
   images: {
     unoptimized: true, // Required for Cloudflare Pages

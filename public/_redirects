@@ -1,0 +1,4 @@
+# Cloudflare Pages rewrites for dynamic property routes
+# Rewrite all property detail pages to the template page (status 200)
+# The client-side JavaScript will extract the actual ID from the original URL
+/properties/:id  /properties/_/  200
