@@ -2,3 +2,4 @@
 # Rewrite all property detail pages to the template page (status 200)
 # The client-side JavaScript will extract the actual ID from the original URL
 /properties/:id  /properties/_/  200
+/dashboard/broker/properties/:id  /dashboard/broker/properties/_/  200
