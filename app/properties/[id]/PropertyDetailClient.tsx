@@ -116,10 +116,10 @@ export default function PropertyDetailClient({ property, propertyId }: PropertyD
 
   /**
    * Get image URL from R2 storage
-   * Images are stored as full R2 public URLs
+   * Handles both local development URLs (/images/key) and production R2 URLs
    */
   const getImageUrl = (imageUrl: string): string => {
-    // Images are already full URLs from R2
+    // Images can be either local URLs or full R2 public URLs
     return imageUrl;
   };
 

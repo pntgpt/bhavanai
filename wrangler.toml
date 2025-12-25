@@ -15,9 +15,12 @@ binding = "MY_BUCKET"
 bucket_name = "bhavan-website"
 
 # R2 bucket binding for property images
+# Using production bucket for both development and production
+# This ensures images are accessible via public URL
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "bhavan-images"
+preview_bucket_name = "bhavan-images"  # Use production bucket in dev mode too
 
 # Environment variables
 [vars]

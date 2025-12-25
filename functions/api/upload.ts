@@ -65,9 +65,22 @@ function generateUniqueFilename(originalFilename: string): string {
 
 /**
  * Get public URL for R2 object
- * Uses the R2 public URL from environment variable
+ * In development (local R2), returns local endpoint URL
+ * In production, returns R2 public URL
  */
-function getPublicUrl(key: string, r2PublicUrl?: string): string {
+function getPublicUrl(key: string, r2PublicUrl?: string, request?: Request): string {
+  // Check if we're in local development by checking the request origin
+  const isLocal = request && (
+    request.url.includes('localhost') || 
+    request.url.includes('127.0.0.1')
+  );
+  
+  // In local development, use local image serving endpoint
+  if (isLocal) {
+    return `/images/${key}`;
+  }
+  
+  // In production, use R2 public URL
   if (!r2PublicUrl) {
     throw new Error('R2_PUBLIC_URL environment variable is not set. Please configure it in wrangler.toml');
   }
@@ -145,8 +158,8 @@ export async function onRequestPost(context: {
           },
         });
 
-        // Generate public URL using R2 public domain
-        const publicUrl = getPublicUrl(uniqueFilename, context.env.R2_PUBLIC_URL);
+        // Generate public URL (local endpoint in dev, R2 public URL in production)
+        const publicUrl = getPublicUrl(uniqueFilename, context.env.R2_PUBLIC_URL, context.request);
         uploadedUrls.push(publicUrl);
 
         console.log(`Uploaded image: ${uniqueFilename} by user ${user.id}`);
