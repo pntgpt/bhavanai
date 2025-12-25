@@ -13,6 +13,14 @@ export default {
       path = '/index.html';
     }
     
+    // Handle dynamic property routes - serve placeholder HTML
+    if (path.match(/^\/properties\/[^\/]+\/?$/)) {
+      const placeholderObject = await env.MY_BUCKET.get('properties/placeholder/index.html');
+      if (placeholderObject) {
+        return serveObject(placeholderObject);
+      }
+    }
+    
     // Handle trailing slashes (Next.js uses them)
     if (path.endsWith('/') && path !== '/') {
       path = path + 'index.html';

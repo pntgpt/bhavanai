@@ -26,7 +26,12 @@ export default function PropertyDetailPage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    // Skip if no ID or if it's the placeholder
+    if (!id || id === 'placeholder') {
+      setLoading(false);
+      setError(true);
+      return;
+    }
 
     /**
      * Fetch property data from API
