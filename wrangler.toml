@@ -19,6 +19,13 @@ bucket_name = "bhavan-website"
 binding = "IMAGES"
 bucket_name = "bhavan-images"
 
+# Environment variables
+[vars]
+# R2 public URL - Replace YOUR_ACCOUNT_ID with your Cloudflare account ID
+# Format: https://<bucket-name>.<account-id>.r2.dev
+# Or use your custom domain if configured
+R2_PUBLIC_URL = "https://bhavan-images.YOUR_ACCOUNT_ID.r2.dev"
+
 # Routes - Update with your actual domain
 # Uncomment these lines and replace with your domain:
 # routes = [

@@ -14,6 +14,7 @@ import { requireRole } from '../lib/auth';
 interface Env {
   DB: D1Database;
   IMAGES: R2Bucket;
+  R2_PUBLIC_URL?: string; // R2 public URL base (e.g., https://bhavan-images.abc123.r2.dev)
 }
 
 // Allowed image MIME types
@@ -64,14 +65,17 @@ function generateUniqueFilename(originalFilename: string): string {
 
 /**
  * Get public URL for R2 object
- * Uses the Cloudflare R2 public URL format
+ * Uses the R2 public URL from environment variable
  */
-function getPublicUrl(bucketName: string, key: string, accountId: string): string {
-  // For Cloudflare R2, the public URL format is:
-  // https://{bucket-name}.{account-id}.r2.cloudflarestorage.com/{key}
-  // However, for production, you should use a custom domain
-  // For now, we'll return the key and let the frontend construct the URL
-  return `/api/images/${key}`;
+function getPublicUrl(key: string, r2PublicUrl?: string): string {
+  if (!r2PublicUrl) {
+    throw new Error('R2_PUBLIC_URL environment variable is not set. Please configure it in wrangler.toml');
+  }
+  
+  // Remove trailing slash from base URL if present
+  const baseUrl = r2PublicUrl.endsWith('/') ? r2PublicUrl.slice(0, -1) : r2PublicUrl;
+  
+  return `${baseUrl}/${key}`;
 }
 
 /**
@@ -141,10 +145,8 @@ export async function onRequestPost(context: {
           },
         });
 
-        // Generate public URL
-        // Note: In production, you should use a custom domain
-        // For now, we'll use a relative URL that can be served through the worker
-        const publicUrl = `/images/${uniqueFilename}`;
+        // Generate public URL using R2 public domain
+        const publicUrl = getPublicUrl(uniqueFilename, context.env.R2_PUBLIC_URL);
         uploadedUrls.push(publicUrl);
 
         console.log(`Uploaded image: ${uniqueFilename} by user ${user.id}`);

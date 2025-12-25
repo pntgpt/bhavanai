@@ -116,16 +116,11 @@ export default function PropertyDetailClient({ property, propertyId }: PropertyD
 
   /**
    * Get image URL from R2 storage
-   * Images are stored in R2 and accessed via /api/images/[key]
+   * Images are stored as full R2 public URLs
    */
-  const getImageUrl = (imageKey: string): string => {
-    // If it's already a full URL, return as is
-    if (imageKey.startsWith('http://') || imageKey.startsWith('https://')) {
-      return imageKey;
-    }
-    
-    // If it's an R2 key, construct the API URL
-    return `/api/images/${imageKey}`;
+  const getImageUrl = (imageUrl: string): string => {
+    // Images are already full URLs from R2
+    return imageUrl;
   };
 
   return (
