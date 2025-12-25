@@ -1,0 +1,21 @@
+# Cloudflare Pages configuration
+name = "bhavanai"
+pages_build_output_dir = "out"
+compatibility_date = "2024-12-01"
+
+# D1 Database binding for user authentication and property management
+[[d1_databases]]
+binding = "DB"
+database_name = "bhavan-db"
+database_id = "6ec7754a-ec37-425e-adea-73ea0650127f"
+
+# R2 bucket binding for property images
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "bhavan-images"
+preview_bucket_name = "bhavan-images"
+
+# Environment variables
+[vars]
+# R2 public URL for serving images
+R2_PUBLIC_URL = "https://pub-28f9edbaef9f4402a511120118772391.r2.dev"

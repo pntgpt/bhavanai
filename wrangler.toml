@@ -3,6 +3,9 @@ name = "bhavan-website-worker"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-12-01"
 
+# Pages configuration
+pages_build_output_dir = "out"
+
 # D1 Database binding for user authentication and property management
 [[d1_databases]]
 binding = "DB"

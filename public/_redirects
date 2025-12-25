@@ -1,5 +1,9 @@
 # Cloudflare Pages rewrites for dynamic property routes
 # Rewrite all property detail pages to the template page (status 200)
 # The client-side JavaScript will extract the actual ID from the original URL
-/properties/:id  /properties/_/  200
-/dashboard/broker/properties/:id  /dashboard/broker/properties/_/  200
+
+# Public property pages - rewrite UUID patterns to template
+/properties/*  /properties/_/  200
+
+# Note: /dashboard/broker/properties/new is a static page and won't be rewritten
+# Only UUID-like paths will be rewritten to the edit template
