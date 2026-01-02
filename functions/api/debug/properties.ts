@@ -44,7 +44,7 @@ async function handleGet(request: Request, env: Env): Promise<Response> {
     }
 
     // Query 1: Count all properties
-    const totalCount = await env.DB.prepare('SELECT COUNT(*) as count FROM properties').first();
+    const totalCount = await env.DB.prepare('SELECT COUNT(*) as count FROM properties').first() as { count: number } | null;
     debugInfo.queries.totalProperties = totalCount;
 
     // Query 2: Count by status
@@ -105,8 +105,8 @@ async function handleGet(request: Request, env: Env): Promise<Response> {
     debugInfo.summary = {
       totalProperties: totalCount?.count || 0,
       approvedProperties: approvedProperties.results?.length || 0,
-      pendingProperties: statusCounts.results?.find((s: any) => s.status === 'pending')?.count || 0,
-      rejectedProperties: statusCounts.results?.find((s: any) => s.status === 'rejected')?.count || 0,
+      pendingProperties: (statusCounts.results?.find((s: any) => s.status === 'pending') as any)?.count || 0,
+      rejectedProperties: (statusCounts.results?.find((s: any) => s.status === 'rejected') as any)?.count || 0,
       hasDataIssues: dataIssues.length > 0,
     };
 
