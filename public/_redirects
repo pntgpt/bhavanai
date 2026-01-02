@@ -1,4 +1,8 @@
 # Cloudflare Pages redirects
-# Ensure /properties/ serves the index page, not the dynamic route
+
+# Properties index page - exact match (must come first)
 /properties /properties/index.html 200
 /properties/ /properties/index.html 200
+
+# Dynamic property detail pages - use splat to catch all IDs
+/properties/* /properties/_/index.html 200

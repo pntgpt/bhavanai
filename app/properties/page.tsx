@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { MapPin, Home, Users } from 'lucide-react';
 import { mapDbPropertyToFrontend } from '@/lib/properties';
 import { Property } from '@/types';
@@ -94,9 +93,9 @@ export default function PropertiesPage() {
             {properties.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.map(property => (
-                  <Link 
+                  <a 
                     key={property.id} 
-                    href={`/properties/${property.id}`}
+                    href={`/properties/${property.id}/`}
                     className="block"
                   >
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
@@ -148,7 +147,7 @@ export default function PropertiesPage() {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 ))}
               </div>
             ) : (
