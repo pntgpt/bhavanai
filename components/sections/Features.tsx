@@ -9,7 +9,8 @@ import {
   Store, 
   Scale,
   Calculator,
-  Building
+  Building,
+  Lock
 } from 'lucide-react';
 
 /**
