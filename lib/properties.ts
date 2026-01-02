@@ -24,14 +24,15 @@ export function mapDbPropertyToFrontend(dbProperty: BrokerProperty): Property {
   const pricePerShare = dbProperty.price / dbProperty.co_owner_count;
 
   // Extract city from location (assuming format "Area, City")
+  // If no comma, use the whole location as both area and city
   const locationParts = dbProperty.location.split(',').map(s => s.trim());
   const city = locationParts.length > 1 ? locationParts[locationParts.length - 1] : locationParts[0];
-  const area = locationParts.length > 1 ? locationParts.slice(0, -1).join(', ') : dbProperty.location;
+  const area = locationParts.length > 1 ? locationParts.slice(0, -1).join(', ') : '';
 
   return {
     id: dbProperty.id,
     title: dbProperty.title,
-    location: area,
+    location: area || city, // Use area if available, otherwise city
     city: city,
     address: dbProperty.location, // Full location as address
     price: dbProperty.price,
