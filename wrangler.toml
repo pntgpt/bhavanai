@@ -1,6 +1,5 @@
-# Cloudflare Worker configuration for R2 static site hosting
-name = "bhavan-website-worker"
-main = "cloudflare-worker.js"
+# Cloudflare Pages configuration
+name = "bhavanai"
 compatibility_date = "2024-12-01"
 
 # Pages configuration
@@ -11,11 +10,6 @@ pages_build_output_dir = "out"
 binding = "DB"
 database_name = "bhavan-db"
 database_id = "6ec7754a-ec37-425e-adea-73ea0650127f"
-
-# R2 bucket binding for static site hosting
-[[r2_buckets]]
-binding = "MY_BUCKET"
-bucket_name = "bhavan-website"
 
 # R2 bucket binding for property images
 # Using production bucket for both development and production
