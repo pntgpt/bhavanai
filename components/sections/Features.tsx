@@ -7,18 +7,22 @@ import {
   FileCheck, 
   Wallet, 
   Store, 
-  Lock 
+  Scale,
+  Calculator,
+  Building
 } from 'lucide-react';
 
 /**
  * Features Section Component
  * 
  * Displays the key features and capabilities of the Bhavan.ai platform:
- * - KYC and credit scoring
  * - Digital SPV creation and legal compliance
  * - Collective down payment and NBFC financing
  * - Secondary market and exit marketplace
- * - Security, escrow, and document vault
+ * - Legal support (documentation and verification)
+ * - CA support (taxation and others)
+ * - Broker support (get you the right property)
+ * - Property Manager
  * 
  * Features a grid layout of feature cards with icons and descriptions.
  * Responsive design adapts from single column on mobile to multi-column on desktop.
@@ -39,12 +43,6 @@ export interface FeaturesProps {
 
 const defaultFeatures: Feature[] = [
   {
-    id: 'kyc',
-    title: 'KYC & Credit Scoring',
-    description: 'Fast, secure identity verification and comprehensive credit assessment to ensure qualified co-owners.',
-    icon: FileCheck,
-  },
-  {
     id: 'spv',
     title: 'Digital SPV Creation',
     description: 'Legally compliant Special Purpose Vehicles created digitally, handling all paperwork and registration.',
@@ -63,10 +61,28 @@ const defaultFeatures: Feature[] = [
     icon: Store,
   },
   {
-    id: 'security',
-    title: 'Security & Escrow',
-    description: 'Bank-grade security with escrow services and encrypted document vault for all your ownership papers.',
-    icon: Lock,
+    id: 'legal',
+    title: 'Legal Support',
+    description: 'Comprehensive legal documentation and verification services to ensure all transactions are compliant and secure.',
+    icon: Scale,
+  },
+  {
+    id: 'ca',
+    title: 'CA Support',
+    description: 'Expert chartered accountant support for taxation, financial planning, and compliance matters.',
+    icon: Calculator,
+  },
+  {
+    id: 'broker',
+    title: 'Broker Support',
+    description: 'Professional brokers to help you find and secure the right property that matches your needs.',
+    icon: Building,
+  },
+  {
+    id: 'property-manager',
+    title: 'Property Manager',
+    description: 'Dedicated property management services to handle maintenance, tenant relations, and day-to-day operations.',
+    icon: FileCheck,
   },
 ];
 

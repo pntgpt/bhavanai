@@ -3,7 +3,6 @@
 import React from 'react';
 import Card from '@/components/ui/Card';
 import { 
-  UserCheck, 
   Users, 
   FileText, 
   TrendingUp 
@@ -12,14 +11,13 @@ import {
 /**
  * HowItWorks Section Component
  * 
- * Displays the 4-step process for co-owning a home through Bhavan.ai:
- * 1. KYC & credit check
- * 2. Matching 2-5 compatible buyers
- * 3. Digital SPV formation with collective down payment
- * 4. Exit via marketplace
+ * Displays the 3-step process for co-owning a home through Bhavan.ai:
+ * 1. Matching 2-5 compatible buyers
+ * 2. Digital SPV formation with collective down payment
+ * 3. Exit via marketplace
  * 
  * Features:
- * - Four step cards with icons and descriptions
+ * - Three step cards with icons and descriptions
  * - Visual flow diagram connecting the steps
  * - Responsive layout for mobile and desktop
  * 
@@ -40,24 +38,18 @@ export interface HowItWorksProps {
 const defaultSteps: ProcessStep[] = [
   {
     id: 1,
-    title: 'KYC & Credit Check',
-    description: 'Fast, secure onboarding with identity verification and credit assessment.',
-    icon: UserCheck,
-  },
-  {
-    id: 2,
     title: 'Match Compatible Co-owners',
     description: 'Connect with 2–5 compatible buyers who share your goals and preferences.',
     icon: Users,
   },
   {
-    id: 3,
+    id: 2,
     title: 'Form SPV & Down Payment',
     description: 'We create the legal entity digitally and facilitate collective down payment.',
     icon: FileText,
   },
   {
-    id: 4,
+    id: 3,
     title: 'Move In & Exit Options',
     description: 'Sell your shares on our marketplace whenever you need liquidity.',
     icon: TrendingUp,
@@ -77,12 +69,12 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
             How It Works
           </h2>
           <p className="font-sans text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Four simple steps to turn your rent into home ownership
+            Three simple steps to turn your rent into home ownership
           </p>
         </div>
 
         {/* Step Cards - Requirements 2.1, 2.2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 relative">
           {steps.map((step, index) => {
             const Icon = step.icon;
             
@@ -90,7 +82,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
               <div key={step.id} className="relative">
                 {/* Connector line for desktop - Requirement 2.3 */}
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary-300 to-primary-200 z-0" 
+                  <div className="hidden md:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary-300 to-primary-200 z-0" 
                        style={{ width: 'calc(100% - 2rem)' }}
                        aria-hidden="true"
                   />
@@ -125,7 +117,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ steps = defaultSteps }) => {
         </div>
 
         {/* Mobile Flow Diagram - Requirement 2.3 */}
-        <div className="lg:hidden flex justify-center mb-12" aria-hidden="true">
+        <div className="md:hidden flex justify-center mb-12" aria-hidden="true">
           <div className="flex flex-col items-center space-y-2">
             {steps.slice(0, -1).map((step) => (
               <div key={`arrow-${step.id}`} className="text-primary-400">

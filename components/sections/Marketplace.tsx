@@ -35,7 +35,6 @@ const defaultExitProcess = [
   'List your shares on the marketplace with your desired price',
   'Buyers browse available shares and make offers',
   'Accept an offer and initiate the transfer process',
-  'Complete KYC verification for the new co-owner',
   'Transfer shares through the SPV with legal documentation',
   'Receive payment via secure escrow within 5-7 business days',
 ];
