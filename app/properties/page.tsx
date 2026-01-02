@@ -52,18 +52,26 @@ export default function PropertiesPage() {
         setLoading(true);
         setError(null);
         
+        console.log('[Properties] Fetching from /api/properties/public');
         const response = await fetch('/api/properties/public');
+        console.log('[Properties] Response status:', response.status);
+        
         const data = await response.json();
+        console.log('[Properties] Response data:', data);
         
         if (!response.ok || !data.success) {
           throw new Error(data.error || 'Failed to fetch properties');
         }
         
+        console.log('[Properties] Raw properties count:', data.properties?.length || 0);
+        
         // Map database properties to frontend format
         const mappedProperties = data.properties.map(mapDbPropertyToFrontend);
+        console.log('[Properties] Mapped properties:', mappedProperties);
+        
         setProperties(mappedProperties);
       } catch (err: any) {
-        console.error('Error fetching properties:', err);
+        console.error('[Properties] Error fetching properties:', err);
         setError(err.message || 'Failed to load properties. Please try again later.');
       } finally {
         setLoading(false);
