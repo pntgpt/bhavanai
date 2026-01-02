@@ -1,12 +1,13 @@
 {
   "version": 1,
   "include": [
-    "/api/*",
-    "/properties/*"
+    "/api/*"
   ],
   "exclude": [
-    "/properties/placeholder/*",
     "/_next/*",
-    "/images/*"
+    "/images/*",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml"
   ]
 }
