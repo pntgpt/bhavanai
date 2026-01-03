@@ -13,7 +13,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import AffiliateStatsDisplay from '@/components/dashboard/AffiliateStatsDisplay';
 
@@ -41,22 +40,39 @@ interface StatsResponse {
 }
 
 export default function AffiliateStatsClient() {
-  const params = useParams();
-  const affiliateId = params.id as string;
-
+  const [affiliateId, setAffiliateId] = useState<string | null>(null);
   const [data, setData] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Extract affiliate ID from the current URL path
+    // URL format: /dashboard/admin/affiliates/[id]/stats
+    const path = window.location.pathname;
+    const matches = path.match(/\/dashboard\/admin\/affiliates\/([^\/]+)\/stats/);
+    const id = matches ? matches[1] : null;
+
+    setAffiliateId(id);
+
+    if (!id) {
+      setError('No affiliate ID found in URL');
+      setLoading(false);
+      return;
+    }
+
+    // Fetch stats with the extracted ID
+    fetchStats(id);
+  }, []); // Run once on mount
+
   /**
    * Fetch affiliate statistics
    */
-  const fetchStats = async (startDate?: number, endDate?: number) => {
+  const fetchStats = async (id: string, startDate?: number, endDate?: number) => {
     setLoading(true);
     setError(null);
 
     try {
-      let url = `/api/admin/affiliates/${affiliateId}/stats`;
+      let url = `/api/admin/affiliates/${id}/stats`;
       const params = new URLSearchParams();
       
       if (startDate) {
@@ -89,10 +105,14 @@ export default function AffiliateStatsClient() {
     }
   };
 
-  // Fetch stats on mount
-  useEffect(() => {
-    fetchStats();
-  }, [affiliateId]);
+  /**
+   * Handle filter changes - refetch with new date range
+   */
+  const handleFilterChange = (startDate?: number, endDate?: number) => {
+    if (affiliateId) {
+      fetchStats(affiliateId, startDate, endDate);
+    }
+  };
 
   if (loading) {
     return (
@@ -112,7 +132,7 @@ export default function AffiliateStatsClient() {
           <p className="font-medium">Error loading statistics</p>
           <p className="text-sm mt-1">{error}</p>
           <button
-            onClick={() => fetchStats()}
+            onClick={() => affiliateId && fetchStats(affiliateId)}
             className="mt-3 text-sm font-medium text-red-900 hover:text-red-700 underline"
           >
             Try again
@@ -157,7 +177,7 @@ export default function AffiliateStatsClient() {
         affiliate={data.affiliate}
         stats={data.stats}
         filters={data.filters}
-        onFilterChange={fetchStats}
+        onFilterChange={handleFilterChange}
       />
     </div>
   );
