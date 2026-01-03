@@ -33,7 +33,7 @@ export async function onRequestGet(context: { request: Request; env: Env }) {
 
     const affiliates = await getAffiliates(env.DB, filters);
 
-    return new Response(JSON.stringify({ affiliates }), {
+    return new Response(JSON.stringify(affiliates), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -107,17 +107,10 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
       description: description || null,
     });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        affiliate,
-        message: 'Affiliate created successfully',
-      }),
-      {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify(affiliate), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error: any) {
     console.error('Create affiliate error:', error);
 
