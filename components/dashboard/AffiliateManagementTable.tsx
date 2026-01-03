@@ -42,6 +42,7 @@ export default function AffiliateManagementTable({
   
   // Form states
   const [createForm, setCreateForm] = useState({
+    id: '',
     name: '',
     description: '',
   });
@@ -64,6 +65,18 @@ export default function AffiliateManagementTable({
       return;
     }
 
+    // Validate affiliate ID if provided
+    if (createForm.id.trim()) {
+      if (!/^[a-zA-Z0-9_-]+$/.test(createForm.id.trim())) {
+        setError('Affiliate ID can only contain letters, numbers, hyphens, and underscores');
+        return;
+      }
+      if (createForm.id.trim().length > 50) {
+        setError('Affiliate ID must be 50 characters or less');
+        return;
+      }
+    }
+
     setLoading('create');
     setError(null);
     setSuccess(null);
@@ -76,6 +89,7 @@ export default function AffiliateManagementTable({
         },
         credentials: 'include',
         body: JSON.stringify({
+          id: createForm.id.trim() || undefined,
           name: createForm.name.trim(),
           description: createForm.description.trim() || undefined,
         }),
@@ -87,9 +101,9 @@ export default function AffiliateManagementTable({
         throw new Error(data.error || 'Failed to create affiliate');
       }
 
-      setSuccess(`Affiliate "${data.name}" created successfully`);
+      setSuccess(`Affiliate "${data.name}" created successfully with ID: ${data.id}`);
       setShowCreateModal(false);
-      setCreateForm({ name: '', description: '' });
+      setCreateForm({ id: '', name: '', description: '' });
       onRefresh();
     } catch (err: any) {
       setError(err.message);
@@ -451,6 +465,25 @@ export default function AffiliateManagementTable({
         title="Create New Affiliate"
       >
         <form onSubmit={handleCreate} className="space-y-4">
+          <div>
+            <label htmlFor="createId" className="block text-sm font-medium text-gray-700">
+              Affiliate ID (Optional)
+            </label>
+            <input
+              type="text"
+              id="createId"
+              value={createForm.id}
+              onChange={(e) => setCreateForm({ ...createForm, id: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono"
+              placeholder="e.g., partner-agency-2024"
+              maxLength={50}
+              pattern="[a-zA-Z0-9_-]*"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Custom ID for the affiliate (letters, numbers, hyphens, underscores only). Leave blank to auto-generate.
+            </p>
+          </div>
+
           <div>
             <label htmlFor="createName" className="block text-sm font-medium text-gray-700">
               Affiliate Name *

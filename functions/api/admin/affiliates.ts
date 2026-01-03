@@ -66,7 +66,42 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     await requireRole(request, env.DB, ['admin']);
 
     const body = await request.json() as any;
-    const { name, description } = body;
+    const { id, name, description } = body;
+
+    // Validate affiliate ID if provided
+    if (id !== undefined && id !== null) {
+      if (typeof id !== 'string' || id.trim().length === 0) {
+        return new Response(
+          JSON.stringify({ error: 'Affiliate ID must be a non-empty string' }),
+          {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
+      // Validate ID format (alphanumeric, hyphens, underscores only)
+      if (!/^[a-zA-Z0-9_-]+$/.test(id.trim())) {
+        return new Response(
+          JSON.stringify({ error: 'Affiliate ID can only contain letters, numbers, hyphens, and underscores' }),
+          {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
+      // Validate ID length (1-50 characters)
+      if (id.trim().length > 50) {
+        return new Response(
+          JSON.stringify({ error: 'Affiliate ID must be between 1 and 50 characters' }),
+          {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
 
     // Validate required fields (name is required per Requirements 1.4)
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -103,6 +138,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
 
     // Create affiliate
     const affiliate = await createAffiliate(env.DB, {
+      id: id ? id.trim() : undefined,
       name: name.trim(),
       description: description || null,
     });
@@ -119,6 +155,17 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         status: error.message.includes('Unauthorized') ? 401 : 403,
         headers: { 'Content-Type': 'application/json' },
       });
+    }
+
+    // Handle duplicate ID error
+    if (error.message && error.message.includes('already exists')) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Handle duplicate name error (if database has unique constraint)

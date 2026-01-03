@@ -491,15 +491,26 @@ interface AffiliateFilters {
 /**
  * Create a new affiliate
  * Returns the created affiliate with a unique ID
+ * Throws an error if the affiliate ID already exists
  */
 export async function createAffiliate(
   db: D1Database,
   data: {
+    id?: string;
     name: string;
     description?: string;
   }
 ): Promise<Affiliate> {
-  const id = crypto.randomUUID();
+  const id = data.id || crypto.randomUUID();
+  
+  // Check if affiliate ID already exists
+  if (data.id) {
+    const existing = await getAffiliateById(db, data.id);
+    if (existing) {
+      throw new Error('An affiliate with this ID already exists');
+    }
+  }
+  
   const now = Date.now();
 
   await db.prepare(`
