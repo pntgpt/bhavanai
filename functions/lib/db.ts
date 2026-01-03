@@ -470,3 +470,159 @@ export async function deleteUser(
 
   return result.success;
 }
+
+// ============================================================================
+// Affiliate Management Functions
+// ============================================================================
+
+interface Affiliate {
+  id: string;
+  name: string;
+  description: string | null;
+  status: 'active' | 'inactive';
+  created_at: number;
+  updated_at: number;
+}
+
+interface AffiliateFilters {
+  status?: 'active' | 'inactive';
+}
+
+/**
+ * Create a new affiliate
+ * Returns the created affiliate with a unique ID
+ */
+export async function createAffiliate(
+  db: D1Database,
+  data: {
+    name: string;
+    description?: string;
+  }
+): Promise<Affiliate> {
+  const id = crypto.randomUUID();
+  const now = Date.now();
+
+  await db.prepare(`
+    INSERT INTO affiliates (
+      id, name, description, status, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `)
+    .bind(
+      id,
+      data.name,
+      data.description || null,
+      'active',
+      now,
+      now
+    )
+    .run();
+
+  return {
+    id,
+    name: data.name,
+    description: data.description || null,
+    status: 'active',
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+/**
+ * Get all affiliates with optional filters
+ * Returns list of affiliates ordered by creation date
+ */
+export async function getAffiliates(
+  db: D1Database,
+  filters?: AffiliateFilters
+): Promise<Affiliate[]> {
+  let query = 'SELECT * FROM affiliates WHERE 1=1';
+  const bindings: any[] = [];
+
+  if (filters?.status) {
+    query += ' AND status = ?';
+    bindings.push(filters.status);
+  }
+
+  query += ' ORDER BY created_at DESC';
+
+  const result = await db.prepare(query).bind(...bindings).all();
+  return (result.results || []) as unknown as Affiliate[];
+}
+
+/**
+ * Get a single affiliate by ID
+ * Returns the affiliate or null if not found
+ */
+export async function getAffiliateById(
+  db: D1Database,
+  affiliateId: string
+): Promise<Affiliate | null> {
+  const result = await db.prepare('SELECT * FROM affiliates WHERE id = ?')
+    .bind(affiliateId)
+    .first();
+  return result as Affiliate | null;
+}
+
+/**
+ * Update an existing affiliate
+ * Returns the updated affiliate or null if not found
+ * Preserves the unique identifier while updating metadata
+ */
+export async function updateAffiliate(
+  db: D1Database,
+  affiliateId: string,
+  data: {
+    name?: string;
+    description?: string;
+    status?: 'active' | 'inactive';
+  }
+): Promise<Affiliate | null> {
+  const existing = await getAffiliateById(db, affiliateId);
+  if (!existing) return null;
+
+  const updates: string[] = [];
+  const bindings: any[] = [];
+
+  if (data.name !== undefined) {
+    updates.push('name = ?');
+    bindings.push(data.name);
+  }
+  if (data.description !== undefined) {
+    updates.push('description = ?');
+    bindings.push(data.description);
+  }
+  if (data.status !== undefined) {
+    updates.push('status = ?');
+    bindings.push(data.status);
+  }
+
+  updates.push('updated_at = ?');
+  bindings.push(Date.now());
+
+  bindings.push(affiliateId);
+
+  await db.prepare(`
+    UPDATE affiliates
+    SET ${updates.join(', ')}
+    WHERE id = ?
+  `)
+    .bind(...bindings)
+    .run();
+
+  return await getAffiliateById(db, affiliateId);
+}
+
+/**
+ * Delete an affiliate
+ * Returns true if deletion was successful
+ */
+export async function deleteAffiliate(
+  db: D1Database,
+  affiliateId: string
+): Promise<boolean> {
+  const result = await db.prepare('DELETE FROM affiliates WHERE id = ?')
+    .bind(affiliateId)
+    .run();
+
+  return result.success;
+}
