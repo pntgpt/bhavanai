@@ -25,10 +25,17 @@ export function generateWhatsAppLink(message: string): string {
 /**
  * Generates a default signup message for WhatsApp
  * 
+ * @param affiliateId - Optional affiliate ID to include in the message
  * @returns Pre-formatted message expressing interest in Bhavan.ai
  */
-export function getSignupMessage(): string {
-  return `Hi! I'm interested in learning more about Bhavan.ai and co-owning a home. Can you help me get started?`;
+export function getSignupMessage(affiliateId?: string | null): string {
+  const baseMessage = `Hi! I'm interested in learning more about Bhavan.ai and co-owning a home. Can you help me get started?`;
+  
+  if (affiliateId) {
+    return `${baseMessage}\n\nReferral Code: ${affiliateId}`;
+  }
+  
+  return baseMessage;
 }
 
 /**
@@ -37,14 +44,22 @@ export function getSignupMessage(): string {
  * @param propertyId - The ID of the property
  * @param propertyAddress - The address of the property
  * @param propertyPrice - The price of the property
+ * @param affiliateId - Optional affiliate ID to include in the message
  * @returns Pre-formatted message with property details
  */
 export function getPropertyInquiryMessage(
   propertyId: string,
   propertyAddress: string,
-  propertyPrice: string
+  propertyPrice: string,
+  affiliateId?: string | null
 ): string {
-  return `Hi! I'm interested in the property at ${propertyAddress} (ID: ${propertyId}, Price: ${propertyPrice}). Can you provide more details about co-ownership opportunities for this property?`;
+  const baseMessage = `Hi! I'm interested in the property at ${propertyAddress} (ID: ${propertyId}, Price: ${propertyPrice}). Can you provide more details about co-ownership opportunities for this property?`;
+  
+  if (affiliateId) {
+    return `${baseMessage}\n\nReferral Code: ${affiliateId}`;
+  }
+  
+  return baseMessage;
 }
 
 /**
@@ -60,7 +75,17 @@ export function openWhatsApp(message: string): void {
 
 /**
  * Opens WhatsApp with default signup message
+ * Includes affiliate ID if present in URL
  */
 export function openWhatsAppSignup(): void {
-  openWhatsApp(getSignupMessage());
+  // Extract affiliate_id from URL parameter
+  let affiliateId: string | null = null;
+  
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    affiliateId = urlParams.get('affiliate_id');
+  }
+  
+  const message = getSignupMessage(affiliateId);
+  openWhatsApp(message);
 }

@@ -108,10 +108,12 @@ export default function PropertyDetailClient({ property, propertyId }: PropertyD
     }
     
     // Open WhatsApp regardless of tracking success
+    // Include affiliate ID in the message if present
     const message = getPropertyInquiryMessage(
       propertyId,
       property.address,
-      formatPrice(property.price)
+      formatPrice(property.price),
+      affiliateId
     );
     
     openWhatsApp(message);
