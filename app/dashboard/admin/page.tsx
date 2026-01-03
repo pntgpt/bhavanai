@@ -149,6 +149,18 @@ export default async function AdminDashboard() {
               View the public property listings page as users see it
             </p>
           </a>
+
+          <a
+            href="/dashboard/admin/affiliates"
+            className="block p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-md transition-all"
+          >
+            <h3 className="font-sans font-semibold text-gray-900 mb-1">
+              Affiliate Management
+            </h3>
+            <p className="font-sans text-sm text-gray-600">
+              Create and manage affiliate partners for tracking referrals
+            </p>
+          </a>
         </div>
       </div>
 
