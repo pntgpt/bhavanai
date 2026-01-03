@@ -444,7 +444,7 @@ export default function AffiliateManagementTable({
                         Delete
                       </button>
                       <a
-                        href={`/dashboard/admin/affiliates/${affiliate.id}/stats`}
+                        href={`/dashboard/admin/affiliates/stats/${affiliate.id}`}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         View Stats

@@ -47,9 +47,9 @@ export default function AffiliateStatsClient() {
 
   useEffect(() => {
     // Extract affiliate ID from the current URL path
-    // URL format: /dashboard/admin/affiliates/[id]/stats
+    // URL format: /dashboard/admin/affiliates/stats/[id]
     const path = window.location.pathname;
-    const matches = path.match(/\/dashboard\/admin\/affiliates\/([^\/]+)\/stats/);
+    const matches = path.match(/\/dashboard\/admin\/affiliates\/stats\/([^\/]+)/);
     const id = matches ? matches[1] : null;
 
     setAffiliateId(id);
