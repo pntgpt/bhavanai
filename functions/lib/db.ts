@@ -626,3 +626,204 @@ export async function deleteAffiliate(
 
   return result.success;
 }
+
+// ============================================================================
+// Tracking Event Functions
+// ============================================================================
+
+interface TrackingEvent {
+  id: string;
+  affiliate_id: string;
+  event_type: 'signup' | 'property_contact' | 'payment';
+  user_id: string | null;
+  property_id: string | null;
+  metadata: string | null; // JSON string
+  created_at: number;
+}
+
+interface TrackingEventFilters {
+  affiliate_id?: string;
+  event_type?: 'signup' | 'property_contact' | 'payment';
+  user_id?: string;
+  property_id?: string;
+  start_date?: number;
+  end_date?: number;
+  limit?: number;
+  offset?: number;
+}
+
+interface AffiliateStats {
+  affiliate_id: string;
+  total_signups: number;
+  total_contacts: number;
+  total_payments: number;
+  total_events: number;
+}
+
+/**
+ * Create a new tracking event
+ * Validates affiliate_id and handles inactive affiliates by using NO_AFFILIATE_ID
+ * Returns the created tracking event
+ */
+export async function createTrackingEvent(
+  db: D1Database,
+  data: {
+    affiliate_id: string;
+    event_type: 'signup' | 'property_contact' | 'payment';
+    user_id?: string;
+    property_id?: string;
+    metadata?: Record<string, any>;
+  }
+): Promise<TrackingEvent> {
+  const id = crypto.randomUUID();
+  const now = Date.now();
+  
+  // Validate affiliate_id and check if active
+  let finalAffiliateId = data.affiliate_id;
+  const affiliate = await getAffiliateById(db, data.affiliate_id);
+  
+  // If affiliate doesn't exist or is inactive, use NO_AFFILIATE_ID
+  if (!affiliate || affiliate.status === 'inactive') {
+    finalAffiliateId = 'NO_AFFILIATE_ID';
+  }
+  
+  const metadataJson = data.metadata ? JSON.stringify(data.metadata) : null;
+
+  await db.prepare(`
+    INSERT INTO tracking_events (
+      id, affiliate_id, event_type, user_id, property_id, metadata, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+  `)
+    .bind(
+      id,
+      finalAffiliateId,
+      data.event_type,
+      data.user_id || null,
+      data.property_id || null,
+      metadataJson,
+      now
+    )
+    .run();
+
+  return {
+    id,
+    affiliate_id: finalAffiliateId,
+    event_type: data.event_type,
+    user_id: data.user_id || null,
+    property_id: data.property_id || null,
+    metadata: metadataJson,
+    created_at: now,
+  };
+}
+
+/**
+ * Get tracking events with optional filters
+ * Supports filtering by affiliate, event type, user, property, and date range
+ * Returns events ordered by creation date (newest first)
+ */
+export async function getTrackingEvents(
+  db: D1Database,
+  filters?: TrackingEventFilters
+): Promise<TrackingEvent[]> {
+  let query = 'SELECT * FROM tracking_events WHERE 1=1';
+  const bindings: any[] = [];
+
+  if (filters?.affiliate_id) {
+    query += ' AND affiliate_id = ?';
+    bindings.push(filters.affiliate_id);
+  }
+
+  if (filters?.event_type) {
+    query += ' AND event_type = ?';
+    bindings.push(filters.event_type);
+  }
+
+  if (filters?.user_id) {
+    query += ' AND user_id = ?';
+    bindings.push(filters.user_id);
+  }
+
+  if (filters?.property_id) {
+    query += ' AND property_id = ?';
+    bindings.push(filters.property_id);
+  }
+
+  if (filters?.start_date) {
+    query += ' AND created_at >= ?';
+    bindings.push(filters.start_date);
+  }
+
+  if (filters?.end_date) {
+    query += ' AND created_at <= ?';
+    bindings.push(filters.end_date);
+  }
+
+  query += ' ORDER BY created_at DESC';
+
+  if (filters?.limit) {
+    query += ' LIMIT ?';
+    bindings.push(filters.limit);
+  }
+
+  if (filters?.offset) {
+    query += ' OFFSET ?';
+    bindings.push(filters.offset);
+  }
+
+  const result = await db.prepare(query).bind(...bindings).all();
+  return (result.results || []) as unknown as TrackingEvent[];
+}
+
+/**
+ * Get statistics for an affiliate
+ * Returns counts of events by type and total events
+ * Optionally filters by date range
+ */
+export async function getAffiliateStats(
+  db: D1Database,
+  affiliateId: string,
+  filters?: {
+    start_date?: number;
+    end_date?: number;
+  }
+): Promise<AffiliateStats> {
+  let query = `
+    SELECT 
+      affiliate_id,
+      SUM(CASE WHEN event_type = 'signup' THEN 1 ELSE 0 END) as total_signups,
+      SUM(CASE WHEN event_type = 'property_contact' THEN 1 ELSE 0 END) as total_contacts,
+      SUM(CASE WHEN event_type = 'payment' THEN 1 ELSE 0 END) as total_payments,
+      COUNT(*) as total_events
+    FROM tracking_events
+    WHERE affiliate_id = ?
+  `;
+  
+  const bindings: any[] = [affiliateId];
+
+  if (filters?.start_date) {
+    query += ' AND created_at >= ?';
+    bindings.push(filters.start_date);
+  }
+
+  if (filters?.end_date) {
+    query += ' AND created_at <= ?';
+    bindings.push(filters.end_date);
+  }
+
+  query += ' GROUP BY affiliate_id';
+
+  const result = await db.prepare(query).bind(...bindings).first();
+  
+  // If no events found, return zeros
+  if (!result) {
+    return {
+      affiliate_id: affiliateId,
+      total_signups: 0,
+      total_contacts: 0,
+      total_payments: 0,
+      total_events: 0,
+    };
+  }
+
+  return result as unknown as AffiliateStats;
+}
