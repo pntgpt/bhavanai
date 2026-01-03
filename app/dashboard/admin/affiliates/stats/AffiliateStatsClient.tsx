@@ -6,6 +6,8 @@
  * - Date range filtering
  * - Chronological event log
  * 
+ * Uses query parameters for affiliate ID to work with static export
+ * 
  * Requirements: 5.1 (total signups), 5.2 (total contacts), 5.3 (chronological order),
  *               5.4 (breakdown by type), 5.5 (date filtering)
  */
@@ -13,7 +15,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import AffiliateStatsDisplay from '@/components/dashboard/AffiliateStatsDisplay';
 
 interface Affiliate {
@@ -40,8 +43,9 @@ interface StatsResponse {
 }
 
 export default function AffiliateStatsClient() {
-  const params = useParams();
-  const affiliateId = params.id as string;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const affiliateId = searchParams.get('id');
 
   const [data, setData] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,6 +55,12 @@ export default function AffiliateStatsClient() {
    * Fetch affiliate statistics
    */
   const fetchStats = async (startDate?: number, endDate?: number) => {
+    if (!affiliateId) {
+      setError('No affiliate ID provided');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -88,10 +98,27 @@ export default function AffiliateStatsClient() {
     }
   };
 
-  // Fetch stats on mount
+  // Fetch stats on mount or when affiliate ID changes
   useEffect(() => {
     fetchStats();
   }, [affiliateId]);
+
+  if (!affiliateId) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+          <p className="font-medium">No affiliate selected</p>
+          <p className="text-sm mt-1">Please select an affiliate from the management page.</p>
+          <Link
+            href="/dashboard/admin/affiliates"
+            className="mt-3 inline-block text-sm font-medium text-yellow-900 hover:text-yellow-700 underline"
+          >
+            Go to Affiliates
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -136,12 +163,12 @@ export default function AffiliateStatsClient() {
       {/* Page Header */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <a
+          <Link
             href="/dashboard/admin/affiliates"
             className="text-blue-600 hover:text-blue-800 text-sm font-medium"
           >
             ← Back to Affiliates
-          </a>
+          </Link>
         </div>
         <h1 className="font-serif font-bold text-4xl text-gray-900 mb-2">
           Affiliate Statistics
