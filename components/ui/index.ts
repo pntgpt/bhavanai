@@ -20,3 +20,6 @@ export type { FloatingWhatsAppButtonProps } from './FloatingWhatsAppButton';
 
 export { default as PropertyCard } from './PropertyCard';
 export type { PropertyCardProps } from './PropertyCard';
+
+export { default as AffiliateLink } from './AffiliateLink';
+export type { AffiliateLinkProps } from './AffiliateLink';
