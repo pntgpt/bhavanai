@@ -5,6 +5,7 @@ import { ContactData } from '@/types';
 import { validateEmail, validateRequired, validateMinLength } from '@/lib/validation';
 import { submitForm, getFormErrorMessage } from '@/lib/forms';
 import Button from '@/components/ui/Button';
+import { getCurrentAffiliateId } from '@/lib/affiliate';
 
 /**
  * ContactForm Component
@@ -26,9 +27,10 @@ interface FormErrors {
 interface ContactFormProps {
   onSuccess?: () => void;
   inline?: boolean;
+  propertyId?: string; // Optional property ID for property-specific contact tracking
 }
 
-export default function ContactForm({ onSuccess, inline = false }: ContactFormProps) {
+export default function ContactForm({ onSuccess, inline = false, propertyId }: ContactFormProps) {
   // Form state
   const [formData, setFormData] = useState<Partial<ContactData>>({
     name: '',
@@ -135,6 +137,9 @@ export default function ContactForm({ onSuccess, inline = false }: ContactFormPr
 
   /**
    * Handles form submission
+   * Tracks property_contact event if propertyId is provided
+   * 
+   * Requirements: 4.1, 4.2, 4.3, 4.4
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -152,6 +157,33 @@ export default function ContactForm({ onSuccess, inline = false }: ContactFormPr
     setIsSubmitting(true);
 
     try {
+      // If propertyId is provided, track property_contact event (Requirements 4.1, 4.2)
+      if (propertyId) {
+        const affiliateId = getCurrentAffiliateId();
+        
+        try {
+          await fetch('/api/tracking/event', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              affiliate_id: affiliateId,
+              event_type: 'property_contact',
+              property_id: propertyId,
+              // user_id would be included here if user is authenticated (Requirement 4.3)
+              metadata: {
+                contact_method: 'contact_form',
+                subject: formData.subject,
+              },
+            }),
+          });
+        } catch (trackingError) {
+          // Log error but don't block form submission
+          console.error('Failed to track property contact event:', trackingError);
+        }
+      }
+
       // Submit form with UTM capture
       await submitForm('contact', formData as ContactData);
 

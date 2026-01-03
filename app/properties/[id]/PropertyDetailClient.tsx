@@ -18,6 +18,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { Property } from '@/types';
 import { getPropertyInquiryMessage, openWhatsApp } from '@/lib/whatsapp';
+import { getCurrentAffiliateId } from '@/lib/affiliate';
 
 /**
  * Property Detail Client Component
@@ -71,8 +72,42 @@ export default function PropertyDetailClient({ property, propertyId }: PropertyD
 
   /**
    * Handle WhatsApp contact button click
+   * Track property_contact event with affiliate attribution
+   * 
+   * Requirements: 4.1, 4.2, 4.3, 4.4
    */
-  const handleContactClick = () => {
+  const handleContactClick = async () => {
+    // Get affiliate_id from URL (Requirements 4.1, 4.4)
+    const affiliateId = getCurrentAffiliateId();
+    
+    // Track property_contact event (Requirements 4.1, 4.2)
+    try {
+      await fetch('/api/tracking/event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          affiliate_id: affiliateId,
+          event_type: 'property_contact',
+          property_id: propertyId,
+          // user_id would be included here if user is authenticated (Requirement 4.3)
+          // For now, we don't have authentication in the property detail page
+          metadata: {
+            contact_method: 'whatsapp',
+            property_title: property.title,
+          },
+        }),
+      });
+      
+      // Note: We don't wait for the tracking to complete or handle errors
+      // to avoid blocking the user's WhatsApp experience
+    } catch (error) {
+      // Log error but don't block user action
+      console.error('Failed to track property contact event:', error);
+    }
+    
+    // Open WhatsApp regardless of tracking success
     const message = getPropertyInquiryMessage(
       propertyId,
       property.address,
