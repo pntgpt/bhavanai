@@ -3,6 +3,7 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { RegistrationData } from '@/types';
 import { validateEmail, validatePhone, validateRequired } from '@/lib/validation';
+import { getCurrentAffiliateId } from '@/lib/affiliate';
 import Button from '@/components/ui/Button';
 
 /**
@@ -11,8 +12,9 @@ import Button from '@/components/ui/Button';
  * Registration form for backend users (Broker, CA, Lawyer).
  * Creates pending user accounts that require admin approval.
  * Implements client-side validation with inline error messages.
+ * Integrates affiliate tracking by extracting affiliate_id from URL.
  * 
- * Requirements: 22.1, 22.2, 22.4
+ * Requirements: 22.1, 22.2, 22.4, 3.1, 3.2, 3.3
  */
 
 interface FormErrors {
@@ -163,13 +165,19 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
     setIsSubmitting(true);
 
     try {
-      // Submit registration to API
+      // Extract affiliate_id from URL (Requirements 3.1, 3.2, 3.3)
+      const affiliateId = getCurrentAffiliateId();
+
+      // Submit registration to API with affiliate_id
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          affiliate_id: affiliateId,
+        }),
       });
 
       const result = await response.json();
