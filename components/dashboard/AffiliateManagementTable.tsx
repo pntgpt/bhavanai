@@ -10,7 +10,6 @@
  */
 
 import { useState } from 'react';
-import Link from 'next/link';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 
@@ -444,12 +443,12 @@ export default function AffiliateManagementTable({
                       >
                         Delete
                       </button>
-                      <Link
+                      <a
                         href={`/dashboard/admin/affiliates/${affiliate.id}/stats`}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         View Stats
-                      </Link>
+                      </a>
                     </td>
                   </tr>
                 ))
