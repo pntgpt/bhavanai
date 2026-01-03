@@ -60,8 +60,8 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     }
 
     // Validate event_type is one of the allowed values
-    const validEventTypes = ['signup', 'property_contact', 'payment'];
-    if (!validEventTypes.includes(event_type)) {
+    const validEventTypes = ['signup', 'property_contact', 'payment'] as const;
+    if (!validEventTypes.includes(event_type as any)) {
       return new Response(
         JSON.stringify({
           error: `event_type must be one of: ${validEventTypes.join(', ')}`,
@@ -72,6 +72,9 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
         }
       );
     }
+    
+    // Type assertion after validation
+    const validatedEventType = event_type as 'signup' | 'property_contact' | 'payment';
 
     // Validate affiliate_id format (Requirements 2.4)
     // If invalid format, use NO_AFFILIATE_ID
@@ -142,7 +145,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     // - Using NO_AFFILIATE_ID if affiliate is inactive or doesn't exist (Requirements 2.4, 2.5)
     const trackingEvent = await createTrackingEvent(env.DB, {
       affiliate_id: finalAffiliateId,
-      event_type,
+      event_type: validatedEventType,
       user_id: user_id || undefined,
       property_id: property_id || undefined,
       metadata: metadata || undefined,
