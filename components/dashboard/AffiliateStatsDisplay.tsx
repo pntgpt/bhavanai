@@ -15,6 +15,7 @@
 
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
+import AffiliateLinkGenerator from './AffiliateLinkGenerator';
 
 interface Affiliate {
   id: string;
@@ -239,6 +240,9 @@ export default function AffiliateStatsDisplay({
           </div>
         </div>
       </div>
+
+      {/* Affiliate Link Generator - Requirements 7.1, 7.2, 7.3, 7.4 */}
+      <AffiliateLinkGenerator affiliateId={affiliate.id} />
 
       {/* Date Range Filter */}
       <div className="bg-white shadow-md rounded-lg p-6">

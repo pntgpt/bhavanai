@@ -130,12 +130,12 @@
     - Commit all changes with detailed message
     - _Requirements: 1.1, 1.2, 1.3, 1.5_
 
-  - [-] 8.2 Create affiliate stats dashboard
+  - [x] 8.2 Create affiliate stats dashboard
     - Display event counts, breakdown by type, date filtering
     - Commit all changes with detailed message
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 8.3 Create affiliate link generator
+  - [-] 8.3 Create affiliate link generator
     - UI to generate trackable links for different landing pages
     - Commit all changes with detailed message
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
