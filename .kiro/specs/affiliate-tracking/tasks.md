@@ -125,12 +125,12 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
 - [ ] 8. Admin dashboard UI
-  - [-] 8.1 Create affiliate management page
+  - [x] 8.1 Create affiliate management page
     - List affiliates, create/edit/deactivate functionality
     - Commit all changes with detailed message
     - _Requirements: 1.1, 1.2, 1.3, 1.5_
 
-  - [ ] 8.2 Create affiliate stats dashboard
+  - [-] 8.2 Create affiliate stats dashboard
     - Display event counts, breakdown by type, date filtering
     - Commit all changes with detailed message
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
