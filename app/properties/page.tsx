@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { MapPin, Home, Users } from 'lucide-react';
 import { mapDbPropertyToFrontend } from '@/lib/properties';
 import { Property } from '@/types';
+import { appendAffiliateId } from '@/lib/affiliate';
+import Link from 'next/link';
 
 /**
  * Properties listing page
@@ -93,9 +95,9 @@ export default function PropertiesPage() {
             {properties.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.map(property => (
-                  <a 
+                  <Link 
                     key={property.id} 
-                    href={`/properties/${property.id}/`}
+                    href={appendAffiliateId(`/properties/${property.id}/`)}
                     className="block"
                   >
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
@@ -147,7 +149,7 @@ export default function PropertiesPage() {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             ) : (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Facebook, Twitter, Linkedin, Instagram, Mail } from 'lucide-react';
 import Button from '../ui/Button';
 import { trackCTAClick, trackDownload, trackExternalLink } from '@/lib/analytics';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * Footer component with multi-column layout
@@ -95,7 +96,7 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
               {companyLinks.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={appendAffiliateId(link.href)}
                     className="hover:text-white transition-colors text-sm"
                   >
                     {link.name}
@@ -112,7 +113,7 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
               {productLinks.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={appendAffiliateId(link.href)}
                     className="hover:text-white transition-colors text-sm"
                   >
                     {link.name}
@@ -129,7 +130,7 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
               {legalLinks.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={appendAffiliateId(link.href)}
                     className="hover:text-white transition-colors text-sm"
                   >
                     {link.name}

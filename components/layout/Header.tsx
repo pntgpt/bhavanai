@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
 import { trackCTAClick } from '@/lib/analytics';
 import { openWhatsAppSignup } from '@/lib/whatsapp';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * Header component with sticky navigation and mobile menu
@@ -85,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className={`text-2xl font-bold ${textColor} hover:opacity-80 transition-opacity`}>
+            <Link href={appendAffiliateId('/')} className={`text-2xl font-bold ${textColor} hover:opacity-80 transition-opacity`}>
               Bhavan.ai
             </Link>
           </div>
@@ -95,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
             {navigation.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                href={appendAffiliateId(item.href)}
                 className={`${textColor} hover:text-primary-600 transition-colors text-sm font-medium`}
               >
                 {item.name}
@@ -159,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
               {navigation.map((item) => (
                 <Link
                   key={item.name}
-                  href={item.href}
+                  href={appendAffiliateId(item.href)}
                   className="block text-gray-900 hover:text-primary-600 transition-colors text-base font-medium py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

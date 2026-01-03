@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MapPin, Home, Users, Bed, Bath } from 'lucide-react';
 import Card from './Card';
 import { Property } from '@/types';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * PropertyCard component for displaying property listings
@@ -80,7 +81,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const imageUrl = getImageUrl();
 
   return (
-    <Link href={`/properties/${property.id}`}>
+    <Link href={appendAffiliateId(`/properties/${property.id}`)}>
       <Card variant="listing" hover className="h-full">
         {/* Property Image */}
         <div className="relative w-full h-48 bg-gray-200 rounded-md overflow-hidden">
