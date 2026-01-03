@@ -2,11 +2,15 @@
   "version": 1,
   "include": [
     "/api/*",
-    "/properties/*"
+    "/properties/*",
+    "/dashboard/admin/affiliates/stats/*",
+    "/dashboard/broker/properties/*"
   ],
   "exclude": [
     "/properties/index.html",
     "/properties/_/*",
+    "/dashboard/admin/affiliates/stats/_/*",
+    "/dashboard/broker/properties/_/*",
     "/_next/*",
     "/images/*",
     "/favicon.ico",
