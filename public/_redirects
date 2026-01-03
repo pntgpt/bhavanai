@@ -6,3 +6,10 @@
 
 # Dynamic property detail pages - use splat to catch all IDs
 /properties/* /properties/_/index.html 200
+
+# Dynamic broker property edit pages - use splat to catch all property IDs
+/dashboard/broker/properties/* /dashboard/broker/properties/_/index.html 200
+
+# Dynamic affiliate stats pages - use splat to catch all affiliate IDs
+/dashboard/admin/affiliates/*/stats /dashboard/admin/affiliates/_/stats/index.html 200
+/dashboard/admin/affiliates/*/stats/ /dashboard/admin/affiliates/_/stats/index.html 200
