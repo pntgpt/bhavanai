@@ -185,13 +185,12 @@ export default function ServicePurchaseForm({
       [name]: value,
     }));
 
-    // Clear error for this field when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
+    // Perform real-time validation as user types
+    const fieldError = validateField(name as keyof PurchaseFormData, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: fieldError,
+    }));
 
     // Clear submission error
     if (submitError) {
