@@ -14,6 +14,13 @@ import { PaymentConfigService, getPaymentGatewayFromEnv } from '../../../lib/pay
 import { PaymentGatewayError } from '../../../lib/payment-gateway';
 import { createEmailService } from '../../../lib/email';
 import { createNotificationService } from '../../../lib/notification';
+import {
+  getCommissionConfig,
+  calculateCommission,
+  createAffiliateCommission,
+  getCommissionByServiceRequestId,
+  updateCommissionStatus,
+} from '../../../lib/db';
 
 interface Env {
   DB: D1Database;
@@ -172,11 +179,11 @@ async function createAffiliateTrackingEvent(
 /**
  * Get service by ID
  */
-async function getServiceById(db: D1Database, serviceId: string): Promise<{ id: string; name: string; description: string } | null> {
+async function getServiceById(db: D1Database, serviceId: string): Promise<{ id: string; name: string; description: string; category: string } | null> {
   const result = await db
-    .prepare('SELECT id, name, description FROM services WHERE id = ?')
+    .prepare('SELECT id, name, description, category FROM services WHERE id = ?')
     .bind(serviceId)
-    .first<{ id: string; name: string; description: string }>();
+    .first<{ id: string; name: string; description: string; category: string }>();
 
   return result;
 }
@@ -216,6 +223,42 @@ async function processPaymentSuccess(
       amount: serviceRequest.payment_amount,
       currency: serviceRequest.payment_currency,
     });
+
+    // Calculate and create commission record (Requirements 10.3)
+    try {
+      const commissionConfig = await getCommissionConfig(
+        db,
+        service.category as 'ca' | 'legal' | 'other'
+      );
+
+      if (commissionConfig) {
+        const commissionAmount = calculateCommission(
+          commissionConfig,
+          serviceRequest.payment_amount
+        );
+
+        await createAffiliateCommission(db, {
+          affiliateId: serviceRequest.affiliate_id,
+          serviceRequestId: serviceRequest.id,
+          commissionAmount,
+          commissionCurrency: serviceRequest.payment_currency,
+          serviceAmount: serviceRequest.payment_amount,
+          serviceCurrency: serviceRequest.payment_currency,
+          notes: `Commission for ${service.name} purchase`,
+        });
+
+        console.log(
+          `Created commission record: ${commissionAmount} ${serviceRequest.payment_currency} for affiliate ${serviceRequest.affiliate_id}`
+        );
+      } else {
+        console.warn(
+          `No commission configuration found for service category: ${service.category}`
+        );
+      }
+    } catch (error) {
+      console.error('Error creating commission record:', error);
+      // Don't block the flow if commission creation fails
+    }
   }
 
   // Get service information
@@ -257,6 +300,90 @@ async function processPaymentSuccess(
     await notificationService.notifyProvider(serviceRequest, service);
   } catch (error) {
     console.error('Error sending provider notification:', error);
+  }
+}
+
+/**
+ * Process payment refund
+ * Handles commission adjustments on refunds (Requirement 10.5)
+ */
+async function processPaymentRefund(
+  db: D1Database,
+  env: Env,
+  serviceRequest: ServiceRequest,
+  transactionId: string
+): Promise<void> {
+  const oldStatus = serviceRequest.status;
+  const newStatus = 'cancelled';
+
+  // Update service request with refund status
+  await updateServiceRequestPayment(db, serviceRequest.id, {
+    transactionId,
+    paymentStatus: 'refunded',
+    status: newStatus,
+  });
+
+  // Create status history record
+  await createStatusHistory(db, {
+    serviceRequestId: serviceRequest.id,
+    oldStatus,
+    newStatus,
+    notes: 'Payment refunded',
+  });
+
+  // Cancel affiliate commission if applicable (Requirement 10.5)
+  if (serviceRequest.affiliate_id) {
+    try {
+      const commission = await getCommissionByServiceRequestId(db, serviceRequest.id);
+      
+      if (commission) {
+        await updateCommissionStatus(
+          db,
+          commission.id,
+          'cancelled',
+          'Commission cancelled due to payment refund'
+        );
+
+        console.log(
+          `Cancelled commission ${commission.id} for refunded service request ${serviceRequest.id}`
+        );
+      }
+    } catch (error) {
+      console.error('Error cancelling commission on refund:', error);
+      // Don't block the flow if commission cancellation fails
+    }
+  }
+
+  // Get service information
+  const service = await getServiceById(db, serviceRequest.service_id);
+  if (!service) {
+    console.error('Service not found:', serviceRequest.service_id);
+    return;
+  }
+
+  // Create email service
+  const emailService = createEmailService(env);
+
+  // Send refund notification email to customer
+  try {
+    const statusUpdateResult = await emailService.sendStatusUpdateEmail({
+      to: serviceRequest.customer_email,
+      customerName: serviceRequest.customer_name,
+      referenceNumber: serviceRequest.reference_number,
+      serviceName: service.name,
+      oldStatus,
+      newStatus,
+      message: 'Your payment has been refunded. The refund should appear in your account within 5-7 business days.',
+      estimatedNextStep: 'If you have any questions, please contact our support team.',
+    });
+
+    if (!statusUpdateResult.sent) {
+      console.error('Failed to send refund notification email:', statusUpdateResult.error);
+    } else {
+      console.log('Refund notification email sent successfully:', statusUpdateResult.messageId);
+    }
+  } catch (error) {
+    console.error('Error sending refund notification email:', error);
   }
 }
 
@@ -433,6 +560,8 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       await processPaymentSuccess(env.DB, env, serviceRequest, webhookResult.transactionId);
     } else if (webhookResult.status === 'failed') {
       await processPaymentFailure(env.DB, env, serviceRequest, webhookResult.transactionId);
+    } else if (webhookResult.status === 'refunded') {
+      await processPaymentRefund(env.DB, env, serviceRequest, webhookResult.transactionId);
     } else {
       // Pending status - just update transaction ID
       await updateServiceRequestPayment(env.DB, serviceRequest.id, {

@@ -85,7 +85,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.4, 9.4_
 
-- [-] 8.3 Create AdminServiceRequestsTable component
+- [x] 8.3 Create AdminServiceRequestsTable component
   - Display service requests with filtering
   - Implement status update UI
   - Implement provider assignment UI
@@ -93,7 +93,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 9. Affiliate integration
+- [-] 9. Affiliate integration
   - Update affiliate tracking to support service purchases
   - Implement commission calculation for services
   - Update affiliate dashboard to show service metrics

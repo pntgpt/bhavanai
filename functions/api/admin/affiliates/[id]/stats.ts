@@ -8,6 +8,7 @@ import { requireRole } from '../../../../lib/auth';
 import {
   getAffiliateById,
   getAffiliateStats,
+  getAffiliateCommissionSummary,
 } from '../../../../lib/db';
 
 interface Env {
@@ -102,6 +103,12 @@ export async function onRequestGet(context: {
       end_date: endDate,
     });
 
+    // Get commission summary (Requirement 10.4)
+    const commissionSummary = await getAffiliateCommissionSummary(env.DB, affiliateId, {
+      start_date: startDate,
+      end_date: endDate,
+    });
+
     // Return statistics with affiliate information
     return new Response(
       JSON.stringify({
@@ -116,6 +123,14 @@ export async function onRequestGet(context: {
           total_contacts: stats.total_contacts,
           total_payments: stats.total_payments,
           total_events: stats.total_events,
+        },
+        commissions: {
+          total_pending: commissionSummary.total_pending,
+          total_approved: commissionSummary.total_approved,
+          total_paid: commissionSummary.total_paid,
+          total_cancelled: commissionSummary.total_cancelled,
+          total_earned: commissionSummary.total_earned,
+          currency: commissionSummary.currency,
         },
         filters: {
           start_date: startDate || null,

@@ -838,3 +838,277 @@ export async function getAffiliateStats(
 
   return result as unknown as AffiliateStats;
 }
+
+// ============================================================================
+// Affiliate Commission Functions
+// ============================================================================
+
+interface AffiliateCommissionConfig {
+  id: string;
+  service_category: 'ca' | 'legal' | 'other' | 'default';
+  commission_type: 'percentage' | 'fixed';
+  commission_value: number;
+  currency: string;
+  is_active: number;
+  created_at: number;
+  updated_at: number;
+}
+
+interface AffiliateCommission {
+  id: string;
+  affiliate_id: string;
+  service_request_id: string;
+  commission_amount: number;
+  commission_currency: string;
+  status: 'pending' | 'approved' | 'paid' | 'cancelled';
+  service_amount: number;
+  service_currency: string;
+  notes: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * Get commission configuration for a service category
+ * Falls back to default configuration if category-specific config not found
+ */
+export async function getCommissionConfig(
+  db: D1Database,
+  serviceCategory: 'ca' | 'legal' | 'other'
+): Promise<AffiliateCommissionConfig | null> {
+  // Try to get category-specific config first
+  let result = await db
+    .prepare('SELECT * FROM affiliate_commission_config WHERE service_category = ? AND is_active = 1')
+    .bind(serviceCategory)
+    .first<AffiliateCommissionConfig>();
+
+  // Fall back to default config if not found
+  if (!result) {
+    result = await db
+      .prepare('SELECT * FROM affiliate_commission_config WHERE service_category = ? AND is_active = 1')
+      .bind('default')
+      .first<AffiliateCommissionConfig>();
+  }
+
+  return result;
+}
+
+/**
+ * Calculate commission amount based on configuration
+ */
+export function calculateCommission(
+  config: AffiliateCommissionConfig,
+  serviceAmount: number
+): number {
+  if (config.commission_type === 'percentage') {
+    return (serviceAmount * config.commission_value) / 100;
+  } else {
+    return config.commission_value;
+  }
+}
+
+/**
+ * Create an affiliate commission record
+ * Returns the created commission
+ */
+export async function createAffiliateCommission(
+  db: D1Database,
+  data: {
+    affiliateId: string;
+    serviceRequestId: string;
+    commissionAmount: number;
+    commissionCurrency: string;
+    serviceAmount: number;
+    serviceCurrency: string;
+    notes?: string;
+  }
+): Promise<AffiliateCommission> {
+  const id = crypto.randomUUID();
+  const now = Date.now();
+
+  await db
+    .prepare(`
+      INSERT INTO affiliate_commissions (
+        id, affiliate_id, service_request_id, commission_amount, commission_currency,
+        status, service_amount, service_currency, notes, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    .bind(
+      id,
+      data.affiliateId,
+      data.serviceRequestId,
+      data.commissionAmount,
+      data.commissionCurrency,
+      'pending',
+      data.serviceAmount,
+      data.serviceCurrency,
+      data.notes || null,
+      now,
+      now
+    )
+    .run();
+
+  return {
+    id,
+    affiliate_id: data.affiliateId,
+    service_request_id: data.serviceRequestId,
+    commission_amount: data.commissionAmount,
+    commission_currency: data.commissionCurrency,
+    status: 'pending',
+    service_amount: data.serviceAmount,
+    service_currency: data.serviceCurrency,
+    notes: data.notes || null,
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+/**
+ * Get commission by service request ID
+ */
+export async function getCommissionByServiceRequestId(
+  db: D1Database,
+  serviceRequestId: string
+): Promise<AffiliateCommission | null> {
+  const result = await db
+    .prepare('SELECT * FROM affiliate_commissions WHERE service_request_id = ?')
+    .bind(serviceRequestId)
+    .first<AffiliateCommission>();
+
+  return result;
+}
+
+/**
+ * Update commission status
+ * Used for handling refunds and status changes
+ */
+export async function updateCommissionStatus(
+  db: D1Database,
+  commissionId: string,
+  status: 'pending' | 'approved' | 'paid' | 'cancelled',
+  notes?: string
+): Promise<AffiliateCommission | null> {
+  const now = Date.now();
+
+  await db
+    .prepare(`
+      UPDATE affiliate_commissions
+      SET status = ?, notes = ?, updated_at = ?
+      WHERE id = ?
+    `)
+    .bind(status, notes || null, now, commissionId)
+    .run();
+
+  const result = await db
+    .prepare('SELECT * FROM affiliate_commissions WHERE id = ?')
+    .bind(commissionId)
+    .first<AffiliateCommission>();
+
+  return result;
+}
+
+/**
+ * Get all commissions for an affiliate
+ * Optionally filters by status and date range
+ */
+export async function getAffiliateCommissions(
+  db: D1Database,
+  affiliateId: string,
+  filters?: {
+    status?: 'pending' | 'approved' | 'paid' | 'cancelled';
+    start_date?: number;
+    end_date?: number;
+  }
+): Promise<AffiliateCommission[]> {
+  let query = 'SELECT * FROM affiliate_commissions WHERE affiliate_id = ?';
+  const bindings: any[] = [affiliateId];
+
+  if (filters?.status) {
+    query += ' AND status = ?';
+    bindings.push(filters.status);
+  }
+
+  if (filters?.start_date) {
+    query += ' AND created_at >= ?';
+    bindings.push(filters.start_date);
+  }
+
+  if (filters?.end_date) {
+    query += ' AND created_at <= ?';
+    bindings.push(filters.end_date);
+  }
+
+  query += ' ORDER BY created_at DESC';
+
+  const result = await db.prepare(query).bind(...bindings).all();
+  return (result.results || []) as unknown as AffiliateCommission[];
+}
+
+/**
+ * Get commission summary for an affiliate
+ * Returns total commission amounts by status
+ */
+export async function getAffiliateCommissionSummary(
+  db: D1Database,
+  affiliateId: string,
+  filters?: {
+    start_date?: number;
+    end_date?: number;
+  }
+): Promise<{
+  total_pending: number;
+  total_approved: number;
+  total_paid: number;
+  total_cancelled: number;
+  total_earned: number;
+  currency: string;
+}> {
+  let query = `
+    SELECT 
+      SUM(CASE WHEN status = 'pending' THEN commission_amount ELSE 0 END) as total_pending,
+      SUM(CASE WHEN status = 'approved' THEN commission_amount ELSE 0 END) as total_approved,
+      SUM(CASE WHEN status = 'paid' THEN commission_amount ELSE 0 END) as total_paid,
+      SUM(CASE WHEN status = 'cancelled' THEN commission_amount ELSE 0 END) as total_cancelled,
+      SUM(CASE WHEN status IN ('pending', 'approved', 'paid') THEN commission_amount ELSE 0 END) as total_earned,
+      commission_currency as currency
+    FROM affiliate_commissions
+    WHERE affiliate_id = ?
+  `;
+  
+  const bindings: any[] = [affiliateId];
+
+  if (filters?.start_date) {
+    query += ' AND created_at >= ?';
+    bindings.push(filters.start_date);
+  }
+
+  if (filters?.end_date) {
+    query += ' AND created_at <= ?';
+    bindings.push(filters.end_date);
+  }
+
+  query += ' GROUP BY commission_currency';
+
+  const result = await db.prepare(query).bind(...bindings).first();
+  
+  // If no commissions found, return zeros
+  if (!result) {
+    return {
+      total_pending: 0,
+      total_approved: 0,
+      total_paid: 0,
+      total_cancelled: 0,
+      total_earned: 0,
+      currency: 'INR',
+    };
+  }
+
+  return result as unknown as {
+    total_pending: number;
+    total_approved: number;
+    total_paid: number;
+    total_cancelled: number;
+    total_earned: number;
+    currency: string;
+  };
+}

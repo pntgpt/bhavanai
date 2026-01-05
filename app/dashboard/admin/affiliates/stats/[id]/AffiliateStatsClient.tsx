@@ -30,9 +30,19 @@ interface Stats {
   total_events: number;
 }
 
+interface CommissionSummary {
+  total_pending: number;
+  total_approved: number;
+  total_paid: number;
+  total_cancelled: number;
+  total_earned: number;
+  currency: string;
+}
+
 interface StatsResponse {
   affiliate: Affiliate;
   stats: Stats;
+  commissions?: CommissionSummary;
   filters: {
     start_date: number | null;
     end_date: number | null;
@@ -176,6 +186,7 @@ export default function AffiliateStatsClient() {
       <AffiliateStatsDisplay
         affiliate={data.affiliate}
         stats={data.stats}
+        commissions={data.commissions}
         filters={data.filters}
         onFilterChange={handleFilterChange}
       />

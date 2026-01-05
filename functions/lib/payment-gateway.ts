@@ -46,7 +46,7 @@ export interface PaymentWebhookResult {
   /** Unique transaction identifier from the payment gateway */
   transactionId: string;
   /** Payment status */
-  status: 'success' | 'failed' | 'pending';
+  status: 'success' | 'failed' | 'pending' | 'refunded';
   /** Amount in the smallest currency unit */
   amount: number;
   /** ISO 4217 currency code */

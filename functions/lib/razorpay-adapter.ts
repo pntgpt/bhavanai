@@ -201,15 +201,33 @@ export class RazorpayAdapter implements PaymentGatewayAdapter {
     try {
       const webhookData = payload as RazorpayWebhookPayload;
 
+      // Check if this is a refund webhook
+      if (webhookData.event === 'refund.created' || webhookData.event === 'refund.processed') {
+        // Handle refund webhook
+        const refund = (webhookData.payload as any).refund?.entity;
+        if (refund) {
+          return {
+            transactionId: refund.payment_id,
+            status: 'refunded',
+            amount: refund.amount,
+            currency: refund.currency,
+            metadata: refund.notes || {},
+            rawPayload: webhookData,
+          };
+        }
+      }
+
       // Extract payment information
       const payment = webhookData.payload.payment.entity;
 
       // Determine status based on Razorpay payment status
-      let status: 'success' | 'failed' | 'pending';
+      let status: 'success' | 'failed' | 'pending' | 'refunded';
       if (payment.status === 'captured' || payment.status === 'authorized') {
         status = 'success';
       } else if (payment.status === 'failed') {
         status = 'failed';
+      } else if (payment.status === 'refunded') {
+        status = 'refunded';
       } else {
         status = 'pending';
       }
