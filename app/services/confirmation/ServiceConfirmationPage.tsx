@@ -17,13 +17,110 @@ export default function ServiceConfirmationPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
+  const [serviceData, setServiceData] = useState<any>(null);
 
   useEffect(() => {
     const ref = searchParams.get('ref');
     if (ref) {
       setReferenceNumber(ref);
+      // Fetch service request data for receipt
+      fetchServiceData(ref);
     }
   }, [searchParams]);
+
+  /**
+   * Fetch service request data for receipt generation
+   * Requirement 5.5
+   */
+  const fetchServiceData = async (ref: string) => {
+    try {
+      const response = await fetch(`/api/services/requests/${ref}`);
+      const data = await response.json();
+      if (data.success) {
+        setServiceData(data.request);
+      }
+    } catch (error) {
+      console.error('Failed to fetch service data:', error);
+    }
+  };
+
+  /**
+   * Format timestamp to readable date
+   */
+  const formatDate = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  /**
+   * Format currency
+   */
+  const formatCurrency = (amount: number, currency: string): string => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
+
+  /**
+   * Download receipt as text file
+   * Requirement 5.5
+   */
+  const downloadReceipt = () => {
+    if (!serviceData || !referenceNumber) return;
+
+    const receiptContent = `
+BHAVAN.AI - SERVICE PURCHASE RECEIPT
+=====================================
+
+Reference Number: ${referenceNumber}
+Date: ${formatDate(serviceData.createdAt)}
+
+CUSTOMER INFORMATION
+--------------------
+Name: ${serviceData.customer.name}
+Email: ${serviceData.customer.email}
+Phone: ${serviceData.customer.phone}
+
+SERVICE DETAILS
+---------------
+Service: ${serviceData.service.name}
+${serviceData.serviceTier ? `Package: ${serviceData.serviceTier.name}` : ''}
+
+PAYMENT INFORMATION
+-------------------
+Amount: ${formatCurrency(serviceData.payment.amount, serviceData.payment.currency)}
+Payment Status: ${serviceData.payment.status}
+${serviceData.payment.transactionId ? `Transaction ID: ${serviceData.payment.transactionId}` : ''}
+${serviceData.payment.completedAt ? `Payment Date: ${formatDate(serviceData.payment.completedAt)}` : ''}
+
+CURRENT STATUS
+--------------
+Status: ${serviceData.statusLabel}
+Last Updated: ${formatDate(serviceData.updatedAt)}
+
+For any queries, please contact support@bhavan.ai
+Reference this number in all correspondence: ${referenceNumber}
+
+Thank you for choosing Bhavan.ai!
+    `.trim();
+
+    const blob = new Blob([receiptContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bhavan-receipt-${referenceNumber}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   if (!referenceNumber) {
     return (
@@ -142,9 +239,10 @@ export default function ServiceConfirmationPage() {
             <Button
               variant="primary"
               size="md"
-              onClick={() => router.push('/')}
+              onClick={downloadReceipt}
+              disabled={!serviceData}
             >
-              Return to Home
+              Download Receipt
             </Button>
             <Button
               variant="outline"
@@ -152,6 +250,13 @@ export default function ServiceConfirmationPage() {
               onClick={() => router.push(`/services/track?ref=${referenceNumber}`)}
             >
               Track Your Request
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => router.push('/')}
+            >
+              Return to Home
             </Button>
           </div>
 

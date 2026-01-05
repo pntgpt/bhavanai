@@ -53,7 +53,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.1, 2.4_
 
-- [-] 6. Frontend: Service purchase page
+- [x] 6. Frontend: Service purchase page
   - Create ServicePurchaseForm component
   - Implement form validation (email, phone, required fields)
   - Create PaymentButton component
@@ -62,7 +62,7 @@
   - Commit all changes with detailed message
   - _Requirements: 2.2, 2.3, 3.1, 3.2, 3.3, 3.5, 4.1, 4.2_
 
-- [ ] 7. Frontend: Confirmation and tracking pages
+- [-] 7. Frontend: Confirmation and tracking pages
   - Create ConfirmationPage component
   - Create ServiceTrackingPage component
   - Implement status display with timeline
