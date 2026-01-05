@@ -154,15 +154,15 @@ Thank you for choosing Bhavan.ai!
             </svg>
           </div>
 
-          {/* Success Heading */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          {/* Success Heading - Requirement 12.1, 12.5 */}
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
             Payment Successful!
           </h1>
 
-          {/* Reference Number - Requirement 5.2 */}
+          {/* Reference Number - Requirement 5.2, 12.5 */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-gray-600 mb-1">Order Reference Number</p>
-            <p className="text-2xl font-mono font-bold text-primary-600">
+            <p className="text-xs sm:text-sm text-gray-600 mb-1">Order Reference Number</p>
+            <p className="text-xl sm:text-2xl font-mono font-bold text-primary-600 break-all">
               {referenceNumber}
             </p>
           </div>
@@ -234,13 +234,14 @@ Thank you for choosing Bhavan.ai!
             </div>
           </div>
 
-          {/* Action Buttons - Requirement 5.5 */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Action Buttons - Requirement 5.5, 12.4 */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               variant="primary"
               size="md"
               onClick={downloadReceipt}
               disabled={!serviceData}
+              className="w-full sm:w-auto"
             >
               Download Receipt
             </Button>
@@ -248,6 +249,7 @@ Thank you for choosing Bhavan.ai!
               variant="outline"
               size="md"
               onClick={() => router.push(`/services/track?ref=${referenceNumber}`)}
+              className="w-full sm:w-auto"
             >
               Track Your Request
             </Button>
@@ -255,6 +257,7 @@ Thank you for choosing Bhavan.ai!
               variant="outline"
               size="md"
               onClick={() => router.push('/')}
+              className="w-full sm:w-auto"
             >
               Return to Home
             </Button>

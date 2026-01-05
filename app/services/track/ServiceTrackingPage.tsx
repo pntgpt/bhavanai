@@ -197,17 +197,17 @@ Thank you for choosing Bhavan.ai!
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Header - Requirement 12.1, 12.5 */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Track Your Service Request
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Enter your reference number to check the status of your service request
           </p>
         </div>
 
-        {/* Reference Number Input Form - Requirement 9.1 */}
+        {/* Reference Number Input Form - Requirement 9.1, 12.2 */}
         <div className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -220,7 +220,9 @@ Thank you for choosing Bhavan.ai!
                 value={inputRef}
                 onChange={(e) => setInputRef(e.target.value)}
                 placeholder="Enter your reference number"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                autoComplete="off"
+                inputMode="text"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
               />
             </div>
@@ -279,15 +281,15 @@ Thank you for choosing Bhavan.ai!
         {/* Tracking Data Display - Requirements 9.2, 9.3, 9.5 */}
         {trackingData && !loading && (
           <div className="space-y-6">
-            {/* Service Request Summary */}
+            {/* Service Request Summary - Requirement 12.5 */}
             <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
-              <div className="flex items-start justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                     {trackingData.request.service.name}
                   </h2>
                   {trackingData.request.serviceTier && (
-                    <p className="text-lg text-gray-600">
+                    <p className="text-base sm:text-lg text-gray-600">
                       {trackingData.request.serviceTier.name}
                     </p>
                   )}
@@ -296,21 +298,22 @@ Thank you for choosing Bhavan.ai!
                   variant="outline"
                   size="sm"
                   onClick={downloadReceipt}
+                  className="w-full sm:w-auto"
                 >
                   Download Receipt
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Reference Number</h3>
-                  <p className="text-lg font-mono font-semibold text-gray-900">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Reference Number</h3>
+                  <p className="text-base sm:text-lg font-mono font-semibold text-gray-900 break-all">
                     {trackingData.request.referenceNumber}
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Amount Paid</h3>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Amount Paid</h3>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">
                     {formatCurrency(
                       trackingData.request.payment.amount,
                       trackingData.request.payment.currency
@@ -318,30 +321,30 @@ Thank you for choosing Bhavan.ai!
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Purchase Date</h3>
-                  <p className="text-lg text-gray-900">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Purchase Date</h3>
+                  <p className="text-base sm:text-lg text-gray-900">
                     {formatDate(trackingData.request.createdAt)}
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Current Status</h3>
-                  <p className="text-lg font-semibold text-primary-600">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Current Status</h3>
+                  <p className="text-base sm:text-lg font-semibold text-primary-600">
                     {trackingData.request.statusLabel}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Status Timeline - Requirement 9.3 */}
+            {/* Status Timeline - Requirement 9.3, 12.5 */}
             <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Status Timeline</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-6">Status Timeline</h2>
               <div className="space-y-6">
                 {trackingData.timeline.map((item, index) => (
                   <div key={index} className="flex items-start">
                     {/* Timeline dot and line */}
-                    <div className="flex flex-col items-center mr-4">
+                    <div className="flex flex-col items-center mr-3 sm:mr-4">
                       <div
-                        className={`w-4 h-4 rounded-full ${
+                        className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${
                           index === trackingData.timeline.length - 1
                             ? 'bg-primary-600'
                             : 'bg-green-600'
@@ -354,15 +357,15 @@ Thank you for choosing Bhavan.ai!
 
                     {/* Timeline content */}
                     <div className="flex-1 pb-6">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-1">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                           {item.statusLabel}
                         </h3>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-xs sm:text-sm text-gray-500">
                           {formatDate(item.timestamp)}
                         </span>
                       </div>
-                      <p className="text-gray-600">{item.description}</p>
+                      <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
                     </div>
                   </div>
                 ))}
@@ -392,16 +395,16 @@ Thank you for choosing Bhavan.ai!
               </div>
             </div>
 
-            {/* Support Information */}
+            {/* Support Information - Requirement 12.4 */}
             <div className="bg-white rounded-lg shadow-md p-6 text-center">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Help?</h3>
               <p className="text-gray-600 mb-4">
                 If you have any questions about your service request, our support team is here to help.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <a
                   href="mailto:support@bhavan.ai"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition-colors"
                 >
                   Email Support
                 </a>
@@ -409,6 +412,7 @@ Thank you for choosing Bhavan.ai!
                   variant="outline"
                   size="md"
                   onClick={() => router.push('/')}
+                  className="w-full sm:w-auto"
                 >
                   Return to Home
                 </Button>

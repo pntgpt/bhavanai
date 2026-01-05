@@ -101,7 +101,7 @@
   - Commit all changes with detailed message
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [-] 10. Error handling and resilience
+- [x] 10. Error handling and resilience
   - Implement error handling middleware
   - Add retry logic for network timeouts
   - Create user-friendly error messages
@@ -109,7 +109,7 @@
   - Commit all changes with detailed message
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 11. Mobile responsiveness
+- [-] 11. Mobile responsiveness
   - Ensure all forms use appropriate input types
   - Test purchase flow on mobile devices
   - Verify touch-friendly button sizes

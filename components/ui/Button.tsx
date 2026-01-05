@@ -49,11 +49,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ghost: 'text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
     };
 
-    // Size-specific styles
+    // Size-specific styles with touch-friendly minimum sizes (Requirement 12.4)
     const sizeStyles = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: 'px-3 py-2 text-sm min-h-[44px]',
+      md: 'px-4 py-2.5 text-base min-h-[44px]',
+      lg: 'px-6 py-3 text-lg min-h-[48px]',
     };
 
     const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;

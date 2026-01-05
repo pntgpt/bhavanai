@@ -249,7 +249,7 @@ export default function ServicePurchaseForm({
     <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Purchase Details</h2>
 
-      {/* Tier Selection - Requirement 1.4 */}
+      {/* Tier Selection - Requirement 1.4, 12.4 */}
       {service.pricing.tiers && service.pricing.tiers.length > 0 && (
         <div className="mb-8">
           <label className="block font-sans font-medium text-gray-700 mb-4">
@@ -260,7 +260,7 @@ export default function ServicePurchaseForm({
               <div
                 key={tier.id}
                 onClick={() => handleTierSelect(tier)}
-                className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                className={`border-2 rounded-lg p-4 cursor-pointer transition-all min-h-[44px] ${
                   selectedTier?.id === tier.id
                     ? 'border-primary-600 bg-primary-50'
                     : 'border-gray-200 hover:border-primary-300'
@@ -273,7 +273,7 @@ export default function ServicePurchaseForm({
                       name="tier"
                       checked={selectedTier?.id === tier.id}
                       onChange={() => handleTierSelect(tier)}
-                      className="mr-3 h-4 w-4 text-primary-600 focus:ring-primary-500"
+                      className="mr-3 h-5 w-5 text-primary-600 focus:ring-primary-500"
                     />
                     <div>
                       <h3 className="font-semibold text-gray-900">{tier.name}</h3>
@@ -313,7 +313,7 @@ export default function ServicePurchaseForm({
       )}
 
       <form className="space-y-6">
-        {/* Full Name - Requirement 3.1 */}
+        {/* Full Name - Requirement 3.1, 12.2 */}
         <div>
           <label htmlFor="fullName" className="block font-sans font-medium text-gray-700 mb-2">
             Full Name <span className="text-red-500">*</span>
@@ -325,7 +325,8 @@ export default function ServicePurchaseForm({
             value={formData.fullName}
             onChange={handleChange}
             placeholder="Enter your full name"
-            className={`w-full px-4 py-2 border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
+            autoComplete="name"
+            className={`w-full px-4 py-3 text-base border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
               errors.fullName
                 ? 'border-red-500 focus:ring-red-200'
                 : 'border-gray-300 focus:border-primary-500 focus:ring-primary-200'
@@ -336,7 +337,7 @@ export default function ServicePurchaseForm({
           )}
         </div>
 
-        {/* Email - Requirement 3.1, 3.2 */}
+        {/* Email - Requirement 3.1, 3.2, 12.2 */}
         <div>
           <label htmlFor="email" className="block font-sans font-medium text-gray-700 mb-2">
             Email Address <span className="text-red-500">*</span>
@@ -348,7 +349,9 @@ export default function ServicePurchaseForm({
             value={formData.email}
             onChange={handleChange}
             placeholder="your.email@example.com"
-            className={`w-full px-4 py-2 border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
+            autoComplete="email"
+            inputMode="email"
+            className={`w-full px-4 py-3 text-base border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
               errors.email
                 ? 'border-red-500 focus:ring-red-200'
                 : 'border-gray-300 focus:border-primary-500 focus:ring-primary-200'
@@ -359,7 +362,7 @@ export default function ServicePurchaseForm({
           )}
         </div>
 
-        {/* Phone - Requirement 3.1, 3.2 */}
+        {/* Phone - Requirement 3.1, 3.2, 12.2 */}
         <div>
           <label htmlFor="phone" className="block font-sans font-medium text-gray-700 mb-2">
             Phone Number <span className="text-red-500">*</span>
@@ -371,7 +374,10 @@ export default function ServicePurchaseForm({
             value={formData.phone}
             onChange={handleChange}
             placeholder="9876543210"
-            className={`w-full px-4 py-2 border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
+            autoComplete="tel"
+            inputMode="tel"
+            pattern="[0-9]*"
+            className={`w-full px-4 py-3 text-base border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors ${
               errors.phone
                 ? 'border-red-500 focus:ring-red-200'
                 : 'border-gray-300 focus:border-primary-500 focus:ring-primary-200'
@@ -385,7 +391,7 @@ export default function ServicePurchaseForm({
           </p>
         </div>
 
-        {/* Requirements - Requirement 3.1, 3.4 */}
+        {/* Requirements - Requirement 3.1, 3.4, 12.2 */}
         <div>
           <label htmlFor="requirements" className="block font-sans font-medium text-gray-700 mb-2">
             Service Requirements <span className="text-red-500">*</span>
@@ -397,7 +403,7 @@ export default function ServicePurchaseForm({
             onChange={handleChange}
             placeholder="Please describe your requirements in detail. For example: property location, transaction type, specific concerns, timeline, etc."
             rows={6}
-            className={`w-full px-4 py-2 border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors resize-y ${
+            className={`w-full px-4 py-3 text-base border rounded-md font-sans focus:outline-none focus:ring-2 transition-colors resize-y ${
               errors.requirements
                 ? 'border-red-500 focus:ring-red-200'
                 : 'border-gray-300 focus:border-primary-500 focus:ring-primary-200'
