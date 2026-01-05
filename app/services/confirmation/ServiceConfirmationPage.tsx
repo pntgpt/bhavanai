@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * ServiceConfirmationPage Component
@@ -443,7 +444,7 @@ Thank you for choosing Bhavan.ai!
               <Button
                 variant="outline"
                 size="md"
-                onClick={() => router.push(`/services/track?ref=${referenceNumber}`)}
+                onClick={() => router.push(appendAffiliateId(`/services/track?ref=${referenceNumber}`))}
                 className="w-full sm:w-auto"
               >
                 Track Your Request
@@ -470,7 +471,7 @@ Thank you for choosing Bhavan.ai!
             <Button
               variant="outline"
               size="md"
-              onClick={() => router.push('/')}
+              onClick={() => router.push(appendAffiliateId('/'))}
               className="w-full sm:w-auto"
             >
               Return to Home

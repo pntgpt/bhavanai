@@ -33,6 +33,8 @@ interface ServiceRequest {
   payment_status: string;
   payment_transaction_id: string | null;
   status: string;
+  affiliate_id: string | null;
+  affiliate_code: string | null;
   created_at: number;
   updated_at: number;
 }
@@ -178,13 +180,15 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
 
     // Construct payment URL based on gateway type
     let paymentUrl: string;
+    const affiliateParam = serviceRequest.affiliate_id ? `&affiliate_id=${encodeURIComponent(serviceRequest.affiliate_id)}` : '';
+    
     if (paymentIntent.gateway === 'mock') {
-      // For mock gateway, redirect to mock payment page
-      paymentUrl = `/services/mock-payment?clientSecret=${encodeURIComponent(paymentIntent.clientSecret)}`;
+      // For mock gateway, redirect to mock payment page with affiliate tracking
+      paymentUrl = `/services/mock-payment?clientSecret=${encodeURIComponent(paymentIntent.clientSecret)}${affiliateParam}`;
     } else {
-      // For real gateways, this would be the gateway's payment page URL
+      // For real gateways, this would be the gateway's payment page URL with affiliate tracking
       // For now, we'll return the client secret and let the frontend handle it
-      paymentUrl = `/services/payment?clientSecret=${encodeURIComponent(paymentIntent.clientSecret)}&gateway=${paymentIntent.gateway}`;
+      paymentUrl = `/services/payment?clientSecret=${encodeURIComponent(paymentIntent.clientSecret)}&gateway=${paymentIntent.gateway}${affiliateParam}`;
     }
 
     // Return payment intent details

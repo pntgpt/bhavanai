@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Service } from '@/types';
 import { ServiceCard } from '@/components/ui/ServiceCard';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * ServicesSection Component
@@ -168,18 +169,20 @@ export default function ServicesSection({ services = DEFAULT_SERVICES }: Service
 
   /**
    * Handles service purchase navigation
-   * Preserves service data through navigation
+   * Preserves service data and affiliate tracking through navigation
    * 
    * Property 4: Service data preservation through navigation
    * For any service selection, when navigating to the purchase page, 
    * the service type and pricing information SHALL be preserved and accessible.
    * 
-   * Requirements: 2.1, 2.2
+   * Requirements: 2.1, 2.2, Affiliate Tracking 2.1, 2.2
    */
   const handleBuyNow = (service: Service) => {
     // Navigate to purchase page with service ID
     // Service data will be fetched on the purchase page using the ID
-    router.push(`/services/purchase?serviceId=${service.id}`);
+    // Affiliate ID is automatically preserved via appendAffiliateId
+    const purchaseUrl = appendAffiliateId(`/services/purchase?serviceId=${service.id}`);
+    router.push(purchaseUrl);
   };
 
   /**

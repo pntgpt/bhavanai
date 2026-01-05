@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import { appendAffiliateId } from '@/lib/affiliate';
 
 /**
  * ServiceTrackingPage Component
@@ -411,7 +412,7 @@ Thank you for choosing Bhavan.ai!
                 <Button
                   variant="outline"
                   size="md"
-                  onClick={() => router.push('/')}
+                  onClick={() => router.push(appendAffiliateId('/'))}
                   className="w-full sm:w-auto"
                 >
                   Return to Home
