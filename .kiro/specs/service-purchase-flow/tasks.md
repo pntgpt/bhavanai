@@ -53,7 +53,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.1, 2.4_
 
-- [ ] 6. Frontend: Service purchase page
+- [-] 6. Frontend: Service purchase page
   - Create ServicePurchaseForm component
   - Implement form validation (email, phone, required fields)
   - Create PaymentButton component

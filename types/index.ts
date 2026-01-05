@@ -346,6 +346,41 @@ export interface Service {
 }
 
 /**
+ * Service request status types
+ */
+export type ServiceRequestStatus =
+  | 'payment_confirmed'
+  | 'pending_contact'
+  | 'team_assigned'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
+
+/**
+ * Service request data structure
+ */
+export interface ServiceRequest {
+  id: string;
+  referenceNumber: string;
+  service: Service;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    requirements: string;
+  };
+  payment: {
+    transactionId?: string;
+    gateway: string;
+    amount: number;
+    currency: string;
+    status: 'pending' | 'completed' | 'failed' | 'refunded';
+  };
+  status: ServiceRequestStatus;
+  createdAt: string;
+}
+
+/**
  * Cloudflare R2 Bucket type
  */
 export interface R2Bucket {

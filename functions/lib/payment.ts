@@ -6,15 +6,16 @@
  */
 
 // Core interfaces and types
-export {
+export type {
   PaymentGatewayAdapter,
   PaymentGatewayConfig,
   PaymentIntent,
   PaymentIntentParams,
   PaymentWebhookResult,
   RefundResult,
-  PaymentGatewayError,
 } from './payment-gateway';
+
+export { PaymentGatewayError } from './payment-gateway';
 
 // Factory for creating payment gateway instances
 export { PaymentGatewayFactory } from './payment-gateway-factory';
@@ -23,8 +24,5 @@ export { PaymentGatewayFactory } from './payment-gateway-factory';
 export { RazorpayAdapter } from './razorpay-adapter';
 
 // Configuration management
-export {
-  PaymentConfigService,
-  PaymentGatewayConfigRecord,
-  getPaymentGatewayFromEnv,
-} from './payment-config';
+export type { PaymentGatewayConfigRecord } from './payment-config';
+export { PaymentConfigService, getPaymentGatewayFromEnv } from './payment-config';
