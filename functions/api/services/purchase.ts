@@ -287,7 +287,7 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       paymentGateway: paymentGateway.getGatewayName(),
       amount,
       currency,
-      affiliateId,
+      affiliateId: affiliateId || undefined,
       affiliateCode: data.affiliateCode,
     });
 
