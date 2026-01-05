@@ -12,6 +12,8 @@
 import { PaymentGatewayFactory } from '../../../lib/payment-gateway-factory';
 import { PaymentConfigService, getPaymentGatewayFromEnv } from '../../../lib/payment-config';
 import { PaymentGatewayError } from '../../../lib/payment-gateway';
+import { createEmailService } from '../../../lib/email';
+import { createNotificationService } from '../../../lib/notification';
 
 interface Env {
   DB: D1Database;
@@ -20,6 +22,11 @@ interface Env {
   PAYMENT_GATEWAY_API_SECRET?: string;
   PAYMENT_GATEWAY_WEBHOOK_SECRET?: string;
   PAYMENT_GATEWAY_MODE?: string;
+  EMAIL_PROVIDER?: string;
+  EMAIL_API_KEY?: string;
+  EMAIL_DOMAIN?: string;
+  EMAIL_FROM_ADDRESS?: string;
+  EMAIL_FROM_NAME?: string;
 }
 
 interface ServiceRequest {
@@ -163,31 +170,15 @@ async function createAffiliateTrackingEvent(
 }
 
 /**
- * Send email notification (placeholder - to be implemented with email service)
+ * Get service by ID
  */
-async function sendEmailNotification(
-  type: 'confirmation' | 'provider_notification' | 'payment_failed',
-  data: {
-    email: string;
-    customerName: string;
-    referenceNumber: string;
-    serviceName?: string;
-    amount?: number;
-    currency?: string;
-  }
-): Promise<void> {
-  // TODO: Implement email sending using email service
-  // For now, just log the notification
-  console.log(`[EMAIL] ${type} notification to ${data.email}:`, data);
-}
+async function getServiceById(db: D1Database, serviceId: string): Promise<{ id: string; name: string; description: string } | null> {
+  const result = await db
+    .prepare('SELECT id, name, description FROM services WHERE id = ?')
+    .bind(serviceId)
+    .first<{ id: string; name: string; description: string }>();
 
-/**
- * Send provider notification (placeholder - to be implemented with notification service)
- */
-async function sendProviderNotification(serviceRequest: ServiceRequest): Promise<void> {
-  // TODO: Implement provider notification
-  // For now, just log the notification
-  console.log('[NOTIFICATION] Provider notification for service request:', serviceRequest.reference_number);
+  return result;
 }
 
 /**
@@ -195,6 +186,7 @@ async function sendProviderNotification(serviceRequest: ServiceRequest): Promise
  */
 async function processPaymentSuccess(
   db: D1Database,
+  env: Env,
   serviceRequest: ServiceRequest,
   transactionId: string
 ): Promise<void> {
@@ -226,17 +218,46 @@ async function processPaymentSuccess(
     });
   }
 
+  // Get service information
+  const service = await getServiceById(db, serviceRequest.service_id);
+  if (!service) {
+    console.error('Service not found:', serviceRequest.service_id);
+    return;
+  }
+
+  // Create email and notification services
+  const emailService = createEmailService(env);
+  const notificationService = createNotificationService(emailService, db);
+
   // Send confirmation email to customer
-  await sendEmailNotification('confirmation', {
-    email: serviceRequest.customer_email,
-    customerName: serviceRequest.customer_name,
-    referenceNumber: serviceRequest.reference_number,
-    amount: serviceRequest.payment_amount,
-    currency: serviceRequest.payment_currency,
-  });
+  try {
+    const confirmationResult = await emailService.sendConfirmationEmail({
+      to: serviceRequest.customer_email,
+      customerName: serviceRequest.customer_name,
+      referenceNumber: serviceRequest.reference_number,
+      serviceName: service.name,
+      serviceDescription: service.description,
+      amount: serviceRequest.payment_amount,
+      currency: serviceRequest.payment_currency,
+      estimatedContact: 'within 24-48 hours',
+    });
+
+    if (!confirmationResult.sent) {
+      console.error('Failed to send confirmation email:', confirmationResult.error);
+      // Log failure for admin review but don't block the flow
+    } else {
+      console.log('Confirmation email sent successfully:', confirmationResult.messageId);
+    }
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+  }
 
   // Send notification to service provider
-  await sendProviderNotification(serviceRequest);
+  try {
+    await notificationService.notifyProvider(serviceRequest, service);
+  } catch (error) {
+    console.error('Error sending provider notification:', error);
+  }
 }
 
 /**
@@ -244,6 +265,7 @@ async function processPaymentSuccess(
  */
 async function processPaymentFailure(
   db: D1Database,
+  env: Env,
   serviceRequest: ServiceRequest,
   transactionId: string
 ): Promise<void> {
@@ -265,12 +287,37 @@ async function processPaymentFailure(
     notes: 'Payment failed',
   });
 
+  // Get service information
+  const service = await getServiceById(db, serviceRequest.service_id);
+  if (!service) {
+    console.error('Service not found:', serviceRequest.service_id);
+    return;
+  }
+
+  // Create email service
+  const emailService = createEmailService(env);
+
   // Send payment failed email to customer
-  await sendEmailNotification('payment_failed', {
-    email: serviceRequest.customer_email,
-    customerName: serviceRequest.customer_name,
-    referenceNumber: serviceRequest.reference_number,
-  });
+  try {
+    const statusUpdateResult = await emailService.sendStatusUpdateEmail({
+      to: serviceRequest.customer_email,
+      customerName: serviceRequest.customer_name,
+      referenceNumber: serviceRequest.reference_number,
+      serviceName: service.name,
+      oldStatus,
+      newStatus,
+      message: 'Unfortunately, your payment could not be processed. Please try again or contact our support team for assistance.',
+      estimatedNextStep: 'You can retry the payment or contact us for alternative payment options.',
+    });
+
+    if (!statusUpdateResult.sent) {
+      console.error('Failed to send payment failure email:', statusUpdateResult.error);
+    } else {
+      console.log('Payment failure email sent successfully:', statusUpdateResult.messageId);
+    }
+  } catch (error) {
+    console.error('Error sending payment failure email:', error);
+  }
 }
 
 /**
@@ -383,9 +430,9 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
 
     // Process based on payment status
     if (webhookResult.status === 'success') {
-      await processPaymentSuccess(env.DB, serviceRequest, webhookResult.transactionId);
+      await processPaymentSuccess(env.DB, env, serviceRequest, webhookResult.transactionId);
     } else if (webhookResult.status === 'failed') {
-      await processPaymentFailure(env.DB, serviceRequest, webhookResult.transactionId);
+      await processPaymentFailure(env.DB, env, serviceRequest, webhookResult.transactionId);
     } else {
       // Pending status - just update transaction ID
       await updateServiceRequestPayment(env.DB, serviceRequest.id, {
