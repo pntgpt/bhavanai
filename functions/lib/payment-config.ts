@@ -13,7 +13,7 @@ import { PaymentGatewayFactory } from './payment-gateway-factory';
  */
 export interface PaymentGatewayConfigRecord {
   id: string;
-  provider: 'razorpay' | 'stripe' | 'paypal';
+  provider: 'razorpay' | 'stripe' | 'paypal' | 'mock';
   is_active: number;
   is_default: number;
   api_key_encrypted: string;
@@ -79,7 +79,7 @@ export class PaymentConfigService {
    * @returns Payment gateway configuration or null if not found
    */
   async getConfigByProvider(
-    provider: 'razorpay' | 'stripe' | 'paypal'
+    provider: 'razorpay' | 'stripe' | 'paypal' | 'mock'
   ): Promise<PaymentGatewayConfig | null> {
     try {
       const config = await this.db
@@ -192,7 +192,7 @@ export class PaymentConfigService {
    * 
    * @param provider - Provider to set as default
    */
-  async setDefaultProvider(provider: 'razorpay' | 'stripe' | 'paypal'): Promise<void> {
+  async setDefaultProvider(provider: 'razorpay' | 'stripe' | 'paypal' | 'mock'): Promise<void> {
     try {
       // Remove default flag from all providers
       await this.db
@@ -221,7 +221,7 @@ export class PaymentConfigService {
    * @param active - Whether to activate (true) or deactivate (false)
    */
   async setProviderActive(
-    provider: 'razorpay' | 'stripe' | 'paypal',
+    provider: 'razorpay' | 'stripe' | 'paypal' | 'mock',
     active: boolean
   ): Promise<void> {
     try {
@@ -315,7 +315,7 @@ export class PaymentConfigService {
  * @returns Payment gateway adapter or null if not configured
  */
 export function getPaymentGatewayFromEnv(env: any): PaymentGatewayConfig | null {
-  const provider = env.PAYMENT_GATEWAY_PROVIDER as 'razorpay' | 'stripe' | 'paypal' | undefined;
+  const provider = env.PAYMENT_GATEWAY_PROVIDER as 'razorpay' | 'stripe' | 'paypal' | 'mock' | undefined;
   
   if (!provider) {
     return null;

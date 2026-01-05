@@ -11,6 +11,7 @@ import {
   PaymentGatewayError,
 } from './payment-gateway';
 import { RazorpayAdapter } from './razorpay-adapter';
+import { MockPaymentAdapter } from './mock-payment-adapter';
 
 /**
  * Factory class for creating payment gateway adapters
@@ -54,6 +55,12 @@ export class PaymentGatewayFactory {
       case 'razorpay':
         return new RazorpayAdapter(config);
 
+      case 'mock':
+        return new MockPaymentAdapter({
+          webhookSecret: config.webhookSecret,
+          mode: config.mode,
+        });
+
       case 'stripe':
         // Placeholder for future Stripe implementation
         throw new PaymentGatewayError(
@@ -85,7 +92,7 @@ export class PaymentGatewayFactory {
    * @returns Array of supported provider names
    */
   static getSupportedProviders(): string[] {
-    return ['razorpay'];
+    return ['razorpay', 'mock'];
   }
 
   /**

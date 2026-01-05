@@ -128,7 +128,7 @@ export interface PaymentGatewayAdapter {
  */
 export interface PaymentGatewayConfig {
   /** Payment provider identifier */
-  provider: 'razorpay' | 'stripe' | 'paypal';
+  provider: 'razorpay' | 'stripe' | 'paypal' | 'mock';
   /** API key for the payment gateway */
   apiKey: string;
   /** API secret for the payment gateway */

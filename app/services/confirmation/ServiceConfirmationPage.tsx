@@ -17,12 +17,15 @@ export default function ServiceConfirmationPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [serviceData, setServiceData] = useState<any>(null);
 
   useEffect(() => {
     const ref = searchParams.get('ref');
+    const status = searchParams.get('status');
     if (ref) {
       setReferenceNumber(ref);
+      setPaymentStatus(status);
       // Fetch service request data for receipt
       fetchServiceData(ref);
     }
@@ -132,88 +135,29 @@ Thank you for choosing Bhavan.ai!
     );
   }
 
+  // Determine if payment was successful based on status or serviceData
+  const isPaymentSuccessful = paymentStatus === 'success' || 
+    (serviceData?.payment?.status === 'completed' && serviceData?.status !== 'cancelled');
+  const isPaymentFailed = paymentStatus === 'failed' || 
+    serviceData?.payment?.status === 'failed' || 
+    (serviceData?.status === 'cancelled' && serviceData?.payment?.status !== 'refunded');
+  const isPaymentRefunded = paymentStatus === 'refunded' || 
+    serviceData?.payment?.status === 'refunded';
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Success Message - Requirements 5.1, 5.2 */}
+        {/* Success/Failure Message */}
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          {/* Success Icon */}
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-10 h-10 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-
-          {/* Success Heading - Requirement 12.1, 12.5 */}
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-            Payment Successful!
-          </h1>
-
-          {/* Reference Number - Requirement 5.2, 12.5 */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Order Reference Number</p>
-            <p className="text-xl sm:text-2xl font-mono font-bold text-primary-600 break-all">
-              {referenceNumber}
-            </p>
-          </div>
-
-          {/* Next Steps - Requirements 5.3, 5.4 */}
-          <div className="text-left mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">What Happens Next?</h2>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-primary-600 font-semibold">1</span>
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">Email Confirmation</h3>
-                  <p className="text-sm text-gray-600">
-                    You'll receive a confirmation email within 5 minutes with your order details and receipt.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-primary-600 font-semibold">2</span>
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">Team Contact</h3>
-                  <p className="text-sm text-gray-600">
-                    Our team will reach out to you within 24-48 hours to schedule your consultation and discuss your requirements.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-primary-600 font-semibold">3</span>
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">Service Delivery</h3>
-                  <p className="text-sm text-gray-600">
-                    Your assigned professional will work with you to deliver the service according to your selected package.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Estimated Timeline - Requirement 5.4 */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start">
+          {/* Icon - changes based on status */}
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+            isPaymentSuccessful ? 'bg-green-100' : 
+            isPaymentRefunded ? 'bg-yellow-100' : 
+            'bg-red-100'
+          }`}>
+            {isPaymentSuccessful ? (
               <svg
-                className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0"
+                className="w-10 h-10 text-green-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -222,37 +166,229 @@ Thank you for choosing Bhavan.ai!
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M5 13l4 4L19 7"
                 />
               </svg>
-              <div className="text-left">
-                <p className="text-sm font-medium text-blue-900">Estimated Contact Time</p>
-                <p className="text-sm text-blue-700">
-                  Our team typically reaches out within 24-48 hours during business days (Monday-Saturday, 9 AM - 6 PM IST)
-                </p>
-              </div>
-            </div>
+            ) : isPaymentRefunded ? (
+              <svg
+                className="w-10 h-10 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-10 h-10 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            )}
           </div>
 
-          {/* Action Buttons - Requirement 5.5, 12.4 */}
+          {/* Heading - changes based on status */}
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+            {isPaymentSuccessful ? 'Payment Successful!' : 
+             isPaymentRefunded ? 'Payment Refunded' : 
+             'Payment Failed'}
+          </h1>
+
+          {/* Status message */}
+          <p className="text-gray-600 mb-6">
+            {isPaymentSuccessful ? 
+              'Your payment has been processed successfully. We\'ll be in touch soon!' :
+             isPaymentRefunded ?
+              'Your payment has been refunded. The amount will be credited to your account within 5-7 business days.' :
+              'Unfortunately, your payment could not be processed. Please try again or contact support.'}
+          </p>
+
+          {/* Reference Number */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+            <p className="text-xs sm:text-sm text-gray-600 mb-1">Order Reference Number</p>
+            <p className="text-xl sm:text-2xl font-mono font-bold text-primary-600 break-all">
+              {referenceNumber}
+            </p>
+          </div>
+
+          {/* Next Steps - only show for successful payments */}
+          {isPaymentSuccessful && (
+            <div className="text-left mb-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">What Happens Next?</h2>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-primary-600 font-semibold">1</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Email Confirmation</h3>
+                    <p className="text-sm text-gray-600">
+                      You'll receive a confirmation email within 5 minutes with your order details and receipt.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-primary-600 font-semibold">2</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Team Contact</h3>
+                    <p className="text-sm text-gray-600">
+                      Our team will reach out to you within 24-48 hours to schedule your consultation and discuss your requirements.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-primary-600 font-semibold">3</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Service Delivery</h3>
+                    <p className="text-sm text-gray-600">
+                      Your assigned professional will work with you to deliver the service according to your selected package.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Failed payment next steps */}
+          {isPaymentFailed && (
+            <div className="text-left mb-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">What You Can Do</h2>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-primary-600 font-semibold">1</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Try Again</h3>
+                    <p className="text-sm text-gray-600">
+                      You can retry the payment by going back to the services page and submitting a new request.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-primary-600 font-semibold">2</span>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Contact Support</h3>
+                    <p className="text-sm text-gray-600">
+                      If you continue to experience issues, please contact our support team with your reference number.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Refunded payment info */}
+          {isPaymentRefunded && (
+            <div className="text-left mb-8">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-start">
+                  <svg
+                    className="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-yellow-900">Refund Processing</p>
+                    <p className="text-sm text-yellow-700">
+                      Your refund is being processed. The amount will be credited back to your original payment method within 5-7 business days.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Estimated Timeline - only for successful payments */}
+          {isPaymentSuccessful && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <svg
+                  className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div className="text-left">
+                  <p className="text-sm font-medium text-blue-900">Estimated Contact Time</p>
+                  <p className="text-sm text-blue-700">
+                    Our team typically reaches out within 24-48 hours during business days (Monday-Saturday, 9 AM - 6 PM IST)
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              variant="primary"
-              size="md"
-              onClick={downloadReceipt}
-              disabled={!serviceData}
-              className="w-full sm:w-auto"
-            >
-              Download Receipt
-            </Button>
-            <Button
-              variant="outline"
-              size="md"
-              onClick={() => router.push(`/services/track?ref=${referenceNumber}`)}
-              className="w-full sm:w-auto"
-            >
-              Track Your Request
-            </Button>
+            {isPaymentSuccessful && (
+              <Button
+                variant="primary"
+                size="md"
+                onClick={downloadReceipt}
+                disabled={!serviceData}
+                className="w-full sm:w-auto"
+              >
+                Download Receipt
+              </Button>
+            )}
+            {isPaymentSuccessful && (
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => router.push(`/services/track?ref=${referenceNumber}`)}
+                className="w-full sm:w-auto"
+              >
+                Track Your Request
+              </Button>
+            )}
+            {isPaymentFailed && (
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => router.push('/services/purchase')}
+                className="w-full sm:w-auto"
+              >
+                Try Again
+              </Button>
+            )}
             <Button
               variant="outline"
               size="md"

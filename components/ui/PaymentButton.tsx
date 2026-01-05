@@ -132,6 +132,16 @@ export default function PaymentButton({
     paymentIntent: { clientSecret: string; amount: number; currency: string; gateway: string },
     referenceNumber: string
   ): Promise<void> => {
+    // Check if this is a mock payment gateway
+    if (paymentIntent.gateway === 'mock') {
+      // Redirect to mock payment page
+      const mockPaymentUrl = `/services/mock-payment?clientSecret=${encodeURIComponent(paymentIntent.clientSecret)}`;
+      window.location.href = mockPaymentUrl;
+      return;
+    }
+
+    // For real payment gateways (Razorpay, Stripe, etc.)
+    // This would integrate with their SDK
     return new Promise((resolve, reject) => {
       // Simulate payment gateway modal/redirect
       const confirmed = window.confirm(
@@ -190,7 +200,7 @@ export default function PaymentButton({
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
           />
         </svg>
-        Secure payment powered by Razorpay
+        Secure payment processing
       </div>
     </div>
   );
