@@ -383,7 +383,7 @@ Thank you for choosing Bhavan.ai!
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => router.push('/services/purchase')}
+                onClick={() => router.push('/#services')}
                 className="w-full sm:w-auto"
               >
                 Try Again
