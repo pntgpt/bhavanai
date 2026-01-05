@@ -161,6 +161,18 @@ export default async function AdminDashboard() {
               Create and manage affiliate partners for tracking referrals
             </p>
           </a>
+
+          <a
+            href="/dashboard/admin/services"
+            className="block p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-md transition-all"
+          >
+            <h3 className="font-sans font-semibold text-gray-900 mb-1">
+              Service Requests
+            </h3>
+            <p className="font-sans text-sm text-gray-600">
+              Manage service purchase requests and assign providers
+            </p>
+          </a>
         </div>
       </div>
 

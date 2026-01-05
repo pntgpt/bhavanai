@@ -85,7 +85,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.4, 9.4_
 
-- [ ] 8.3 Create AdminServiceRequestsTable component
+- [-] 8.3 Create AdminServiceRequestsTable component
   - Display service requests with filtering
   - Implement status update UI
   - Implement provider assignment UI
