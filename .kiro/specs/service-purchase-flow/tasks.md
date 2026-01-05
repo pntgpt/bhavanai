@@ -62,7 +62,7 @@
   - Commit all changes with detailed message
   - _Requirements: 2.2, 2.3, 3.1, 3.2, 3.3, 3.5, 4.1, 4.2_
 
-- [-] 7. Frontend: Confirmation and tracking pages
+- [x] 7. Frontend: Confirmation and tracking pages
   - Create ConfirmationPage component
   - Create ServiceTrackingPage component
   - Implement status display with timeline
@@ -71,13 +71,13 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 9.1, 9.2, 9.3, 9.5_
 
 - [ ] 8. Admin dashboard for service requests
-- [ ] 8.1 Implement GET /api/admin/services/requests endpoint
+- [x] 8.1 Implement GET /api/admin/services/requests endpoint
   - Support filtering by service type, status, date range, assigned provider
   - Implement pagination
   - Commit all changes with detailed message
   - _Requirements: 8.1, 8.2, 8.5_
 
-- [ ] 8.2 Implement PATCH /api/admin/services/requests/:id endpoint
+- [x] 8.2 Implement PATCH /api/admin/services/requests/:id endpoint
   - Handle status updates
   - Handle provider assignment
   - Create status history records
