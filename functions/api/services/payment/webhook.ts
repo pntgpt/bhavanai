@@ -21,6 +21,14 @@ import {
   getCommissionByServiceRequestId,
   updateCommissionStatus,
 } from '../../../lib/db';
+import {
+  DatabaseError,
+  PaymentError,
+  withDatabaseRetry,
+  withErrorHandling,
+  generateRequestId,
+  logError,
+} from '../../../lib/error-handling';
 
 interface Env {
   DB: D1Database;
@@ -61,19 +69,23 @@ interface ServiceRequest {
 }
 
 /**
- * Get service request by ID
+ * Get service request by ID with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function getServiceRequestById(db: D1Database, requestId: string): Promise<ServiceRequest | null> {
-  const result = await db
-    .prepare('SELECT * FROM service_requests WHERE id = ?')
-    .bind(requestId)
-    .first<ServiceRequest>();
+  return await withDatabaseRetry(async () => {
+    const result = await db
+      .prepare('SELECT * FROM service_requests WHERE id = ?')
+      .bind(requestId)
+      .first<ServiceRequest>();
 
-  return result;
+    return result;
+  }, { operation: 'getServiceRequestById', requestId });
 }
 
 /**
- * Update service request with payment information
+ * Update service request with payment information with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function updateServiceRequestPayment(
   db: D1Database,
@@ -84,32 +96,35 @@ async function updateServiceRequestPayment(
     status: string;
   }
 ): Promise<void> {
-  const now = Date.now();
-  const paymentCompletedAt = data.paymentStatus === 'completed' ? now : null;
+  await withDatabaseRetry(async () => {
+    const now = Date.now();
+    const paymentCompletedAt = data.paymentStatus === 'completed' ? now : null;
 
-  await db
-    .prepare(`
-      UPDATE service_requests
-      SET payment_transaction_id = ?,
-          payment_status = ?,
-          payment_completed_at = ?,
-          status = ?,
-          updated_at = ?
-      WHERE id = ?
-    `)
-    .bind(
-      data.transactionId,
-      data.paymentStatus,
-      paymentCompletedAt,
-      data.status,
-      now,
-      requestId
-    )
-    .run();
+    await db
+      .prepare(`
+        UPDATE service_requests
+        SET payment_transaction_id = ?,
+            payment_status = ?,
+            payment_completed_at = ?,
+            status = ?,
+            updated_at = ?
+        WHERE id = ?
+      `)
+      .bind(
+        data.transactionId,
+        data.paymentStatus,
+        paymentCompletedAt,
+        data.status,
+        now,
+        requestId
+      )
+      .run();
+  }, { operation: 'updateServiceRequestPayment', requestId });
 }
 
 /**
- * Create status history record
+ * Create status history record with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function createStatusHistory(
   db: D1Database,
@@ -120,24 +135,26 @@ async function createStatusHistory(
     notes?: string;
   }
 ): Promise<void> {
-  const id = crypto.randomUUID();
-  const now = Date.now();
+  await withDatabaseRetry(async () => {
+    const id = crypto.randomUUID();
+    const now = Date.now();
 
-  await db
-    .prepare(`
-      INSERT INTO service_request_status_history (
-        id, service_request_id, old_status, new_status, notes, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?)
-    `)
-    .bind(
-      id,
-      data.serviceRequestId,
-      data.oldStatus,
-      data.newStatus,
-      data.notes || null,
-      now
-    )
-    .run();
+    await db
+      .prepare(`
+        INSERT INTO service_request_status_history (
+          id, service_request_id, old_status, new_status, notes, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?)
+      `)
+      .bind(
+        id,
+        data.serviceRequestId,
+        data.oldStatus,
+        data.newStatus,
+        data.notes || null,
+        now
+      )
+      .run();
+  }, { operation: 'createStatusHistory', serviceRequestId: data.serviceRequestId });
 }
 
 /**
@@ -215,6 +232,13 @@ async function processPaymentSuccess(
     notes: 'Payment completed successfully',
   });
 
+  // Get service information first
+  const service = await getServiceById(db, serviceRequest.service_id);
+  if (!service) {
+    console.error('Service not found:', serviceRequest.service_id);
+    return;
+  }
+
   // Create affiliate tracking event if applicable
   if (serviceRequest.affiliate_id) {
     await createAffiliateTrackingEvent(db, {
@@ -259,13 +283,6 @@ async function processPaymentSuccess(
       console.error('Error creating commission record:', error);
       // Don't block the flow if commission creation fails
     }
-  }
-
-  // Get service information
-  const service = await getServiceById(db, serviceRequest.service_id);
-  if (!service) {
-    console.error('Service not found:', serviceRequest.service_id);
-    return;
   }
 
   // Create email and notification services
@@ -450,8 +467,11 @@ async function processPaymentFailure(
 /**
  * POST /api/services/payment/webhook
  * Process payment gateway webhooks
+ * Requirements: 11.1, 11.2, 11.3, 11.4
  */
 async function handlePost(request: Request, env: Env): Promise<Response> {
+  const requestId = generateRequestId();
+
   try {
     // Get webhook signature from headers
     const signature = request.headers.get('x-razorpay-signature') || 
@@ -459,7 +479,9 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
                      request.headers.get('x-webhook-signature') || '';
 
     if (!signature) {
-      console.error('Webhook signature missing');
+      logError(new Error('Webhook signature missing'), {
+        request: { method: request.method, url: request.url, requestId },
+      });
       return new Response(
         JSON.stringify({ success: false, error: 'Webhook signature missing' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -482,10 +504,16 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       }
 
       if (!paymentConfig) {
-        throw new Error('No payment gateway configured');
+        throw new PaymentError('Payment gateway not configured');
       }
     } catch (error) {
-      console.error('Failed to load payment gateway configuration:', error);
+      logError(
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          request: { method: request.method, url: request.url, requestId },
+          additional: { operation: 'loadPaymentConfig' },
+        }
+      );
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -501,7 +529,10 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     // Verify webhook signature
     const isValid = paymentGateway.verifyWebhook(payload, signature);
     if (!isValid) {
-      console.error('Invalid webhook signature');
+      logError(new Error('Invalid webhook signature'), {
+        request: { method: request.method, url: request.url, requestId },
+        additional: { payloadKeys: payload && typeof payload === 'object' ? Object.keys(payload) : [] },
+      });
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid webhook signature' }),
         { status: 401, headers: { 'Content-Type': 'application/json' } }
@@ -577,22 +608,41 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
         received: true, 
         processed: true 
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 200, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+        } 
+      }
     );
   } catch (error: any) {
-    console.error('POST /api/services/payment/webhook error:', error);
-
     // Handle payment gateway errors
     if (error instanceof PaymentGatewayError) {
+      const paymentError = new PaymentError(
+        'Failed to process webhook',
+        error.code
+      );
+      logError(paymentError, {
+        request: { method: request.method, url: request.url, requestId },
+        additional: { originalError: error.message },
+      });
       return new Response(
         JSON.stringify({
           success: false,
           error: 'Failed to process webhook',
-          details: error.message,
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    // Log and return generic error
+    logError(
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        request: { method: request.method, url: request.url, requestId },
+      }
+    );
 
     return new Response(
       JSON.stringify({ success: false, error: 'Internal server error' }),

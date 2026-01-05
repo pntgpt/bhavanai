@@ -93,7 +93,7 @@
   - Commit all changes with detailed message
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [-] 9. Affiliate integration
+- [x] 9. Affiliate integration
   - Update affiliate tracking to support service purchases
   - Implement commission calculation for services
   - Update affiliate dashboard to show service metrics
@@ -101,7 +101,7 @@
   - Commit all changes with detailed message
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 10. Error handling and resilience
+- [-] 10. Error handling and resilience
   - Implement error handling middleware
   - Add retry logic for network timeouts
   - Create user-friendly error messages

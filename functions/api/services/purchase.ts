@@ -10,6 +10,17 @@
 import { PaymentGatewayFactory } from '../../lib/payment-gateway-factory';
 import { PaymentConfigService, getPaymentGatewayFromEnv } from '../../lib/payment-config';
 import { PaymentGatewayError } from '../../lib/payment-gateway';
+import {
+  ValidationError,
+  DatabaseError,
+  NotFoundError,
+  PaymentError,
+  withDatabaseRetry,
+  withNetworkRetry,
+  withErrorHandling,
+  generateRequestId,
+  logError,
+} from '../../lib/error-handling';
 
 interface Env {
   DB: D1Database;
@@ -56,71 +67,85 @@ interface ServiceTier {
 
 /**
  * Validate purchase request data
+ * Requirement 11.1: Display clear error messages for validation errors
  */
-function validatePurchaseRequest(data: any): { valid: boolean; error?: string } {
+function validatePurchaseRequest(data: any): void {
+  const fields: Record<string, string> = {};
+
   if (!data.serviceId) {
-    return { valid: false, error: 'serviceId is required' };
+    fields.serviceId = 'Service selection is required';
   }
 
   if (!data.customer) {
-    return { valid: false, error: 'customer information is required' };
+    throw new ValidationError('Customer information is required');
   }
 
   const { fullName, email, phone, requirements } = data.customer;
 
   if (!fullName || typeof fullName !== 'string' || fullName.trim().length === 0) {
-    return { valid: false, error: 'customer.fullName is required' };
+    fields.fullName = 'Full name is required';
   }
 
   if (!email || typeof email !== 'string' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-    return { valid: false, error: 'valid customer.email is required' };
+    fields.email = 'Valid email address is required';
   }
 
   if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
-    return { valid: false, error: 'customer.phone is required' };
+    fields.phone = 'Phone number is required';
   }
 
   if (!requirements || typeof requirements !== 'string' || requirements.trim().length === 0) {
-    return { valid: false, error: 'customer.requirements is required' };
+    fields.requirements = 'Service requirements are required';
   }
 
-  return { valid: true };
+  if (Object.keys(fields).length > 0) {
+    throw new ValidationError('Please correct the following fields', fields);
+  }
 }
 
 /**
- * Get service by ID
+ * Get service by ID with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function getServiceById(db: D1Database, serviceId: string): Promise<Service | null> {
-  const result = await db
-    .prepare('SELECT * FROM services WHERE id = ? AND is_active = 1')
-    .bind(serviceId)
-    .first<Service>();
+  return await withDatabaseRetry(async () => {
+    const result = await db
+      .prepare('SELECT * FROM services WHERE id = ? AND is_active = 1')
+      .bind(serviceId)
+      .first<Service>();
 
-  return result;
+    return result;
+  }, { operation: 'getServiceById', serviceId });
 }
 
 /**
- * Get service tier by ID
+ * Get service tier by ID with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function getServiceTierById(db: D1Database, tierId: string): Promise<ServiceTier | null> {
-  const result = await db
-    .prepare('SELECT * FROM service_tiers WHERE id = ? AND is_active = 1')
-    .bind(tierId)
-    .first<ServiceTier>();
+  return await withDatabaseRetry(async () => {
+    const result = await db
+      .prepare('SELECT * FROM service_tiers WHERE id = ? AND is_active = 1')
+      .bind(tierId)
+      .first<ServiceTier>();
 
-  return result;
+    return result;
+  }, { operation: 'getServiceTierById', tierId });
 }
 
 /**
- * Validate affiliate code and get affiliate ID
+ * Validate affiliate code and get affiliate ID with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function validateAffiliateCode(db: D1Database, affiliateCode: string): Promise<string | null> {
-  const result = await db
-    .prepare('SELECT id FROM affiliates WHERE id = ? AND status = ?')
-    .bind(affiliateCode, 'active')
-    .first<{ id: string }>();
+  return await withDatabaseRetry(async () => {
+    const result = await db
+      .prepare('SELECT id FROM affiliates WHERE id = ? AND status = ?')
+      .bind(affiliateCode, 'active')
+      .first<{ id: string }>();
 
-  return result?.id || null;
+    return result?.id || null;
+  }, { operation: 'validateAffiliateCode', affiliateCode });
 }
 
 /**
@@ -133,7 +158,8 @@ function generateReferenceNumber(): string {
 }
 
 /**
- * Create a pending service request record
+ * Create a pending service request record with database retry
+ * Requirement 11.2: Database error handling with retry option
  */
 async function createPendingServiceRequest(
   db: D1Database,
@@ -153,69 +179,65 @@ async function createPendingServiceRequest(
     affiliateCode?: string;
   }
 ): Promise<{ id: string; referenceNumber: string }> {
-  const id = crypto.randomUUID();
-  const referenceNumber = generateReferenceNumber();
-  const now = Date.now();
+  return await withDatabaseRetry(async () => {
+    const id = crypto.randomUUID();
+    const referenceNumber = generateReferenceNumber();
+    const now = Date.now();
 
-  await db
-    .prepare(`
-      INSERT INTO service_requests (
-        id, reference_number, service_id, service_tier_id,
-        customer_name, customer_email, customer_phone, customer_requirements,
-        payment_gateway, payment_amount, payment_currency, payment_status,
-        status, affiliate_code, affiliate_id,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `)
-    .bind(
-      id,
-      referenceNumber,
-      data.serviceId,
-      data.serviceTierId || null,
-      data.customer.fullName,
-      data.customer.email,
-      data.customer.phone,
-      data.customer.requirements,
-      data.paymentGateway,
-      data.amount,
-      data.currency,
-      'pending',
-      'pending_contact',
-      data.affiliateCode || null,
-      data.affiliateId || null,
-      now,
-      now
-    )
-    .run();
+    await db
+      .prepare(`
+        INSERT INTO service_requests (
+          id, reference_number, service_id, service_tier_id,
+          customer_name, customer_email, customer_phone, customer_requirements,
+          payment_gateway, payment_amount, payment_currency, payment_status,
+          status, affiliate_code, affiliate_id,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+      .bind(
+        id,
+        referenceNumber,
+        data.serviceId,
+        data.serviceTierId || null,
+        data.customer.fullName,
+        data.customer.email,
+        data.customer.phone,
+        data.customer.requirements,
+        data.paymentGateway,
+        data.amount,
+        data.currency,
+        'pending',
+        'pending_contact',
+        data.affiliateCode || null,
+        data.affiliateId || null,
+        now,
+        now
+      )
+      .run();
 
-  return { id, referenceNumber };
+    return { id, referenceNumber };
+  }, { operation: 'createPendingServiceRequest', serviceId: data.serviceId });
 }
 
 /**
  * POST /api/services/purchase
  * Create a payment intent for service purchase
+ * Requirements: 11.1, 11.2, 11.3, 11.4
  */
 async function handlePost(request: Request, env: Env): Promise<Response> {
+  const requestId = generateRequestId();
+
   try {
     // Parse request body
     const data: PurchaseRequest = await request.json();
 
-    // Validate request data
-    const validation = validatePurchaseRequest(data);
-    if (!validation.valid) {
-      return new Response(
-        JSON.stringify({ success: false, error: validation.error }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // Validate request data (throws ValidationError if invalid)
+    validatePurchaseRequest(data);
 
     // Get service details
     const service = await getServiceById(env.DB, data.serviceId);
     if (!service) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Service not found or inactive' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
+      throw new NotFoundError('Service', data.serviceId);
     }
 
     // Determine price (from tier or base price)
@@ -226,18 +248,12 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     if (data.serviceTierId) {
       serviceTier = await getServiceTierById(env.DB, data.serviceTierId);
       if (!serviceTier) {
-        return new Response(
-          JSON.stringify({ success: false, error: 'Service tier not found or inactive' }),
-          { status: 404, headers: { 'Content-Type': 'application/json' } }
-        );
+        throw new NotFoundError('Service tier', data.serviceTierId);
       }
 
       // Verify tier belongs to service
       if (serviceTier.service_id !== service.id) {
-        return new Response(
-          JSON.stringify({ success: false, error: 'Service tier does not belong to the specified service' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
+        throw new ValidationError('Service tier does not belong to the specified service');
       }
 
       amount = serviceTier.price;
@@ -263,17 +279,17 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       }
 
       if (!paymentConfig) {
-        throw new Error('No payment gateway configured');
+        throw new PaymentError('Payment gateway not configured. Please contact support.');
       }
     } catch (error) {
-      console.error('Failed to load payment gateway configuration:', error);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Payment gateway not configured. Please contact support.' 
-        }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      logError(
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          request: { method: request.method, url: request.url, requestId },
+          additional: { operation: 'loadPaymentConfig' },
+        }
       );
+      throw new PaymentError('Payment gateway not configured. Please contact support.');
     }
 
     // Create payment gateway adapter
@@ -291,22 +307,27 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       affiliateCode: data.affiliateCode,
     });
 
-    // Create payment intent
-    const paymentIntent = await paymentGateway.createPaymentIntent({
-      amount,
-      currency,
-      customerEmail: data.customer.email,
-      customerName: data.customer.fullName,
-      description: `${service.name}${serviceTier ? ` - ${serviceTier.name}` : ''}`,
-      metadata: {
-        service_request_id: serviceRequest.id,
-        reference_number: serviceRequest.referenceNumber,
-        service_id: service.id,
-        service_tier_id: serviceTier?.id || '',
-        affiliate_id: affiliateId || '',
-        affiliate_code: data.affiliateCode || '',
+    // Create payment intent with network retry
+    const paymentIntent = await withNetworkRetry(
+      async () => {
+        return await paymentGateway.createPaymentIntent({
+          amount,
+          currency,
+          customerEmail: data.customer.email,
+          customerName: data.customer.fullName,
+          description: `${service.name}${serviceTier ? ` - ${serviceTier.name}` : ''}`,
+          metadata: {
+            service_request_id: serviceRequest.id,
+            reference_number: serviceRequest.referenceNumber,
+            service_id: service.id,
+            service_tier_id: serviceTier?.id || '',
+            affiliate_id: affiliateId || '',
+            affiliate_code: data.affiliateCode || '',
+          },
+        });
       },
-    });
+      { operation: 'createPaymentIntent', serviceRequestId: serviceRequest.id }
+    );
 
     // Return payment intent to client
     return new Response(
@@ -323,33 +344,48 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       }),
       {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+        },
       }
     );
   } catch (error: any) {
-    console.error('POST /api/services/purchase error:', error);
-
     // Handle payment gateway errors
     if (error instanceof PaymentGatewayError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Failed to create payment intent. Please try again.',
-          details: error.message,
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      const paymentError = new PaymentError(
+        'Failed to create payment intent. Please try again.',
+        error.code
       );
+      logError(paymentError, {
+        request: { method: request.method, url: request.url, requestId },
+        additional: { originalError: error.message },
+      });
+      throw paymentError;
     }
 
-    return new Response(
-      JSON.stringify({ success: false, error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    // Re-throw our custom errors
+    if (error instanceof ValidationError || 
+        error instanceof NotFoundError || 
+        error instanceof PaymentError ||
+        error instanceof DatabaseError) {
+      throw error;
+    }
+
+    // Wrap unknown errors
+    logError(
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        request: { method: request.method, url: request.url, requestId },
+      }
     );
+    throw error;
   }
 }
 
 /**
  * Main handler for /api/services/purchase
+ * Wrapped with error handling middleware
  */
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context;
@@ -366,18 +402,17 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     });
   }
 
-  let response: Response;
+  // Wrap handler with error handling
+  const handler = withErrorHandling(async (req: Request, environment: Env) => {
+    switch (req.method) {
+      case 'POST':
+        return await handlePost(req, environment);
+      default:
+        throw new ValidationError('Method not allowed');
+    }
+  });
 
-  switch (request.method) {
-    case 'POST':
-      response = await handlePost(request, env);
-      break;
-    default:
-      response = new Response(
-        JSON.stringify({ success: false, error: 'Method not allowed' }),
-        { status: 405, headers: { 'Content-Type': 'application/json' } }
-      );
-  }
+  const response = await handler(request, env, context);
 
   // Add CORS headers to response
   const headers = new Headers(response.headers);
