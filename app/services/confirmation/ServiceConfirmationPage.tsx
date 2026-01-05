@@ -172,13 +172,21 @@ Thank you for choosing Bhavan.ai!
   }
 
   // Determine if payment was successful based on status or serviceData
-  const isPaymentSuccessful = paymentStatus === 'success' || 
-    (serviceData?.payment?.status === 'completed' && serviceData?.status !== 'cancelled');
-  const isPaymentFailed = paymentStatus === 'failed' || 
-    serviceData?.payment?.status === 'failed' || 
-    (serviceData?.status === 'cancelled' && serviceData?.payment?.status !== 'refunded');
-  const isPaymentRefunded = paymentStatus === 'refunded' || 
-    serviceData?.payment?.status === 'refunded';
+  // Priority: URL status parameter (most recent) > database status
+  const isPaymentSuccessful =
+    paymentStatus === 'success' ||
+    (!paymentStatus &&
+      serviceData?.payment?.status === 'completed' &&
+      serviceData?.status !== 'cancelled');
+  const isPaymentFailed =
+    paymentStatus === 'failed' ||
+    (!paymentStatus &&
+      (serviceData?.payment?.status === 'failed' ||
+        (serviceData?.status === 'cancelled' &&
+          serviceData?.payment?.status !== 'refunded')));
+  const isPaymentRefunded =
+    paymentStatus === 'refunded' ||
+    (!paymentStatus && serviceData?.payment?.status === 'refunded');
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
