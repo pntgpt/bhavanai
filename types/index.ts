@@ -309,6 +309,43 @@ export interface Env {
 }
 
 /**
+ * Service category types
+ */
+export type ServiceCategory = 'ca' | 'legal' | 'other';
+
+/**
+ * Service tier structure
+ */
+export interface ServiceTier {
+  id: string;
+  name: string;
+  price: number;
+  features: string[];
+}
+
+/**
+ * Service pricing structure
+ */
+export interface ServicePricing {
+  amount: number;
+  currency: string;
+  tiers?: ServiceTier[];
+}
+
+/**
+ * Service data structure
+ */
+export interface Service {
+  id: string;
+  name: string;
+  description: string;
+  shortDescription: string;
+  pricing: ServicePricing;
+  features: string[];
+  category: ServiceCategory;
+}
+
+/**
  * Cloudflare R2 Bucket type
  */
 export interface R2Bucket {

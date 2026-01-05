@@ -23,3 +23,5 @@ export type { PropertyCardProps } from './PropertyCard';
 
 export { default as AffiliateLink } from './AffiliateLink';
 export type { AffiliateLinkProps } from './AffiliateLink';
+
+export { ServiceCard } from './ServiceCard';

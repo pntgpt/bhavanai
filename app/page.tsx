@@ -12,6 +12,7 @@ import { Hero, HowItWorks } from '@/components/sections';
  * Requirements: 12.2, 12.4, 12.5
  */
 const Features = lazy(() => import('@/components/sections/Features'));
+const Services = lazy(() => import('@/components/sections/Services'));
 const Marketplace = lazy(() => import('@/components/sections/Marketplace'));
 const Pricing = lazy(() => import('@/components/sections/Pricing'));
 const Team = lazy(() => import('@/components/sections/Team'));
@@ -43,6 +44,7 @@ const SectionLoader = () => (
  * - Hero section with headline and CTAs (Task 3) - Loaded immediately
  * - How It Works section with 4-step process (Task 3) - Loaded immediately
  * - Features section with platform capabilities (Task 4) - Lazy loaded
+ * - Services section with professional services (Service Purchase Flow) - Lazy loaded
  * - Marketplace section with exit process (Task 4) - Lazy loaded
  * - Pricing section with fee structure (Task 4) - Lazy loaded
  * - Team section with founder information (Task 5) - Lazy loaded
@@ -55,6 +57,7 @@ const SectionLoader = () => (
  * Note: Market & Validation and Roadmap sections removed per Task 22
  * 
  * Requirements: 1.1-1.5, 2.1-2.5, 3.1-3.5, 6.1-6.5, 7.1-7.5, 10.1-10.4, 12.2, 12.4, 12.5
+ * Service Purchase Flow Requirements: 1.1, 1.2, 1.3, 1.4, 2.1, 2.4
  */
 export default function Home() {
   return (
@@ -71,6 +74,11 @@ export default function Home() {
         <Suspense fallback={<SectionLoader />}>
           {/* Features Section - Requirements 3.1-3.5 */}
           <Features />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoader />}>
+          {/* Services Section - Service Purchase Flow Requirements 1.1, 1.2, 1.3, 1.4, 2.1, 2.4 */}
+          <Services />
         </Suspense>
         
         <Suspense fallback={<SectionLoader />}>
