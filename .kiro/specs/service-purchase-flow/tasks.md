@@ -1,13 +1,13 @@
 # Implementation Plan
 
-- [-] 1. Database schema and migrations
+- [x] 1. Database schema and migrations
   - Create migration files for services, service_tiers, service_requests, service_request_status_history, and payment_gateway_config tables
   - Add necessary indexes for performance
   - Create seed data for initial services (CA, Legal)
   - Commit all changes with detailed message
   - _Requirements: 1.1, 7.1, 8.1_
 
-- [ ] 2. Payment gateway adapter infrastructure
+- [-] 2. Payment gateway adapter infrastructure
   - Create PaymentGatewayAdapter interface
   - Implement PaymentGatewayFactory
   - Implement RazorpayAdapter (or chosen provider)
