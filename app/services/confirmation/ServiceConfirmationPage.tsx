@@ -19,6 +19,8 @@ export default function ServiceConfirmationPage() {
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [serviceData, setServiceData] = useState<any>(null);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   useEffect(() => {
     const ref = searchParams.get('ref');
@@ -69,6 +71,40 @@ export default function ServiceConfirmationPage() {
       style: 'currency',
       currency: currency,
     }).format(amount);
+  };
+
+  /**
+   * Retry payment for failed service request
+   * Creates a new payment session and redirects to payment gateway
+   */
+  const handleRetryPayment = async () => {
+    if (!referenceNumber) return;
+
+    setRetrying(true);
+    setRetryError(null);
+
+    try {
+      const response = await fetch('/api/services/payment/retry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ referenceNumber }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to retry payment');
+      }
+
+      // Redirect to payment gateway
+      window.location.href = data.paymentUrl;
+    } catch (error: any) {
+      console.error('Failed to retry payment:', error);
+      setRetryError(error.message || 'Failed to retry payment. Please try again.');
+      setRetrying(false);
+    }
   };
 
   /**
@@ -272,6 +308,32 @@ Thank you for choosing Bhavan.ai!
           {isPaymentFailed && (
             <div className="text-left mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">What You Can Do</h2>
+              
+              {/* Retry Error Message */}
+              {retryError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-start">
+                    <svg
+                      className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-red-900">Retry Failed</p>
+                      <p className="text-sm text-red-700">{retryError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
@@ -280,7 +342,7 @@ Thank you for choosing Bhavan.ai!
                   <div>
                     <h3 className="font-medium text-gray-900">Try Again</h3>
                     <p className="text-sm text-gray-600">
-                      You can retry the payment by going back to the services page and submitting a new request.
+                      Click the "Try Again" button below to retry the payment for this service request. You won't need to re-enter your information.
                     </p>
                   </div>
                 </div>
@@ -383,10 +445,18 @@ Thank you for choosing Bhavan.ai!
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => router.push('/services/purchase')}
+                onClick={handleRetryPayment}
+                disabled={retrying}
                 className="w-full sm:w-auto"
               >
-                Try Again
+                {retrying ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Retrying...
+                  </>
+                ) : (
+                  'Try Again'
+                )}
               </Button>
             )}
             <Button
