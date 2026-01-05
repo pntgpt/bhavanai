@@ -31,13 +31,13 @@
   - Commit all changes with detailed message
   - _Requirements: 4.3, 4.4, 7.1, 7.2_
 
-- [ ] 3.3 Implement GET /api/services/requests/:referenceNumber endpoint
+- [x] 3.3 Implement GET /api/services/requests/:referenceNumber endpoint
   - Fetch service request by reference number
   - Return status timeline
   - Commit all changes with detailed message
   - _Requirements: 9.2, 9.3, 9.5_
 
-- [-] 4. Email and notification services
+- [x] 4. Email and notification services
   - Create email service with confirmation email template
   - Implement retry logic with exponential backoff
   - Create provider notification service
