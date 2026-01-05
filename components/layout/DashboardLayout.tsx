@@ -54,6 +54,8 @@ function getNavigationItems(role: string): Array<{ label: string; href: string }
       { label: 'User Management', href: '/dashboard/admin/users' },
       { label: 'Property Approval', href: '/dashboard/admin/properties/approval' },
       { label: 'All Properties', href: '/dashboard/admin/properties' },
+      { label: 'Service Requests', href: '/dashboard/admin/services' },
+      { label: 'Affiliates', href: '/dashboard/admin/affiliates' },
     ];
   }
 

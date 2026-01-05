@@ -73,12 +73,14 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   // Form states
   const [newStatus, setNewStatus] = useState<string>('');
   const [statusNotes, setStatusNotes] = useState('');
   const [selectedProviderId, setSelectedProviderId] = useState<string>('');
+  const [notesText, setNotesText] = useState('');
 
   /**
    * Fetch service requests with filters
@@ -213,6 +215,15 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
   };
 
   /**
+   * Open notes modal
+   */
+  const openNotesModal = (request: ServiceRequest) => {
+    setSelectedRequest(request);
+    setNotesText(request.notes || '');
+    setShowNotesModal(true);
+  };
+
+  /**
    * Handle status update
    */
   const handleStatusUpdate = async () => {
@@ -293,6 +304,51 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
 
       setSuccess('Provider assigned successfully');
       setShowAssignModal(false);
+      setSelectedRequest(null);
+      fetchRequests();
+      onRefresh?.();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  /**
+   * Handle adding/updating notes
+   */
+  const handleAddNotes = async () => {
+    if (!selectedRequest) return;
+
+    if (notesText.trim() === (selectedRequest.notes || '').trim()) {
+      setError('Please modify the notes before saving');
+      return;
+    }
+
+    setActionLoading(selectedRequest.id);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch(`/api/admin/services/requests/${selectedRequest.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          notes: notesText.trim() || null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update notes');
+      }
+
+      setSuccess('Notes updated successfully');
+      setShowNotesModal(false);
       setSelectedRequest(null);
       fetchRequests();
       onRefresh?.();
@@ -633,6 +689,13 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
                             </button>
                           </>
                         )}
+                        <button
+                          onClick={() => openNotesModal(request)}
+                          disabled={actionLoading === request.id}
+                          className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                        >
+                          Notes
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -836,6 +899,16 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
               <Button variant="outline" size="md" onClick={() => setShowDetailModal(false)}>
                 Close
               </Button>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => {
+                  setShowDetailModal(false);
+                  openNotesModal(selectedRequest);
+                }}
+              >
+                Add/Edit Notes
+              </Button>
               {selectedRequest.status !== 'completed' && selectedRequest.status !== 'cancelled' && (
                 <>
                   <Button
@@ -1020,6 +1093,69 @@ export default function AdminServiceRequestsTable({ onRefresh }: AdminServiceReq
                 }
               >
                 Assign Provider
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Add/Edit Notes Modal */}
+      <Modal
+        isOpen={showNotesModal}
+        onClose={() => setShowNotesModal(false)}
+        title="Add/Edit Notes"
+      >
+        {selectedRequest && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Managing notes for request: <strong>{selectedRequest.reference_number}</strong>
+            </p>
+
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">Customer</p>
+              <p className="text-sm text-gray-900">{selectedRequest.customer_name}</p>
+              <p className="text-xs text-gray-500">{selectedRequest.service_name}</p>
+            </div>
+
+            <div>
+              <label htmlFor="notesText" className="block text-sm font-medium text-gray-700 mb-2">
+                Notes
+              </label>
+              <textarea
+                id="notesText"
+                rows={6}
+                value={notesText}
+                onChange={(e) => setNotesText(e.target.value)}
+                placeholder="Add internal notes about this service request (e.g., customer preferences, special requirements, follow-up actions, etc.)"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                These notes are for internal use only and will not be visible to the customer.
+              </p>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Tip:</strong> Use notes to track important details, customer preferences, or
+                any special instructions for the assigned provider.
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4 border-t">
+              <Button variant="outline" size="md" onClick={() => setShowNotesModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={handleAddNotes}
+                loading={actionLoading === selectedRequest.id}
+                disabled={
+                  actionLoading === selectedRequest.id ||
+                  notesText.trim() === (selectedRequest.notes || '').trim()
+                }
+              >
+                Save Notes
               </Button>
             </div>
           </div>
