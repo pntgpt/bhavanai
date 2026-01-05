@@ -7,7 +7,7 @@
   - Commit all changes with detailed message
   - _Requirements: 1.1, 7.1, 8.1_
 
-- [-] 2. Payment gateway adapter infrastructure
+- [x] 2. Payment gateway adapter infrastructure
   - Create PaymentGatewayAdapter interface
   - Implement PaymentGatewayFactory
   - Implement RazorpayAdapter (or chosen provider)
@@ -15,15 +15,15 @@
   - Commit all changes with detailed message
   - _Requirements: 4.1, 4.6, 4.7_
 
-- [ ] 3. Core API endpoints for service purchase flow
-- [ ] 3.1 Implement POST /api/services/purchase endpoint
+- [x] 3. Core API endpoints for service purchase flow
+- [x] 3.1 Implement POST /api/services/purchase endpoint
   - Handle service purchase request
   - Create payment intent via gateway adapter
   - Preserve affiliate tracking
   - Commit all changes with detailed message
   - _Requirements: 2.1, 2.2, 4.1, 10.1_
 
-- [ ] 3.2 Implement POST /api/services/payment/webhook endpoint
+- [x] 3.2 Implement POST /api/services/payment/webhook endpoint
   - Verify webhook signatures
   - Process payment success/failure
   - Create service request record
@@ -31,7 +31,7 @@
   - Commit all changes with detailed message
   - _Requirements: 4.3, 4.4, 7.1, 7.2_
 
-- [ ] 3.3 Implement GET /api/services/requests/:referenceNumber endpoint
+- [x] 3.3 Implement GET /api/services/requests/:referenceNumber endpoint
   - Fetch service request by reference number
   - Return status timeline
   - Commit all changes with detailed message
