@@ -24,8 +24,19 @@ preview_bucket_name = "bhavan-images"  # Use production bucket in dev mode too
 # R2 public URL for serving images
 R2_PUBLIC_URL = "https://pub-28f9edbaef9f4402a511120118772391.r2.dev"
 
-# NOTE: Email configuration (EMAIL_PROVIDER, EMAIL_API_KEY, EMAIL_FROM_ADDRESS, EMAIL_FROM_NAME)
-# is set via Cloudflare Dashboard → Workers & Pages → Settings → Environment Variables
+# Mock Payment Gateway Configuration (for testing)
+PAYMENT_GATEWAY_PROVIDER = "mock"
+PAYMENT_GATEWAY_API_KEY = "mock_api_key_12345"
+PAYMENT_GATEWAY_API_SECRET = "mock_api_secret_12345"
+PAYMENT_GATEWAY_WEBHOOK_SECRET = "mock_webhook_secret_12345"
+PAYMENT_GATEWAY_MODE = "test"
+
+# Email Service Configuration
+EMAIL_PROVIDER = "resend"
+EMAIL_FROM_ADDRESS = "noreply@bhavan.ai"
+EMAIL_FROM_NAME = "Bhavan.ai"
+
+# NOTE: EMAIL_API_KEY (secret) is set via Cloudflare Dashboard → Workers & Pages → Settings → Environment Variables
 
 # Routes - Update with your actual domain
 # Uncomment these lines and replace with your domain:
