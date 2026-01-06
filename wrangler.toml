@@ -24,14 +24,14 @@ preview_bucket_name = "bhavan-images"  # Use production bucket in dev mode too
 # R2 public URL for serving images
 R2_PUBLIC_URL = "https://pub-28f9edbaef9f4402a511120118772391.r2.dev"
 
-# Email service configuration (add your values here or use secrets for production)
-# EMAIL_PROVIDER = "resend"
-# EMAIL_FROM_ADDRESS = "noreply@bhavan.ai"
-# EMAIL_FROM_NAME = "Bhavan.ai"
+# Email service configuration
+EMAIL_PROVIDER = "resend"
+EMAIL_FROM_ADDRESS = "noreply@bhavan.ai"
+EMAIL_FROM_NAME = "Bhavan.ai"
 
-# Use secrets for sensitive data in production:
-# wrangler secret put EMAIL_API_KEY
-# wrangler secret put EMAIL_DOMAIN (if using mailgun)
+# IMPORTANT: Add EMAIL_API_KEY via Cloudflare Dashboard or wrangler secret
+# Dashboard: Workers & Pages → Your Project → Settings → Environment Variables
+# CLI: wrangler secret put EMAIL_API_KEY --env production
 
 # Routes - Update with your actual domain
 # Uncomment these lines and replace with your domain:

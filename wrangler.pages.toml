@@ -19,3 +19,12 @@ preview_bucket_name = "bhavan-images"
 [vars]
 # R2 public URL for serving images
 R2_PUBLIC_URL = "https://pub-28f9edbaef9f4402a511120118772391.r2.dev"
+
+# Email service configuration
+EMAIL_PROVIDER = "resend"
+EMAIL_FROM_ADDRESS = "noreply@bhavan.ai"
+EMAIL_FROM_NAME = "Bhavan.ai"
+
+# IMPORTANT: Add EMAIL_API_KEY via Cloudflare Dashboard
+# Dashboard: Workers & Pages → Your Project → Settings → Environment Variables → Production
+# Add: EMAIL_API_KEY = re_8ry9535e_carP8XuyXb2ZXbhMnHE7VTzb
