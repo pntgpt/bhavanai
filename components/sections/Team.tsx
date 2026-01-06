@@ -40,30 +40,21 @@ export interface TeamProps {
 const defaultMembers: TeamMember[] = [
   {
     id: 'founder-1',
-    name: 'Priya Sharma',
-    title: 'Co-Founder & CEO',
-    bio: 'Former product lead at a leading proptech startup. Passionate about making home ownership accessible to everyone.',
-    credentials: 'MBA from IIM Bangalore, 8+ years in real estate technology',
+    name: 'Mohammad Emran Jalaluddin',
+    title: 'CEO',
+    bio: 'Visionary leader driving innovation in proptech and real estate technology. Passionate about making home ownership accessible to everyone through fractional ownership and compliant SPV structures.',
+    credentials: 'Experienced entrepreneur and business leader in real estate technology',
     photo: '/images/team/placeholder-1.jpg',
-    linkedIn: 'https://linkedin.com/in/priya-sharma',
+    linkedIn: 'https://www.linkedin.com/in/mohammad-emran-jalaluddin/',
   },
   {
     id: 'founder-2',
-    name: 'Rahul Verma',
-    title: 'Co-Founder & CTO',
-    bio: 'Tech entrepreneur with expertise in fintech and blockchain. Previously built scalable platforms at major tech companies.',
-    credentials: 'B.Tech from IIT Delhi, Former Engineering Lead at Razorpay',
+    name: 'Puneet Gupta',
+    title: 'CTO',
+    bio: 'Over 9 years of experience in conceptualizing, developing and implementing effective cloud and customer-based products with startups and enterprises. Strong people management skills with expertise in backend development.',
+    credentials: 'Senior Engineering Manager at Booking.com | IIT Hyderabad | Ex-PayPal, Qubole',
     photo: '/images/team/placeholder-2.jpg',
-    linkedIn: 'https://linkedin.com/in/rahul-verma',
-  },
-  {
-    id: 'founder-3',
-    name: 'Anjali Mehta',
-    title: 'Co-Founder & COO',
-    bio: 'Legal and compliance expert specializing in SPVs and real estate law. Ensures all operations are fully compliant.',
-    credentials: 'LLB from National Law School, 10+ years in corporate law',
-    photo: '/images/team/placeholder-3.jpg',
-    linkedIn: 'https://linkedin.com/in/anjali-mehta',
+    linkedIn: 'https://www.linkedin.com/in/pntgpt/',
   },
 ];
 
@@ -93,9 +84,9 @@ const Team: React.FC<TeamProps> = ({
         </div>
 
         {/* Team Member Cards - Requirements 10.1, 10.2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="flex flex-wrap justify-center gap-8 mb-16 max-w-4xl mx-auto">
           {members.map((member) => (
-            <Card key={member.id} variant="team" hover>
+            <Card key={member.id} variant="team" hover className="w-full md:w-[calc(50%-1rem)] max-w-md flex flex-col">
               {/* Photo - Requirement 19.2 */}
               <div className="mb-6 flex justify-center">
                 <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden">
@@ -113,22 +104,22 @@ const Team: React.FC<TeamProps> = ({
               </div>
 
               {/* Name */}
-              <h3 className="font-serif font-semibold text-xl text-gray-900 mb-1 text-center">
+              <h3 className="font-serif font-semibold text-xl text-gray-900 mb-1 text-center min-h-[28px]">
                 {member.name}
               </h3>
 
               {/* Title */}
-              <p className="font-sans text-primary-600 font-medium mb-4 text-center">
+              <p className="font-sans text-primary-600 font-medium mb-4 text-center min-h-[24px]">
                 {member.title}
               </p>
 
               {/* Bio */}
-              <p className="font-sans text-gray-600 leading-relaxed mb-4 text-center">
+              <p className="font-sans text-gray-600 leading-relaxed mb-4 text-center min-h-[120px]">
                 {member.bio}
               </p>
 
               {/* Credentials - Requirement 10.2 */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 min-h-[60px] flex items-center justify-center">
                 <p className="font-sans text-sm text-gray-700 text-center">
                   {member.credentials}
                 </p>
@@ -136,7 +127,7 @@ const Team: React.FC<TeamProps> = ({
 
               {/* LinkedIn Link */}
               {member.linkedIn && (
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-auto">
                   <a
                     href={member.linkedIn}
                     target="_blank"
