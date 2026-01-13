@@ -223,8 +223,8 @@ export default function PrivacyPage() {
               </p>
               <p className="font-sans text-gray-700 mb-2">
                 <strong>General Inquiries:</strong>{' '}
-                <a href="mailto:hello@bhavan.ai" className="text-primary-600 hover:underline">
-                  hello@bhavan.ai
+                <a href="mailto:info@bhavan.ai" className="text-primary-600 hover:underline">
+                  info@bhavan.ai
                 </a>
               </p>
               <p className="font-sans text-gray-700">
