@@ -197,7 +197,7 @@ Interactive elements include appropriate ARIA labels:
 
 The Bhavan.ai marketing website has been designed and developed to meet WCAG 2.1 Level AA standards. We are committed to ensuring digital accessibility for all users and continuously work to improve the user experience for everyone.
 
-If you encounter any accessibility barriers, please contact us at hello@bhavan.ai.
+If you encounter any accessibility barriers, please contact us at info@bhavan.ai.
 
 ---
 

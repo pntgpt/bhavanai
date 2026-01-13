@@ -2288,7 +2288,7 @@ Slow: 500ms ease-in-out
 
 **Form Error Messages**
 - Network error: "Connection error. Please check your internet and try again."
-- Server error: "Something went wrong. Please try again or email us at hello@bhavan.ai"
+- Server error: "Something went wrong. Please try again or email us at info@bhavan.ai"
 - Validation error: "Please check the highlighted fields and try again."
 
 ### SEO Content

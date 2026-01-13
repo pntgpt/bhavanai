@@ -293,12 +293,18 @@ export default function TermsPage() {
               </p>
               <p className="font-sans text-gray-700 mb-2">
                 <strong>General Inquiries:</strong>{' '}
-                <a href="mailto:hello@bhavan.ai" className="text-primary-600 hover:underline">
-                  hello@bhavan.ai
+                <a href="mailto:info@bhavan.ai" className="text-primary-600 hover:underline">
+                  info@bhavan.ai
+                </a>
+              </p>
+              <p className="font-sans text-gray-700 mb-2">
+                <strong>Phone:</strong>{' '}
+                <a href="tel:+918727812524" className="text-primary-600 hover:underline">
+                  +91 87278 12524
                 </a>
               </p>
               <p className="font-sans text-gray-700">
-                <strong>Address:</strong> Bhavan.ai, Bangalore, India
+                <strong>Address:</strong> 306, Morya Grand, B3 Nr, Shalimar Morya Bldg., Andheri Railway Station, Mumbai, Mumbai-400058, Maharashtra
               </p>
             </div>
           </section>

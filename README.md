@@ -375,4 +375,4 @@ ISC
 
 ## Contact
 
-For questions or support, contact: hello@bhavan.ai
+For questions or support, contact: info@bhavan.ai

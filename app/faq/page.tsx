@@ -393,7 +393,7 @@ export default function FAQPage() {
               Get Early Access
             </a>
             <a
-              href="mailto:hello@bhavan.ai"
+              href="mailto:info@bhavan.ai"
               className="inline-block bg-white text-primary-600 border-2 border-primary-600 font-sans font-medium px-6 py-3 rounded-lg hover:bg-primary-50 transition-colors"
             >
               Contact Us

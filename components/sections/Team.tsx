@@ -71,7 +71,7 @@ const Team: React.FC<TeamProps> = ({
   };
 
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section id="team" className="py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -174,12 +174,12 @@ const Team: React.FC<TeamProps> = ({
 
               {/* Direct Email Link - Requirement 10.4 */}
               <a
-                href="mailto:hello@bhavan.ai"
+                href="mailto:info@bhavan.ai"
                 className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-sans font-medium transition-colors"
-                aria-label="Email us at hello@bhavan.ai"
+                aria-label="Email us at info@bhavan.ai"
               >
                 <Mail className="w-5 h-5" aria-hidden="true" />
-                <span>hello@bhavan.ai</span>
+                <span>info@bhavan.ai</span>
               </a>
             </div>
           </div>

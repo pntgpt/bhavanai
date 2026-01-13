@@ -132,7 +132,8 @@ export const organizationSchema = {
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'Customer Service',
-    email: 'hello@bhavan.ai',
+    email: 'info@bhavan.ai',
+    telephone: '+91-87278-12524',
     availableLanguage: ['English'],
   },
   sameAs: [
@@ -142,6 +143,10 @@ export const organizationSchema = {
   ],
   address: {
     '@type': 'PostalAddress',
+    streetAddress: '306, Morya Grand, B3 Nr, Shalimar Morya Bldg., Andheri Railway Station',
+    addressLocality: 'Mumbai',
+    addressRegion: 'Maharashtra',
+    postalCode: '400058',
     addressCountry: 'IN',
   },
 };
@@ -256,6 +261,22 @@ export const pageMetadata = {
       'Read the terms and conditions for using Bhavan.ai services. Legal agreements and user responsibilities.',
     path: '/terms',
     keywords: ['terms of service', 'legal', 'terms and conditions'],
+    noIndex: true,
+  },
+  refund: {
+    title: 'Refund Policy',
+    description:
+      'Bhavan.ai refund policy for platform services, SPV formation, and marketplace transactions. Learn about refund eligibility and processing.',
+    path: '/refund',
+    keywords: ['refund policy', 'refunds', 'money back', 'payment'],
+    noIndex: true,
+  },
+  cancellation: {
+    title: 'Cancellation Policy',
+    description:
+      'Bhavan.ai cancellation policy for services, subscriptions, and property transactions. Understand cancellation procedures and timelines.',
+    path: '/cancellation',
+    keywords: ['cancellation policy', 'cancel service', 'cancellation'],
     noIndex: true,
   },
 };

@@ -244,7 +244,7 @@ export function getFormErrorMessage(error: unknown): string {
     }
 
     if (error.statusCode && error.statusCode >= 500) {
-      return 'Something went wrong. Please try again or email us at hello@bhavan.ai';
+      return 'Something went wrong. Please try again or email us at info@bhavan.ai';
     }
 
     // Return the specific error message for other cases
@@ -252,7 +252,7 @@ export function getFormErrorMessage(error: unknown): string {
   }
 
   // Generic error
-  return 'Something went wrong. Please try again or email us at hello@bhavan.ai';
+  return 'Something went wrong. Please try again or email us at info@bhavan.ai';
 }
 
 /**
