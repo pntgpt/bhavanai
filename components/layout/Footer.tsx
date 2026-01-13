@@ -57,8 +57,6 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
   const companyLinks = [
     { name: 'About Us', href: '/#team' },
     { name: 'How It Works', href: '/#how-it-works' },
-    { name: 'Roadmap', href: '/#roadmap' },
-    { name: 'Contact', href: '/#contact' },
   ];
 
   const productLinks = [
@@ -75,11 +73,6 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
     { name: 'FAQ', href: '/faq' },
   ];
 
-  const resourceLinks = [
-    { name: 'Press Kit', href: '/downloads/press-kit.pdf', download: true },
-    { name: 'Investor Deck', href: '/downloads/investor-deck.pdf', download: true },
-  ];
-
   const socialLinks = [
     { name: 'Facebook', href: 'https://facebook.com/bhavan.ai', icon: Facebook },
     { name: 'Twitter', href: 'https://twitter.com/bhavan_ai', icon: Twitter },
@@ -90,7 +83,7 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Column */}
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
@@ -137,28 +130,6 @@ const Footer: React.FC<FooterProps> = ({ onNewsletterSubmit }) => {
                   >
                     {link.name}
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Column */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Resources</h3>
-            <ul className="space-y-2">
-              {resourceLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    download={link.download}
-                    className="hover:text-white transition-colors text-sm"
-                    onClick={() => {
-                      const fileType = link.href.split('.').pop() || 'pdf';
-                      trackDownload(link.name, fileType);
-                    }}
-                  >
-                    {link.name}
-                  </a>
                 </li>
               ))}
             </ul>
